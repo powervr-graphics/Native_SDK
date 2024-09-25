@@ -1190,6 +1190,7 @@ void VulkanIntroducingPVRVk::createLogicalDevice()
 
 	// Get the queue
 	_deviceResources->queue = _deviceResources->device->getQueue(_graphicsQueueFamilyIndex, 0);
+	_deviceResources->queue->setObjectName("GraphicsQueue");
 }
 
 /// <summary>Gets a set of corrected screen extents based on the surface's capabilities.</summary>
@@ -1556,6 +1557,8 @@ void VulkanIntroducingPVRVk::recordCommandBuffers()
 
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
+		_deviceResources->cmdBuffers[i]->setObjectName("CommandBufferSwapchain" + std::to_string(i));
+
 		// Commands may only be recorded once the command buffer is in the recording state.
 		// begin recording commands
 		_deviceResources->cmdBuffers[i]->begin();
@@ -1739,6 +1742,7 @@ void VulkanIntroducingPVRVk::createPipeline()
 
 	// Create the graphics pipeline we'll use for rendering a triangle.
 	_deviceResources->graphicsPipeline = _deviceResources->device->createGraphicsPipeline(pipelineInfo, _deviceResources->pipelineCache);
+	_deviceResources->graphicsPipeline->setObjectName("GraphicsPipeline");
 }
 
 /// <summary>Initializes the vertex buffer objects used in the demo.</summary>
@@ -1828,6 +1832,7 @@ void VulkanIntroducingPVRVk::createVbo()
 
 		// We create a command buffer to execute the copy operation from our command pool.
 		pvrvk::CommandBuffer cmdBuffers = _deviceResources->commandPool->allocateCommandBuffer();
+		cmdBuffers->setObjectName("VBOCommandBuffer");
 
 		// We start recording our command buffer operation
 		cmdBuffers->begin();
@@ -1839,6 +1844,7 @@ void VulkanIntroducingPVRVk::createVbo()
 
 		// We create a fence to make sure that the command buffer is synchronized correctly.
 		pvrvk::Fence copyFence = _deviceResources->device->createFence();
+		copyFence->setObjectName("CreateVBOFence");
 
 		// Submit the command buffer to the queue specified
 		pvrvk::SubmitInfo submitInfo;
@@ -1932,6 +1938,9 @@ void VulkanIntroducingPVRVk::allocateDescriptorSets()
 	_deviceResources->staticDescriptorSet = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->staticDescriptorSetLayout);
 	_deviceResources->dynamicDescriptorSet = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->dynamicDescriptorSetLayout);
 
+	_deviceResources->staticDescriptorSet->setObjectName("StaticDescriptorSet");
+	_deviceResources->dynamicDescriptorSet->setObjectName("DynamicDescriptorSet");
+
 	// Note that at this point the descriptor sets are largely uninitialised and all the descriptors are undefined although
 	// the descriptor sets can still be bound to command buffers without issues.
 
@@ -2000,6 +2009,7 @@ void VulkanIntroducingPVRVk::createDescriptorPool()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 1)
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 1)
 																						  .setMaxDescriptorSets(2));
+	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
 }
 
 /// <summary>Creates a checker board texture which will be applied to the triangle during rendering.</summary>
@@ -2110,6 +2120,7 @@ void VulkanIntroducingPVRVk::createTexture()
 
 	// We create command buffer to execute the copy operation from our command pool.
 	pvrvk::CommandBuffer cmdBuffers = _deviceResources->commandPool->allocateCommandBuffer();
+	cmdBuffers->setObjectName("TextureCommandBuffer");
 
 	// We start recording our command buffer operation
 	cmdBuffers->begin();
@@ -2153,6 +2164,7 @@ void VulkanIntroducingPVRVk::createTexture()
 
 	// We create a fence to make sure that the command buffer is synchronized correctly.
 	pvrvk::Fence copyFence = _deviceResources->device->createFence();
+	copyFence->setObjectName("CreateTextureFence");
 
 	// Submit the command buffer to the queue specified
 	pvrvk::SubmitInfo submitInfo;
@@ -2289,6 +2301,7 @@ void VulkanIntroducingPVRVk::createRenderPass()
 	renderPassInfo.addSubpassDependencies(dependencies, ARRAY_SIZE(dependencies));
 
 	_deviceResources->renderPass = _deviceResources->device->createRenderPass(renderPassInfo);
+	_deviceResources->renderPass->setObjectName("RenderPass");
 }
 
 /// <summary>Creates the Framebuffer objects used in this demo.</summary>
@@ -2345,9 +2358,13 @@ void VulkanIntroducingPVRVk::createSynchronisationPrimitives()
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquireSemaphores[i] = _deviceResources->device->createSemaphore();
 
+		_deviceResources->presentationSemaphores[i]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->imageAcquireSemaphores[i]->setObjectName("ImageAcquireSemaphoreSwapchain" + std::to_string(i));
+
 		// Fences are used for indicating a dependency from the queue to the host.
 		// The fences are created in the signalled state meaning we don't require any special logic for handling the first frame synchronization.
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->perFrameResourcesFences[i]->setObjectName("FenceSwapchain" + std::to_string(i));
 	}
 }
 

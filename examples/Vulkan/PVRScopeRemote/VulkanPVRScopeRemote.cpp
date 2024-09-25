@@ -323,6 +323,7 @@ pvr::Result VulkanPVRScopeRemote::initView()
 	_deviceResources->device = pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(0), &queuePopulateInfo, 1, &queueAccessInfo);
 
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
+	_deviceResources->queue->setObjectName("GraphicsQueue");
 
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
@@ -354,14 +355,22 @@ pvr::Result VulkanPVRScopeRemote::initView()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, static_cast<uint16_t>(8 * _swapchainLength))
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, static_cast<uint16_t>(8 * _swapchainLength))
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, static_cast<uint16_t>(8 * _swapchainLength)));
+	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
+
 	const uint32_t swapchainLength = _deviceResources->swapchain->getSwapchainLength();
 	_deviceResources->cmdBuffers.resize(swapchainLength);
 	for (uint32_t i = 0; i < swapchainLength; ++i)
 	{
 		_deviceResources->cmdBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
+		_deviceResources->cmdBuffers[i]->setObjectName("CommandBufferSwapchain" + std::to_string(i));
+
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->presentationSemaphores[i]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->imageAcquiredSemaphores[i]->setObjectName("ImageAcquiredSemaphoreSwapchain" + std::to_string(i));
+
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->perFrameResourcesFences[i]->setObjectName("FenceSwapchain" + std::to_string(i));
 	}
 
 	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
@@ -678,6 +687,7 @@ void VulkanPVRScopeRemote::createPipeline()
 	pvr::utils::populateInputAssemblyFromMesh(_scene->getMesh(0), vertexBindings, 3, pipeDesc.vertexInput, pipeDesc.inputAssembler);
 
 	_deviceResources->pipeline = _deviceResources->device->createGraphicsPipeline(pipeDesc, _deviceResources->pipelineCache);
+	_deviceResources->pipeline->setObjectName("GraphicsPipeline");
 }
 
 /// <summary>Loads the mesh data required for this training course into vertex buffer objects.</summary>
@@ -765,6 +775,7 @@ void VulkanPVRScopeRemote::createDescriptorSet()
 			pvrvk::BufferCreateInfo(_deviceResources->uboMatricesBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		_deviceResources->uboMatrices->setObjectName("MatricesUBO");
 
 		_deviceResources->uboMatricesBufferView.pointToMappedMemory(_deviceResources->uboMatrices->getDeviceMemory()->getMappedData());
 	}
@@ -780,6 +791,7 @@ void VulkanPVRScopeRemote::createDescriptorSet()
 	for (uint32_t i = 0; i < swapchainLength; ++i)
 	{
 		_deviceResources->modelDescriptorSets[i] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->modelDescriptorSetLayout);
+		_deviceResources->modelDescriptorSets[i]->setObjectName("ModelDrawingSwapchain" + std::to_string(i) + "DescriptorSet");
 
 		descSetWrites.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER, _deviceResources->modelDescriptorSets[i], 0)
 									.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_deviceResources->uboMatrices, 0, _deviceResources->uboMatricesBufferView.getDynamicSliceSize())));
@@ -792,6 +804,7 @@ void VulkanPVRScopeRemote::createDescriptorSet()
 	}
 
 	_deviceResources->lightingDescriptorSet = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->lightingDescriptorSetLayout);
+	_deviceResources->lightingDescriptorSet->setObjectName("LightingDescriptorSet");
 	descSetWrites.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER, _deviceResources->lightingDescriptorSet, 0)
 								.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_deviceResources->uboLighting, 0, _deviceResources->uboLightingBufferView.getSize())));
 
@@ -851,6 +864,7 @@ void VulkanPVRScopeRemote::createBuffers()
 			pvrvk::BufferCreateInfo(_deviceResources->uboMaterialBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		_deviceResources->uboMaterial->setObjectName("MaterialUBO");
 
 		_deviceResources->uboMaterialBufferView.pointToMappedMemory(_deviceResources->uboMaterial->getDeviceMemory()->getMappedData());
 	}
@@ -864,6 +878,7 @@ void VulkanPVRScopeRemote::createBuffers()
 			pvrvk::BufferCreateInfo(_deviceResources->uboLightingBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		_deviceResources->uboLighting->setObjectName("LightingUBO");
 
 		_deviceResources->uboLightingBufferView.pointToMappedMemory(_deviceResources->uboLighting->getDeviceMemory()->getMappedData());
 	}
@@ -875,6 +890,9 @@ void VulkanPVRScopeRemote::recordCommandBuffer(uint32_t swapchain)
 	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
 
 	_deviceResources->cmdBuffers[swapchain]->begin();
+
+	pvr::utils::beginCommandBufferDebugLabel(_deviceResources->cmdBuffers[swapchain], pvrvk::DebugUtilsLabel("MainRenderPassSwapchain" + std::to_string(swapchain)));
+
 	const pvrvk::ClearValue clearValues[2] = { pvrvk::ClearValue(0.0f, 0.40f, 0.39f, 1.0f), pvrvk::ClearValue(1.f, 0u) };
 	_deviceResources->cmdBuffers[swapchain]->beginRenderPass(
 		_deviceResources->onScreenFramebuffer[swapchain], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), true, clearValues, ARRAY_SIZE(clearValues));
@@ -899,6 +917,7 @@ void VulkanPVRScopeRemote::recordCommandBuffer(uint32_t swapchain)
 	_deviceResources->uiRenderer.getDefaultControls()->render();
 	_deviceResources->uiRenderer.endRendering();
 	_deviceResources->cmdBuffers[swapchain]->endRenderPass();
+	pvr::utils::endCommandBufferDebugLabel(_deviceResources->cmdBuffers[swapchain]);
 	_deviceResources->cmdBuffers[swapchain]->end();
 }
 

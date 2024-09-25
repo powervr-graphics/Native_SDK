@@ -10,7 +10,7 @@
 #if defined(__APPLE__)
 struct mach_timebase_info;
 #endif
-#if !defined(__APPLE__) && !defined(__QNX__)
+#if !defined(__APPLE__)
 #define PVR_PLATFORM_USES_TIMESTAMP
 #endif
 namespace pvr {

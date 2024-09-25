@@ -13,7 +13,7 @@
 namespace Files {
 const char QuadVertShaderSrc[] = "QuadVertShader_ES3.vsh";
 const char QuadFragShaderSrc[] = "QuadFragShader_ES3.fsh";
-const char ImageTexture[] = "Lenna.pvr";
+const char ImageTexture[] = "Mandrill.pvr";
 const char KernelSrc[] = "ConvolutionKernel.cl";
 } // namespace Files
 namespace Kernel {

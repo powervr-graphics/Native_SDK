@@ -416,6 +416,7 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 	_deviceResources->device = pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(0), queueFlagsInfo, ARRAY_SIZE(queueFlagsInfo), &queueAccessInfo);
 
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
+	_deviceResources->queue->setObjectName("GraphicsQueue");
 
 	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(surface);
 
@@ -479,6 +480,8 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, static_cast<uint16_t>(16 * _numSwapImages))
 																						  .setMaxDescriptorSets(static_cast<uint16_t>(16 * _numSwapImages)));
 
+	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
+
 	// Initialise lighting structures
 	allocateLights();
 
@@ -488,7 +491,11 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 		_deviceResources->cmdBufferMain[i] = _deviceResources->commandPool->allocateCommandBuffer();
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->presentationSemaphores[i]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->imageAcquiredSemaphores[i]->setObjectName("ImageAcquiredSemaphoreSwapchain" + std::to_string(i));
+
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->perFrameResourcesFences[i]->setObjectName("FenceSwapchain" + std::to_string(i));
 
 		pvr::utils::setImageLayout(_deviceResources->swapchain->getImage(i), pvrvk::ImageLayout::e_UNDEFINED, pvrvk::ImageLayout::e_PRESENT_SRC_KHR, uploadBuffer);
 	}
@@ -1114,7 +1121,11 @@ void VulkanDeferredShadingPFX::recordMainCommandBuffer()
 
 	for (uint32_t i = 0; i < _numSwapImages; ++i)
 	{
+		_deviceResources->cmdBufferMain[i]->setObjectName("CommandBufferSwapchain" + std::to_string(i));
+
 		_deviceResources->cmdBufferMain[i]->begin();
+
+		pvr::utils::beginCommandBufferDebugLabel(_deviceResources->cmdBufferMain[i], pvrvk::DebugUtilsLabel("MainRenderPass"));
 
 		pvrvk::Framebuffer framebuffer = _deviceResources->render_mgr.toPass(0, 0).getFramebuffer(i);
 
@@ -1158,6 +1169,7 @@ void VulkanDeferredShadingPFX::recordMainCommandBuffer()
 		_deviceResources->uiRenderer.getSdkLogo()->render();
 		_deviceResources->uiRenderer.endRendering();
 		_deviceResources->cmdBufferMain[i]->endRenderPass();
+		pvr::utils::endCommandBufferDebugLabel(_deviceResources->cmdBufferMain[i]);
 
 		// Prepare the image for Presenting
 		pvr::utils::setImageLayout(

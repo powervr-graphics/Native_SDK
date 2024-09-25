@@ -485,6 +485,7 @@ pvr::Result VulkanHybridHardShadows::initView()
 
 	// Get queue
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
+	_deviceResources->queue->setObjectName("GraphicsQueue");
 
 	// Create vulkan memory allocatortea
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
@@ -553,6 +554,8 @@ pvr::Result VulkanHybridHardShadows::initView()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, static_cast<uint16_t>(16 * _numSwapImages))
 																						  .setMaxDescriptorSets(static_cast<uint16_t>(16 * _numSwapImages)));
 
+	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
+
 	// Setup command buffers
 	for (uint32_t i = 0; i < _numSwapImages; ++i)
 	{
@@ -563,9 +566,20 @@ pvr::Result VulkanHybridHardShadows::initView()
 		_deviceResources->cmdBufferForwadShading[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
 		_deviceResources->cmdBufferRayTracedShadows[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
 
+		_deviceResources->cmdBufferMainDeferred[i]->setObjectName("DeferredCommandBufferSwapchain" + std::to_string(i));
+		_deviceResources->cmdBufferMainForward[i]->setObjectName("ForwardCommandBufferSwapchain" + std::to_string(i));
+		_deviceResources->cmdBufferGBuffer[i]->setObjectName("GBufferSecondaryCommandBufferSwapchain" + std::to_string(i));
+		_deviceResources->cmdBufferDeferredShading[i]->setObjectName("DeferredSecondaryShadingCommandBufferSwapchain" + std::to_string(i));
+		_deviceResources->cmdBufferForwadShading[i]->setObjectName("ForwadShadingSecondaryCommandBufferSwapchain" + std::to_string(i));
+		_deviceResources->cmdBufferRayTracedShadows[i]->setObjectName("RayTracedShadowsSecondaryCommandBufferSwapchain" + std::to_string(i));
+
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->presentationSemaphores[i]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->imageAcquiredSemaphores[i]->setObjectName("ImageAcquiredSemaphoreSwapchain" + std::to_string(i));
+
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->perFrameResourcesFences[i]->setObjectName("FenceSwapchain" + std::to_string(i));
 	}
 
 	// Handle device rotation
@@ -819,6 +833,11 @@ void VulkanHybridHardShadows::createDescriptorSets()
 	_deviceResources->imageDescriptorSet = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->imageDescriptorSetLayout);
 	_deviceResources->deferredShadingDescriptorSet = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->deferredShadingDescriptorSetLayout);
 
+	_deviceResources->commonDescriptorSet->setObjectName("CommonDescriptorSet");
+	_deviceResources->gbufferDescriptorSet->setObjectName("GBufferDescriptorSet");
+	_deviceResources->imageDescriptorSet->setObjectName("ImageDescriptorSet");
+	_deviceResources->deferredShadingDescriptorSet->setObjectName("DeferredShadingDescriptorSet");
+
 	// Write Common Descriptor Set
 
 	std::vector<pvrvk::WriteDescriptorSet> writeDescSets;
@@ -974,6 +993,7 @@ void VulkanHybridHardShadows::createGBufferPipelines()
 
 	renderGBufferPipelineCreateInfo.pipelineLayout = _deviceResources->gbufferPipelineLayout;
 	_deviceResources->gbufferPipeline = _deviceResources->device->createGraphicsPipeline(renderGBufferPipelineCreateInfo, _deviceResources->pipelineCache);
+	_deviceResources->gbufferPipeline->setObjectName("GBufferGraphicsPipeline");
 }
 
 /// <summary>Creates the pipeline for the Ray-Traced shadows pass.</summary>
@@ -1024,6 +1044,7 @@ void VulkanHybridHardShadows::createRayTracingPipelines()
 	raytracingPipeline.pipelineLayout = _deviceResources->raytraceShadowPipelineLayout;
 
 	_deviceResources->raytraceShadowPipeline = _deviceResources->device->createRaytracingPipeline(raytracingPipeline, nullptr);
+	_deviceResources->raytraceShadowPipeline->setObjectName("ShadowRaytracingPipeline");
 }
 
 /// <summary>Creates the pipeline for the Deferred shading pass.</summary>
@@ -1095,6 +1116,7 @@ void VulkanHybridHardShadows::createDeferredShadingPipelines()
 		_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream(Files::DeferredShadingFragmentShader)->readToEnd<uint32_t>())));
 
 	_deviceResources->defferedShadingPipeline = _deviceResources->device->createGraphicsPipeline(pipelineCreateInfo, _deviceResources->pipelineCache);
+	_deviceResources->defferedShadingPipeline->setObjectName("DeferredShadingGraphicsPipeline");
 }
 
 /// <summary>Creates the pipeline for the Forward shading pass.</summary>
@@ -1198,6 +1220,7 @@ void VulkanHybridHardShadows::createForwardShadingPipelines()
 
 	pipelineCreateInfo.pipelineLayout = _deviceResources->forwardShadingPipelineLayout;
 	_deviceResources->forwardShadingPipeline = _deviceResources->device->createGraphicsPipeline(pipelineCreateInfo, _deviceResources->pipelineCache);
+	_deviceResources->forwardShadingPipeline->setObjectName("ForwardShadingGraphicsPipeline");
 }
 
 /// <summary>Creates the shader binding table for the Ray-Traced shadows pass.</summary>
@@ -1221,6 +1244,7 @@ void VulkanHybridHardShadows::createShaderBindingTable()
 			sbtSize, pvrvk::BufferUsageFlags::e_TRANSFER_SRC_BIT | pvrvk::BufferUsageFlags::e_SHADER_BINDING_TABLE_BIT_KHR | pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT),
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT);
+	_deviceResources->raytraceShadowShaderBindingTable->setObjectName("RaytraceShadowShaderBindingTableBuffer");
 
 	// Write the handles in the SBT
 	void* mapped = _deviceResources->raytraceShadowShaderBindingTable->getDeviceMemory()->map(0, VK_WHOLE_SIZE);
@@ -1345,6 +1369,7 @@ void VulkanHybridHardShadows::createFramebufferAndRenderPass()
 		_deviceResources->gbufferImages[3], _deviceResources->gbufferDepthStencilImage };
 
 	_deviceResources->gbufferRenderPass = _deviceResources->device->createRenderPass(renderPassCreateInfo);
+	_deviceResources->gbufferRenderPass->setObjectName("GBufferRenderPass");
 
 	_deviceResources->gbufferFramebuffer = _deviceResources->device->createFramebuffer(
 		pvrvk::FramebufferCreateInfo(dimension.getWidth(), dimension.getHeight(), 1, _deviceResources->gbufferRenderPass, 5, &imageViews[0]));
@@ -1463,6 +1488,7 @@ void VulkanHybridHardShadows::createModelBuffers(pvrvk::CommandBuffer& uploadCmd
 
 		_deviceResources->vertexBuffers.push_back(pvr::utils::createBuffer(_deviceResources->device, vertexBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
 			pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT));
+		_deviceResources->vertexBuffers.back()->setObjectName("AccelerationStructureMeshVBO");
 
 		pvr::utils::updateBufferUsingStagingBuffer(
 			_deviceResources->device, _deviceResources->vertexBuffers[meshIdx], uploadCmd, vertices.data(), 0, sizeof(pvr::utils::ASVertexFormat) * vertices.size());
@@ -1475,6 +1501,7 @@ void VulkanHybridHardShadows::createModelBuffers(pvrvk::CommandBuffer& uploadCmd
 
 		_deviceResources->indexBuffers.push_back(pvr::utils::createBuffer(_deviceResources->device, indexBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
 			pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT));
+		_deviceResources->indexBuffers.back()->setObjectName("AccelerationStructureMeshIBO");
 
 		pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, _deviceResources->indexBuffers[meshIdx], uploadCmd, indices.data(), 0, sizeof(uint32_t) * indices.size());
 
@@ -1488,6 +1515,7 @@ void VulkanHybridHardShadows::createModelBuffers(pvrvk::CommandBuffer& uploadCmd
 	materialColorBufferInfo.setUsageFlags(pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT);
 
 	_deviceResources->materialBuffer = pvr::utils::createBuffer(_deviceResources->device, materialColorBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT);
+	_deviceResources->materialBuffer->setObjectName("MaterialSBO");
 
 	pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, _deviceResources->materialBuffer, uploadCmd, materials.data(), 0, sizeof(Material) * materials.size());
 }
@@ -1509,6 +1537,7 @@ void VulkanHybridHardShadows::createCameraBuffer()
 		pvrvk::BufferCreateInfo(_deviceResources->globalBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_deviceResources->globalBuffer->setObjectName("GlobalUBO");
 
 	_deviceResources->globalBufferView.pointToMappedMemory(_deviceResources->globalBuffer->getDeviceMemory()->getMappedData());
 }
@@ -1588,6 +1617,7 @@ void VulkanHybridHardShadows::createMeshTransformBuffer()
 		pvrvk::BufferCreateInfo(_deviceResources->perMeshBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_deviceResources->perMeshBuffer->setObjectName("PerMeshUBO");
 
 	_deviceResources->perMeshBufferView.pointToMappedMemory(_deviceResources->perMeshBuffer->getDeviceMemory()->getMappedData());
 }
@@ -1607,6 +1637,7 @@ void VulkanHybridHardShadows::createLightBuffer()
 		pvrvk::BufferCreateInfo(_deviceResources->lightDataBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_deviceResources->lightDataBuffer->setObjectName("LightDataBufferUBO");
 
 	_deviceResources->lightDataBufferView.pointToMappedMemory(_deviceResources->lightDataBuffer->getDeviceMemory()->getMappedData());
 }

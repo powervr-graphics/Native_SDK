@@ -452,6 +452,7 @@ void VulkanGameOfLife::createPipelines()
 		createInfo.computeShader.setShader(computeShader);
 		createInfo.pipelineLayout = _deviceResources->computePipelinelayout;
 		_deviceResources->computePipeline = _deviceResources->device->createComputePipeline(createInfo, _deviceResources->pipelineCache);
+		_deviceResources->computePipeline->setObjectName("ComputePipeline");
 	}
 
 	// Create the graphics pipeline
@@ -483,6 +484,7 @@ void VulkanGameOfLife::createPipelines()
 		createInfo.subpass = 0;
 
 		_deviceResources->graphicsPipeline = _deviceResources->device->createGraphicsPipeline(createInfo, _deviceResources->pipelineCache);
+		_deviceResources->graphicsPipeline->setObjectName("GraphicsPipeline");
 	}
 }
 
@@ -537,6 +539,9 @@ void VulkanGameOfLife::createResources()
 	{
 		_deviceResources->computeDescriptorSets[i] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->computeDescriptorSetLayout);
 		_deviceResources->graphicsDescriptorSets[i] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->graphicsDescriptorSetLayout);
+
+		_deviceResources->computeDescriptorSets[i]->setObjectName("ComputeSwapchain" + std::to_string(i) + "DescriptorSet");
+		_deviceResources->graphicsDescriptorSets[i]->setObjectName("GraphicsSwapchain" + std::to_string(i) + "DescriptorSet");
 	}
 
 	updateDesciptorSets();
@@ -547,13 +552,16 @@ void VulkanGameOfLife::recordUICmdBuffer()
 {
 	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
+		_deviceResources->uiRendererCmdBuffers[i]->setObjectName("UISwapchain" + std::to_string(i));
 		_deviceResources->uiRendererCmdBuffers[i]->begin(_deviceResources->onScreenFramebuffer[i], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
+		pvr::utils::beginCommandBufferDebugLabel(_deviceResources->uiRendererCmdBuffers[i], pvrvk::DebugUtilsLabel("UIRenderPass"));
 		_deviceResources->uiRenderer.beginRendering(_deviceResources->uiRendererCmdBuffers[i]);
 		_deviceResources->uiRenderer.getSdkLogo()->render();
 		_deviceResources->uiRenderer.getDefaultTitle()->render();
 		_deviceResources->uiRenderer.getDefaultDescription()->render();
 		_deviceResources->uiRenderer.getDefaultControls()->render();
 		_deviceResources->uiRenderer.endRendering();
+		pvr::utils::endCommandBufferDebugLabel(_deviceResources->uiRendererCmdBuffers[i]);
 		_deviceResources->uiRendererCmdBuffers[i]->end();
 	}
 }
@@ -566,6 +574,9 @@ pvrvk::CommandBuffer VulkanGameOfLife::recordGraphicsCmdBuffer(const uint32_t sw
 
 	pvrvk::CommandBuffer& mainCmdBuffer = _deviceResources->graphicsPrimaryCmdBuffers[swapchainIndex];
 	pvrvk::SecondaryCommandBuffer& graphicsCmdBuffer = _deviceResources->graphicsCmdBuffers[swapchainIndex];
+
+	mainCmdBuffer->setObjectName("GraphicsCommandBufferSwapchain" + std::to_string(currentFrameId));
+	graphicsCmdBuffer->setObjectName("SecondaryGraphicsCommandBufferSwapchain" + std::to_string(currentFrameId));
 
 	// Recording The graphics Commandbuffer
 	graphicsCmdBuffer->begin(_deviceResources->onScreenFramebuffer[swapchainIndex], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
@@ -592,6 +603,9 @@ pvrvk::CommandBuffer VulkanGameOfLife::recordComputeCmdBuffer()
 	pvrvk::SecondaryCommandBuffer& computeCmdBuffer = _deviceResources->computeCmdBuffers[currentFrameId];
 	pvrvk::CommandBuffer& mainCmdBuffer = _deviceResources->computePrimaryCmdBuffers[currentFrameId];
 
+	mainCmdBuffer->setObjectName("ComputeCommandBufferSwapchain" + std::to_string(currentFrameId));
+	computeCmdBuffer->setObjectName("SecondaryComputeCommandBufferSwapchain" + std::to_string(currentFrameId));
+
 	// Recording the Compute Commandbuffer
 	computeCmdBuffer->reset();
 	computeCmdBuffer->begin();
@@ -599,7 +613,7 @@ pvrvk::CommandBuffer VulkanGameOfLife::recordComputeCmdBuffer()
 	computeCmdBuffer->bindPipeline(_deviceResources->computePipeline);
 	computeCmdBuffer->bindDescriptorSet(pvrvk::PipelineBindPoint::e_COMPUTE, _deviceResources->computePipelinelayout, 0, _deviceResources->computeDescriptorSets[currentFrameId]);
 	computeCmdBuffer->dispatch(boardWidth / 8, boardHeight / 4, 1);
-
+	pvr::utils::endCommandBufferDebugLabel(computeCmdBuffer);
 	computeCmdBuffer->end();
 
 	mainCmdBuffer->begin();
@@ -721,6 +735,7 @@ pvr::Result VulkanGameOfLife::initView()
 	_deviceResources->device = pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(0), queueCreateInfos, 2, queueAccessInfos);
 
 	_deviceResources->queues[0] = _deviceResources->device->getQueue(queueAccessInfos[0].familyId, queueAccessInfos[0].queueId);
+	_deviceResources->queues[0]->setObjectName("GraphicsQueue");
 
 	// In the future we may want to improve our flexibility with regards to making use of multiple queues but for now to support multi queue the queue must support
 	// Graphics + Compute + WSI support.
@@ -732,6 +747,7 @@ pvr::Result VulkanGameOfLife::initView()
 		Log(LogLevel::Information, "Multiple queues support e_GRAPHICS_BIT + e_COMPUTE_BIT + WSI. These queues will be used to ping-pong work each frame");
 
 		_deviceResources->queues[1] = _deviceResources->device->getQueue(queueAccessInfos[1].familyId, queueAccessInfos[1].queueId);
+		_deviceResources->queues[1]->setObjectName("ComputeQueue");
 	}
 	else
 	{
@@ -782,6 +798,8 @@ pvr::Result VulkanGameOfLife::initView()
 		_deviceResources->device->createDescriptorPool(
 			pvrvk::DescriptorPoolCreateInfo(static_cast<uint16_t>(8 * _swapchainLength)).addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, static_cast<uint16_t>(8 * _swapchainLength)));
 
+	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
+
 	// Create per frame Resources.
 	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
@@ -799,8 +817,16 @@ pvr::Result VulkanGameOfLife::initView()
 		_deviceResources->computeToRenderSemaphore[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->renderToComputeSemaphore[i] = _deviceResources->device->createSemaphore();
 
+		_deviceResources->presentationSemaphores[i]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->imageAcquiredSemaphores[i]->setObjectName("ImageAcquiredSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->computeToComputeSemaphores[i]->setObjectName("ComputeToComputeSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->computeToRenderSemaphore[i]->setObjectName("ComputeToRenderSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->renderToComputeSemaphore[i]->setObjectName("RenderToComputeSemaphoreSwapchain" + std::to_string(i));
+
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 		_deviceResources->computeFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->perFrameResourcesFences[i]->setObjectName("FenceSwapchain" + std::to_string(i));
+		_deviceResources->computeFences[i]->setObjectName("ComputeFenceSwapchain" + std::to_string(i));
 	}
 
 	srand(34563464);

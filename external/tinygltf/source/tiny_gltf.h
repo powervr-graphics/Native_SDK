@@ -575,7 +575,7 @@ struct Scene {
   std::vector<int> nodes;
 
   ParameterMap extensions;
-  ParameterMap extras;
+  Value extras;
 };
 
 struct Light {
@@ -1125,21 +1125,41 @@ static void ParseObjectProperty(Value *ret, const picojson::object &o) {
     picojson::value v = it->second;
 
     if (v.is<bool>()) {
-      vo[it->first] = tinygltf::Value(v.get<bool>());
+      vo[it->first] = tinygltf::Value(v.get<bool>()); 
+    } else if (v.is<int64_t>()){
+	  vo[it->first] = tinygltf::Value(static_cast<int>(v.get<int64_t>())); // truncate 
     } else if (v.is<double>()) {
       vo[it->first] = tinygltf::Value(v.get<double>());
-    } else if (v.is<int64_t>()) {
-      vo[it->first] =
-          tinygltf::Value(static_cast<int>(v.get<int64_t>()));  // truncate
     } else if (v.is<std::string>()) {
       vo[it->first] = tinygltf::Value(v.get<std::string>());
     } else if (v.is<picojson::object>()) {
       tinygltf::Value child_value;
       ParseObjectProperty(&child_value, v.get<picojson::object>());
       vo[it->first] = child_value;
-      }
+	}
+	else if (v.is<picojson::array>())
+	{
+		const picojson::value::array& list = v.get<picojson::value::array>();
+        tinygltf::Value::Array tgArray;
+		for (std::size_t i = 0; i < list.size(); i++) { 
+            
+            tinygltf::Value element;
+			if (list[i].is<int64_t>()) 
+                element = tinygltf::Value(static_cast<int>(list[i].get<int64_t>()));
+			if (list[i].is<double>())
+				element = tinygltf::Value(list[i].get<double>());
+			else if (list[i].is<std::string>())
+				element = tinygltf::Value(list[i].get<std::string>());
+			else if (list[i].is<picojson::object>())
+				ParseObjectProperty(&element, list[i].get<picojson::object>());
+				
+			tgArray.push_back(element);
+        }
+		vo[it->first] = tinygltf::Value(tgArray);
+    }
+
     // TODO(syoyo) binary, array
-      }
+  }
 
   (*ret) = tinygltf::Value(vo);
   }
@@ -2117,12 +2137,10 @@ static bool ParseAnimation(Animation *animation, std::string *err,
           }
           return false;
         }
+		
         if (!ParseStringProperty(&sampler.interpolation, err, s,
                                  "interpolation", true)) {
-          if (err) {
-            (*err) += "`interpolation` field is missing in animation.sampler\n";
-          }
-          return false;
+			sampler.interpolation = "LINEAR";
         }
         if (!ParseNumberProperty(&outputIndex, err, s, "output", true)) {
           if (err) {
@@ -2583,7 +2601,10 @@ fileLoader, &buffer, err, it->get<picojson::object>(), base_dir,
           return false;
         }
 
+
         Scene scene;
+        ParseExtrasProperty(&scene.extras, o);
+
         ParseStringProperty(&scene.name, err, o, "name", false);
         std::vector<int> nodesIds;
         for (size_t i = 0; i < nodes.size(); i++) {

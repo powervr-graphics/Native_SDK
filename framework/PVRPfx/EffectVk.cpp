@@ -1161,6 +1161,8 @@ void Effect_::buildRenderObjects(CommandBuffer& texUploadCmdBuffer, IAssetProvid
 															   .addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_BUFFER_DYNAMIC, 8 * swapchainLength)
 															   .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, 8 * swapchainLength));
 
+	_descriptorPool->setObjectName("DescriptorPool");
+
 	createFixedDescriptorSets(*this, _pipelineDefinitions, pipeLayoutsIndexed, swapchainLength);
 }
 

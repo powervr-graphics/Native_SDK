@@ -165,6 +165,7 @@ pvr::Result VulkanIMGTextureFilterCubic::initView()
 
 	// Get the queue
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
+	_deviceResources->queue->setObjectName("GraphicsQueue");
 
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
@@ -195,18 +196,25 @@ pvr::Result VulkanIMGTextureFilterCubic::initView()
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(
 		pvrvk::DescriptorPoolCreateInfo().addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, static_cast<uint16_t>(5 * _swapchainLength)).setMaxDescriptorSets(static_cast<uint16_t>(5 * _swapchainLength)));
+	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
 
 	// Create per swapchain resource
 	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->presentationSemaphores[i]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->imageAcquiredSemaphores[i]->setObjectName("ImageAcquiredSemaphoreSwapchain" + std::to_string(i));
+
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->perFrameResourcesFences[i]->setObjectName("FenceSwapchain" + std::to_string(i));
 
 		_deviceResources->cmdBuffers[i] = _deviceResources->cmdPool->allocateCommandBuffer();
+		_deviceResources->cmdBuffers[i]->setObjectName("CommandBufferSwapchain" + std::to_string(i));
 	}
 
 	_deviceResources->uploadCmdBuffer = _deviceResources->cmdPool->allocateCommandBuffer();
+	_deviceResources->uploadCmdBuffer->setObjectName("UploadCommandBuffer");
 
 	// create the descriptor set layouts and pipeline layouts
 	createDescriptorSetLayout();
@@ -339,6 +347,7 @@ void VulkanIMGTextureFilterCubic::loadVbo()
 		pvrvk::BufferCreateInfo(pvr::getSize(pvr::GpuDatatypes::vec3) * 6, pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		_deviceResources->vmaAllocator);
+	_deviceResources->quadVbo->setObjectName("quadVBO");
 
 	bool isBufferHostVisible = (_deviceResources->quadVbo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0;
 
@@ -491,6 +500,8 @@ void VulkanIMGTextureFilterCubic::recordCommandBuffers()
 		// begin recording commands
 		_deviceResources->cmdBuffers[i]->begin();
 
+		pvr::utils::beginCommandBufferDebugLabel(_deviceResources->cmdBuffers[i], pvrvk::DebugUtilsLabel("MainRenderPass"));
+
 		// begin the renderpass
 		_deviceResources->cmdBuffers[i]->beginRenderPass(_deviceResources->onScreenFramebuffer[i], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), true, &clearValue, 1);
 
@@ -518,6 +529,7 @@ void VulkanIMGTextureFilterCubic::recordCommandBuffers()
 		_deviceResources->uiRenderer.getSdkLogo()->render();
 		_deviceResources->uiRenderer.endRendering();
 		_deviceResources->cmdBuffers[i]->endRenderPass();
+		pvr::utils::endCommandBufferDebugLabel(_deviceResources->cmdBuffers[i]);
 		_deviceResources->cmdBuffers[i]->end();
 	}
 }
@@ -577,6 +589,7 @@ void VulkanIMGTextureFilterCubic::createPipeline()
 	pipelineInfo.pipelineLayout = _deviceResources->pipelineLayout;
 
 	_deviceResources->pipeline = _deviceResources->device->createGraphicsPipeline(pipelineInfo, _deviceResources->pipelineCache);
+	_deviceResources->pipeline->setObjectName("GraphicsPipeline");
 }
 
 /// <summary>Create combined texture and sampler descriptor set for the materials in the _scene</summary>
@@ -604,6 +617,7 @@ void VulkanIMGTextureFilterCubic::createDescriptorSet()
 	}
 
 	_deviceResources->textureDescriptorSet = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->texDescriptorSetLayout);
+	_deviceResources->textureDescriptorSet->setObjectName("TextureDescriptorSet");
 
 	// Add the Linear and Cubic samplers along with the Image to the descriptor set to be bound
 	std::vector<pvrvk::WriteDescriptorSet> writeDescSets;

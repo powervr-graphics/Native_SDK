@@ -158,6 +158,7 @@ pvr::Result VulkanSkinning::initView()
 	_deviceResources->device = pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(0), &queueCreateInfo, 1, &queueAccessInfo);
 
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
+	_deviceResources->queue->setObjectName("GraphicsQueue");
 
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
@@ -199,15 +200,23 @@ pvr::Result VulkanSkinning::initView()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, static_cast<uint16_t>(32 * _swapchainLength))
 																						  .setMaxDescriptorSets(static_cast<uint16_t>(32 * _swapchainLength)));
 
+	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
+
 	_deviceResources->commandPool = _deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(_deviceResources->queue->getFamilyIndex()));
 
 	// create the command buffers, semaphores & the fence
 	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		_deviceResources->cmdBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
+		_deviceResources->cmdBuffers[i]->setObjectName("MainCommandBufferSwapchain" + std::to_string(i));
+
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->presentationSemaphores[i]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->imageAcquiredSemaphores[i]->setObjectName("ImageAcquiredSemaphoreSwapchain" + std::to_string(i));
+
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->perFrameResourcesFences[i]->setObjectName("FenceSwapchain" + std::to_string(i));
 	}
 
 	// Allocate a single use command buffer to upload resources to the GPU
@@ -410,6 +419,8 @@ inline void VulkanSkinning::recordCommandBuffer()
 		_deviceResources->cmdBuffers[swapidx]->begin();
 		// Clear the colour and depth buffer automatically.
 
+		pvr::utils::beginCommandBufferDebugLabel(_deviceResources->cmdBuffers[swapidx], pvrvk::DebugUtilsLabel("MainRenderPassSwapchain" + std::to_string(swapidx)));
+
 		pvr::utils::setImageLayout(_deviceResources->mgr.toPass(0, 0).getFramebuffer(swapidx)->getAttachment(0)->getImage(), pvrvk::ImageLayout::e_PRESENT_SRC_KHR,
 			pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL, _deviceResources->cmdBuffers[swapidx]);
 
@@ -429,6 +440,7 @@ inline void VulkanSkinning::recordCommandBuffer()
 		// prepare image for presentation
 		pvr::utils::setImageLayout(_deviceResources->mgr.toPass(0, 0).getFramebuffer(swapidx)->getAttachment(0)->getImage(), pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL,
 			pvrvk::ImageLayout::e_PRESENT_SRC_KHR, _deviceResources->cmdBuffers[swapidx]);
+		pvr::utils::endCommandBufferDebugLabel(_deviceResources->cmdBuffers[swapidx]);
 		_deviceResources->cmdBuffers[swapidx]->end();
 	}
 }

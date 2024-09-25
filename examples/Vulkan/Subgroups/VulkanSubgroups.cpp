@@ -305,6 +305,7 @@ pvr::Result VulkanSubgroups::initView()
 	_deviceResources->device = pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(0), queueCreateInfos, 2, queueAccessInfos);
 
 	_deviceResources->queues[0] = _deviceResources->device->getQueue(queueAccessInfos[0].familyId, queueAccessInfos[0].queueId);
+	_deviceResources->queues[0]->setObjectName("Queue0");
 
 	// In the future we may want to improve our flexibility with regards to making use of multiple queues but for now to support multi queue the queue must support
 	// Graphics + Compute + WSI support.
@@ -314,6 +315,7 @@ pvr::Result VulkanSubgroups::initView()
 	if (queueAccessInfos[1].familyId != -1 && queueAccessInfos[1].queueId != -1)
 	{
 		_deviceResources->queues[1] = _deviceResources->device->getQueue(queueAccessInfos[1].familyId, queueAccessInfos[1].queueId);
+		_deviceResources->queues[1]->setObjectName("Queue1");
 
 		if (_deviceResources->queues[0]->getFamilyIndex() == _deviceResources->queues[1]->getFamilyIndex())
 		{
@@ -368,19 +370,30 @@ pvr::Result VulkanSubgroups::initView()
 	_deviceResources->descriptorPool =
 		_deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo(10).addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, static_cast<uint16_t>(8 * _swapLength)));
 
+	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
+
 	// Create the per frame resources
 	for (uint32_t i = 0; i < _swapLength; i++)
 	{
 		// Sync objects
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->presentationSemaphores[i]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->imageAcquiredSemaphores[i]->setObjectName("ImageAcquiredSemaphoreSwapchain" + std::to_string(i));
+
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->perFrameResourcesFences[i]->setObjectName("FenceSwapchain" + std::to_string(i));
 
 		// Command Buffers
 		_deviceResources->primaryCmdBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
 		_deviceResources->computeSecondaryCmdBuffers[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
 		_deviceResources->graphicsSecondaryCmdBuffers[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
 		_deviceResources->uiSecondaryCmdBuffers[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
+
+		_deviceResources->primaryCmdBuffers[i]->setObjectName("MainCommandBufferSwapchain" + std::to_string(i));
+		_deviceResources->computeSecondaryCmdBuffers[i]->setObjectName("ComputeSecondaryCommandBufferSwapchain" + std::to_string(i));
+		_deviceResources->graphicsSecondaryCmdBuffers[i]->setObjectName("GraphicsSecondaryCommandBufferSwapchain" + std::to_string(i));
+		_deviceResources->uiSecondaryCmdBuffers[i]->setObjectName("UISecondaryCommandBufferSwapchain" + std::to_string(i));
 	}
 
 	// Before creating any resources specific to this demo, fill the demo settings namespace
@@ -893,6 +906,7 @@ void VulkanSubgroups::createcomputeOutputImageDescSets()
 	{
 		// For each frame in the swapchain allocate a descriptor set from the pool
 		_deviceResources->computeOutputImageDescSets[i] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->computeOutputImageDescSetLayout);
+		_deviceResources->computeOutputImageDescSets[i]->setObjectName("ComputeOutputImageSwapchain" + std::to_string(i) + "DescriptorSet");
 
 		// For each frame in add a descriptor to be written
 		descriptorWriter.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_STORAGE_IMAGE, _deviceResources->computeOutputImageDescSets[i], 0)
@@ -920,6 +934,7 @@ void VulkanSubgroups::createMatrixDescSets()
 		pvrvk::BufferCreateInfo(_deviceResources->matrixBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_deviceResources->matrixBuffer->setObjectName("MatrixUBO");
 	_deviceResources->matrixBufferView.pointToMappedMemory(_deviceResources->matrixBuffer->getDeviceMemory()->getMappedData());
 
 	// Create some basic values for the camera matrices
@@ -946,6 +961,7 @@ void VulkanSubgroups::createMatrixDescSets()
 	_deviceResources->matrixDescSetLayout = _deviceResources->device->createDescriptorSetLayout(layout);
 
 	_deviceResources->matrixDescSet = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->matrixDescSetLayout);
+	_deviceResources->matrixDescSet->setObjectName("MatrixDescriptorSet");
 
 	// Since this is a dynamic descriptor set we only need to write one descriptor for the per frame resources
 	pvrvk::WriteDescriptorSet descriptorWriter =
@@ -977,6 +993,7 @@ void VulkanSubgroups::createGraphicsDescSet()
 	{
 		// For each frame in the swapchain, allocate a descriptor set
 		_deviceResources->graphicsDescSet[i] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->graphicsDescSetLayout);
+		_deviceResources->graphicsDescSet[i]->setObjectName("GraphicsSwapchain" + std::to_string(i) + "DescriptorSet");
 
 		// For each frame, add a descriptor to be written
 		descriptorWriter.push_back(
@@ -1028,6 +1045,7 @@ void VulkanSubgroups::createGraphicsPipeline()
 
 	// Create pipeline
 	_deviceResources->graphicsPipeline = _deviceResources->device->createGraphicsPipeline(pipeDesc);
+	_deviceResources->graphicsPipeline->setObjectName("GraphicsPipeline");
 }
 
 /// <summary>Creates all of the compute pipelines for this demo, they all have the same layouts and description, however the shader
@@ -1085,6 +1103,7 @@ void VulkanSubgroups::createComputePipeline()
 
 		// Create and add the pipeline
 		pvrvk::ComputePipeline pipeline = _deviceResources->device->createComputePipeline(pipeDesc);
+		pipeline->setObjectName("SubgroupFunctionality" + std::to_string(i) + "ComputePipeline");
 		_deviceResources->computePiplines[i] = pipeline;
 	}
 }
@@ -1099,6 +1118,8 @@ void VulkanSubgroups::recordPrimaryCommandBuffers()
 		// Begin the primary command buffer
 		_deviceResources->primaryCmdBuffers[i]->begin();
 
+		pvr::utils::beginCommandBufferDebugLabel(_deviceResources->primaryCmdBuffers[i], pvrvk::DebugUtilsLabel("MainRenderPassSwapchain" + std::to_string(i)));
+
 		// Run the compute stage
 		_deviceResources->primaryCmdBuffers[i]->executeCommands(_deviceResources->computeSecondaryCmdBuffers[i]);
 
@@ -1107,6 +1128,8 @@ void VulkanSubgroups::recordPrimaryCommandBuffers()
 		_deviceResources->primaryCmdBuffers[i]->executeCommands(_deviceResources->graphicsSecondaryCmdBuffers[i]);
 		_deviceResources->primaryCmdBuffers[i]->executeCommands(_deviceResources->uiSecondaryCmdBuffers[i]);
 		_deviceResources->primaryCmdBuffers[i]->endRenderPass();
+
+		pvr::utils::endCommandBufferDebugLabel(_deviceResources->primaryCmdBuffers[i]);
 
 		// End the command buffer
 		_deviceResources->primaryCmdBuffers[i]->end();
@@ -1161,6 +1184,8 @@ void VulkanSubgroups::recordComputeCommandBuffer(uint32_t i)
 		_deviceResources->queues[0]->getFamilyIndex(), _deviceResources->queues[0]->getFamilyIndex()));
 	_deviceResources->computeSecondaryCmdBuffers[i]->pipelineBarrier(pvrvk::PipelineStageFlags::e_COMPUTE_SHADER_BIT, pvrvk::PipelineStageFlags::e_FRAGMENT_SHADER_BIT, barriers);
 
+	pvr::utils::endCommandBufferDebugLabel(_deviceResources->computeSecondaryCmdBuffers[i]);
+
 	// end the compute shader
 	_deviceResources->computeSecondaryCmdBuffers[i]->end();
 }
@@ -1179,6 +1204,8 @@ void VulkanSubgroups::recordGraphicsCommandBuffer(uint32_t i)
 		pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->graphicsPipelineLayout, 0, _deviceResources->graphicsDescSet[i]);
 
 	_deviceResources->graphicsSecondaryCmdBuffers[i]->draw(0, 3);
+
+	pvr::utils::endCommandBufferDebugLabel(_deviceResources->graphicsSecondaryCmdBuffers[i]);
 
 	// end this secondary command buffer
 	_deviceResources->graphicsSecondaryCmdBuffers[i]->end();

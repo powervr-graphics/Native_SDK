@@ -5,6 +5,7 @@
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #pragma once
+#include "PVRAssets/model/FormattedUserData.h"
 #include "PVRAssets/model/Camera.h"
 #include "PVRAssets/model/Animation.h"
 #include "PVRAssets/model/Light.h"
@@ -76,6 +77,7 @@ public:
 			uint32_t materialIndex; //!< Index of material used on this mesh
 			uint32_t parentIndex; //!< Index into Node array; recursively apply ancestor's transforms after this instance's.
 			UInt8Buffer userData; //!< Optionally, user data
+			CustomData formattedUserData; //!< Optionally, formatted user data (json-style)
 
 			/// <summary>Transformation flags.</summary>
 			enum TransformFlags
@@ -155,6 +157,10 @@ public:
 			{
 				transformFlags = TransformFlags::Identity;
 				hasAnimation = false;
+
+				getFrameScaleAnimation() = scale;
+				getFrameRotationAnimation() = glm::quat();
+				getFrameTranslationAnimation() = translation;
 			}
 		};
 
@@ -183,6 +189,8 @@ public:
 		/// <returns>The user data of this Node</returns>
 		const uint8_t* getUserData() const { return _data.userData.data(); }
 
+		const CustomData& getFormattedUserData() const { return _data.formattedUserData; }
+
 		/// <summary>Get the size of this Node's user data.</summary>
 		/// <returns>Return The size in bytes of the user data of this Node</returns>
 		uint32_t getUserDataSize() const { return static_cast<uint32_t>(_data.userData.size()); }
@@ -207,6 +215,8 @@ public:
 			_data.userData.resize(size);
 			memcpy(_data.userData.data(), data, size);
 		}
+
+		void setFormattedUserData(const CustomData& cd) { _data.formattedUserData = cd; }
 
 		/// <summary>Get a reference to the internal data of this object. Handle with care.</summary>
 		/// <returns>Return a reference to the internal data of this object.</returns>
@@ -353,6 +363,7 @@ public:
 			StringHash effectName; //!< Effect name (in the filename) if using an effect
 
 			UInt8Buffer userData; //!< Raw user data
+			CustomData formattedUserData; //!< Optionally, formatted user data (json-style)
 		};
 
 		/// <summary>Base class for Physically-based-rendering(PBR) semantics</summary>
@@ -843,6 +854,7 @@ public:
 		/// <summary>Return a reference to the material's internal data structure. Handle with care.</summary>
 		/// <returns>Return reference to the internal data</returns>
 		InternalData& getInternalData() { return _data; }
+		const InternalData& getInternalData() const { return _data; }
 
 	private:
 		UInt8Buffer userData;
@@ -880,6 +892,7 @@ public:
 		float units; //!< Unit scaling
 		uint32_t flags; //!< Flags
 		std::shared_ptr<void> userDataPtr; //!< Can be used to store any kind of data that the user wraps in a std::shared_ptr resource
+		CustomData formattedUserData; //!< Optionally, formatted user data (json-style)
 
 		/// <summary>Constructor. Initializing to empty.</summary>
 		InternalData() : numMeshNodes(0), numLightNodes(0), numCameraNodes(0), numFrames(0), currentFrame(0), FPS(30), units(1), flags(0)
@@ -1343,6 +1356,7 @@ public:
 	/// <summary>Get a reference to the internal data of this Model. Handle with care.</summary>
 	/// <returns>Return internal data</returns>
 	InternalData& getInternalData() { return _data; }
+	CustomData& getFormattedUserData() { return _data.formattedUserData; }
 
 	/// <summary>Get the properties of a camera. This is additional info on the class (remarks or documentation).</summary>
 	/// <param name="cameraIdx">The index of the camera.</param>
@@ -1469,3 +1483,7 @@ inline CameraHandle getCameraHandle(ModelHandle model, uint32_t cameraId) { retu
 inline NodeHandle getNodeHandle(ModelHandle model, uint32_t nodeId) { return std::shared_ptr<Node>(model, &model->getNode(nodeId)); }
 } // namespace assets
 } // namespace pvr
+
+
+
+

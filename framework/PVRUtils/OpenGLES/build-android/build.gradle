@@ -4,6 +4,7 @@ def projectDependencies = ["PVRCore", "PVRAssets"]
 
 android {
 	compileSdkVersion 29
+	ndkVersion "26.2.11394342"
 	defaultConfig {
 		minSdkVersion 21
 		targetSdkVersion 29
@@ -61,7 +62,7 @@ buildscript {
 		jcenter()
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:3.5.3'
+		classpath 'com.android.tools.build:gradle:4.0.1'
 	}
 }
 

@@ -233,6 +233,7 @@ pvr::Result VulkanAmbientOcclusion::initView()
 	pvr::utils::QueueAccessInfo queueAccessInfo;
 	_resources->device = pvr::utils::createDeviceAndQueues(physicalDevice, &queuePopulateInfo, 1, &queueAccessInfo);
 	_resources->queue = _resources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
+	_resources->queue->setObjectName("GraphicsQueue");
 
 	_astcSupported = pvr::utils::isSupportedFormat(_resources->device->getPhysicalDevice(), pvrvk::Format::e_ASTC_4x4_UNORM_BLOCK);
 
@@ -292,12 +293,19 @@ pvr::Result VulkanAmbientOcclusion::initView()
 													 .setMaxDescriptorSets(4 + static_cast<uint16_t>(4 * _swapLength)));
 	if (!_resources->descriptorPool) { return pvr::Result::UnknownError; }
 
+	_resources->descriptorPool->setObjectName("DescriptorPool");
+
 	// create the synchronization objects and command buffers
 	for (uint32_t i = 0; i < _resources->swapchain->getSwapchainLength(); i++)
 	{
 		_resources->presentationSemaphores[i] = _resources->device->createSemaphore();
 		_resources->imageAcquiredSemaphores[i] = _resources->device->createSemaphore();
+		_resources->presentationSemaphores[i]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(i));
+		_resources->imageAcquiredSemaphores[i]->setObjectName("ImageAcquiredSemaphoreSwapchain" + std::to_string(i));
+
 		_resources->perFrameResourcesFences[i] = _resources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_resources->perFrameResourcesFences[i]->setObjectName("FenceSwapchain" + std::to_string(i));
+
 		_resources->cmdBuffers[i] = _resources->commandPool->allocateCommandBuffer();
 	}
 
@@ -457,16 +465,19 @@ void VulkanAmbientOcclusion::createBuffers()
 	_resources->modelBuffer = pvr::utils::createBuffer(_resources->device,
 		pvrvk::BufferCreateInfo(_resources->modelBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, _resources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_resources->modelBuffer->setObjectName("ModelBufferUBO");
 
 	_resources->uniformBuffers[UBOs::AOParamaters] = pvr::utils::createBuffer(_resources->device,
 		pvrvk::BufferCreateInfo(_resources->uniformBufferViews[UBOs::AOParamaters].getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
 		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, _resources->vmaAllocator,
 		pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_resources->uniformBuffers[UBOs::AOParamaters]->setObjectName("AOParamatersUBO");
 
 	_resources->uniformBuffers[UBOs::CompositeParams] = pvr::utils::createBuffer(_resources->device,
 		pvrvk::BufferCreateInfo(_resources->uniformBufferViews[UBOs::CompositeParams].getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
 		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, _resources->vmaAllocator,
 		pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_resources->uniformBuffers[UBOs::CompositeParams]->setObjectName("CompositeParamsUBO");
 
 	// Associate the buffers to their buffer view
 	_resources->modelBufferView.pointToMappedMemory(_resources->modelBuffer->getDeviceMemory()->getMappedData());
@@ -796,7 +807,11 @@ void VulkanAmbientOcclusion::createRenderpasses()
 	renderPassCreateInfo[RenderPasses::HorizontalBlur] = renderPassCreateInfo[RenderPasses::AmbientOcclusion];
 
 	// Create all of the render passes
-	for (uint32_t i = 0; i < RenderPasses::Presentation + 1; i++) { _resources->renderPasses[i] = _resources->device->createRenderPass(renderPassCreateInfo[i]); }
+	for (uint32_t i = 0; i < RenderPasses::Presentation + 1; i++)
+	{
+		_resources->renderPasses[i] = _resources->device->createRenderPass(renderPassCreateInfo[i]);
+		_resources->renderPasses[i]->setObjectName("RenderPass" + std::to_string(i));
+	}
 }
 
 /// <summary> Create the framebuffer objects, this is dependent on the render passes being created first </summary>
@@ -865,6 +880,9 @@ void VulkanAmbientOcclusion::createUBODescriptorSets()
 	// Allocate the descriptor sets from their layouts
 	_resources->uniformDescSets[UBOs::AOParamaters] = _resources->descriptorPool->allocateDescriptorSet(_resources->uniformDescSetLayouts[UBOs::AOParamaters]);
 	_resources->uniformDescSets[UBOs::CompositeParams] = _resources->descriptorPool->allocateDescriptorSet(_resources->uniformDescSetLayouts[UBOs::CompositeParams]);
+
+	_resources->uniformDescSets[UBOs::AOParamaters]->setObjectName("AOParamaters");
+	_resources->uniformDescSets[UBOs::CompositeParams]->setObjectName("CompositeParams");
 
 	// Use a vector to store the information about the UBO descriptors, so that they can be updated in one go
 	std::vector<pvrvk::WriteDescriptorSet> descriptorSetWriter;
@@ -936,6 +954,7 @@ void VulkanAmbientOcclusion::createInputDescriptorSets()
 	for (uint32_t i = 0; i < _sceneHandle->getNumMaterials(); i++)
 	{
 		_resources->inputDescSets[Subpasses::GBuffer][i] = _resources->descriptorPool->allocateDescriptorSet(_resources->inputDescSetLayouts[Subpasses::GBuffer]);
+		_resources->inputDescSets[Subpasses::GBuffer][i]->setObjectName("GBufferMaterial" + std::to_string(i) + "DescriptorSet");
 
 		// Add the dynamic buffer descriptor
 		descriptorSetWriter.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _resources->inputDescSets[Subpasses::GBuffer][i], 0)
@@ -953,6 +972,7 @@ void VulkanAmbientOcclusion::createInputDescriptorSets()
 		{
 			// Allocate all the descriptor sets for the attachments
 			_resources->inputDescSets[j][i] = _resources->descriptorPool->allocateDescriptorSet(_resources->inputDescSetLayouts[j]);
+			_resources->inputDescSets[j][i]->setObjectName("Swapchain" + std::to_string(i) + "Subpass" + std::to_string(j) + "DescriptorSet");
 		}
 		// Ambient Occlusion Pass : Normal attachment
 		descriptorSetWriter.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _resources->inputDescSets[Subpasses::AmbientOcclusion][i], 0)
@@ -1070,6 +1090,7 @@ void VulkanAmbientOcclusion::createPipelines()
 
 	// Create the AO Pipeline
 	_resources->pipelines[Subpasses::AmbientOcclusion] = _resources->device->createGraphicsPipeline(pipelineCreateInfo, _resources->pipelineCache);
+	_resources->pipelines[Subpasses::AmbientOcclusion]->setObjectName("AmbientOcclusionGraphicsPipeline");
 
 	// Horizontal Blur pass
 	pipelineCreateInfo.renderPass = _resources->renderPasses[RenderPasses::HorizontalBlur];
@@ -1077,6 +1098,7 @@ void VulkanAmbientOcclusion::createPipelines()
 	fragSource = getAssetStream("BlurHorizontal.fsh.spv");
 	pipelineCreateInfo.fragmentShader.setShader(_resources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(fragSource->readToEnd<uint32_t>())));
 	_resources->pipelines[Subpasses::HorizontalBlur] = _resources->device->createGraphicsPipeline(pipelineCreateInfo, _resources->pipelineCache);
+	_resources->pipelines[Subpasses::HorizontalBlur]->setObjectName("HorizontalBlurPassGraphicsPipeline");
 
 	// Presentation pass : Vertical Blur subpass
 	// Reset the view port back to full sized
@@ -1087,6 +1109,7 @@ void VulkanAmbientOcclusion::createPipelines()
 	fragSource = getAssetStream("BlurVertical.fsh.spv");
 	pipelineCreateInfo.fragmentShader.setShader(_resources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(fragSource->readToEnd<uint32_t>())));
 	_resources->pipelines[Subpasses::VerticalBlur] = _resources->device->createGraphicsPipeline(pipelineCreateInfo, _resources->pipelineCache);
+	_resources->pipelines[Subpasses::VerticalBlur]->setObjectName("VerticalBlurPassGraphicsPipeline");
 
 	// Presentation pass : Composition subpass
 	pipelineCreateInfo.subpass = 1;
@@ -1094,6 +1117,7 @@ void VulkanAmbientOcclusion::createPipelines()
 	fragSource = getAssetStream("Composite.fsh.spv");
 	pipelineCreateInfo.fragmentShader.setShader(_resources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(fragSource->readToEnd<uint32_t>())));
 	_resources->pipelines[Subpasses::Composite] = _resources->device->createGraphicsPipeline(pipelineCreateInfo, _resources->pipelineCache);
+	_resources->pipelines[Subpasses::Composite]->setObjectName("CompositePassGraphicsPipeline");
 }
 
 /// <summary>Prerecords the prebaked command buffers, one for each framebuffer in the swapchain</summary>
@@ -1110,9 +1134,12 @@ void VulkanAmbientOcclusion::recordCommandBuffers()
 
 	for (uint32_t i = 0; i < _resources->swapchain->getSwapchainLength(); i++)
 	{
+		_resources->cmdBuffers[i]->setObjectName("CommandBufferSwapchain" + std::to_string(i));
+
 		_resources->cmdBuffers[i]->begin();
 
 		// Gbuffer renderpass
+		pvr::utils::beginCommandBufferDebugLabel(_resources->cmdBuffers[i], pvrvk::DebugUtilsLabel("GBufferPass"));
 		_resources->cmdBuffers[i]->beginRenderPass(
 			_resources->framebuffers[RenderPasses::GBuffer][i], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), true, gClearValues, ARRAY_SIZE(gClearValues));
 		_resources->cmdBuffers[i]->bindPipeline(_resources->pipelines[Subpasses::GBuffer]);
@@ -1135,8 +1162,10 @@ void VulkanAmbientOcclusion::recordCommandBuffers()
 			_resources->cmdBuffers[i]->drawIndexed(0, mesh.getNumFaces() * 3, 0, 0, 1);
 		}
 		_resources->cmdBuffers[i]->endRenderPass();
+		pvr::utils::endCommandBufferDebugLabel(_resources->cmdBuffers[i]);
 
 		// AO generation renderpass
+		pvr::utils::beginCommandBufferDebugLabel(_resources->cmdBuffers[i], pvrvk::DebugUtilsLabel("AOPass"));
 		_resources->cmdBuffers[i]->beginRenderPass(_resources->framebuffers[RenderPasses::AmbientOcclusion][i], pvrvk::Rect2D(0, 0, getWidth() / 2, getHeight() / 2), true,
 			downscaledClearValues, ARRAY_SIZE(downscaledClearValues));
 		_resources->cmdBuffers[i]->bindDescriptorSet(
@@ -1146,8 +1175,10 @@ void VulkanAmbientOcclusion::recordCommandBuffers()
 		_resources->cmdBuffers[i]->bindPipeline(_resources->pipelines[Subpasses::AmbientOcclusion]);
 		_resources->cmdBuffers[i]->draw(0, 3, 0, 1);
 		_resources->cmdBuffers[i]->endRenderPass();
+		pvr::utils::endCommandBufferDebugLabel(_resources->cmdBuffers[i]);
 
 		// Horizontal blur renderpass
+		pvr::utils::beginCommandBufferDebugLabel(_resources->cmdBuffers[i], pvrvk::DebugUtilsLabel("HorizontalBlurPass"));
 		_resources->cmdBuffers[i]->beginRenderPass(_resources->framebuffers[RenderPasses::HorizontalBlur][i], pvrvk::Rect2D(0, 0, getWidth() / 2, getHeight() / 2), true,
 			downscaledClearValues, ARRAY_SIZE(downscaledClearValues));
 		_resources->cmdBuffers[i]->bindDescriptorSet(
@@ -1155,8 +1186,10 @@ void VulkanAmbientOcclusion::recordCommandBuffers()
 		_resources->cmdBuffers[i]->bindPipeline(_resources->pipelines[Subpasses::HorizontalBlur]);
 		_resources->cmdBuffers[i]->draw(0, 3, 0, 1);
 		_resources->cmdBuffers[i]->endRenderPass();
+		pvr::utils::endCommandBufferDebugLabel(_resources->cmdBuffers[i]);
 
 		// Presentation pass - Vertical blur subpass
+		pvr::utils::beginCommandBufferDebugLabel(_resources->cmdBuffers[i], pvrvk::DebugUtilsLabel("VerticalBlurPass"));
 		_resources->cmdBuffers[i]->beginRenderPass(
 			_resources->framebuffers[RenderPasses::Presentation][i], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), true, onScreenClearValues, ARRAY_SIZE(onScreenClearValues));
 		_resources->cmdBuffers[i]->bindDescriptorSet(
@@ -1183,6 +1216,7 @@ void VulkanAmbientOcclusion::recordCommandBuffers()
 
 		// Finished rendering
 		_resources->cmdBuffers[i]->endRenderPass();
+		pvr::utils::endCommandBufferDebugLabel(_resources->cmdBuffers[i]);
 		_resources->cmdBuffers[i]->end();
 	}
 }

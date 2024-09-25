@@ -58,7 +58,7 @@ void AccelerationStructureWrapper::buildBottomLevelASModels(pvrvk::Device device
 		triangleGeometryData.vertexStride = static_cast<VkDeviceSize>(_rtModelInfos[i].vertexStride);
 		triangleGeometryData.indexType = static_cast<VkIndexType>(pvrvk::IndexType::e_UINT32);
 		triangleGeometryData.indexData = VkDeviceOrHostAddressConstKHR{ indexBufferAddress };
-		triangleGeometryData.maxVertex = _rtModelInfos[i].vertexCount;
+		triangleGeometryData.maxVertex = _rtModelInfos[i].vertexCount - 1;
 		triangleGeometryData.transformData = {};
 
 		vectorASGeometry[i] = { static_cast<VkStructureType>(pvrvk::StructureType::e_ACCELERATION_STRUCTURE_GEOMETRY_KHR) };

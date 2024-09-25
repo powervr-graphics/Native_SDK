@@ -376,9 +376,17 @@ struct StatuePass
 		createDescriptorSetLayout(device);
 		createPipeline(assetProvider, device, renderpass, swapchain->getDimension(), pipelineCache);
 
-		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i) { descriptorSets.push_back(descriptorPool->allocateDescriptorSet(descriptorSetLayout)); }
+		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i)
+		{
+			descriptorSets.push_back(descriptorPool->allocateDescriptorSet(descriptorSetLayout));
+			descriptorSets.back()->setObjectName("StatePassSwaphcain" + std::to_string(i) + "DescriptorSet");
+		}
 
-		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i) {cmdBuffers.push_back(commandPool->allocateSecondaryCommandBuffer()); }
+		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i)
+		{
+			cmdBuffers.push_back(commandPool->allocateSecondaryCommandBuffer());
+			cmdBuffers.back()->setObjectName("StatuePassCommandBufferSwapchain" + std::to_string(i));
+		}
 	}
 
 	/// <summary>Update the object animation.</summary>
@@ -419,6 +427,7 @@ struct StatuePass
 			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, vmaAllocator,
 			pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		buffer->setObjectName("StatueUBO");
 		structuredBufferView.pointToMappedMemory(buffer->getDeviceMemory()->getMappedData());
 	}
 
@@ -533,6 +542,7 @@ struct StatuePass
 		pipelineInfo.pipelineLayout = pipelineLayout;
 
 		pipeline = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
+		pipeline->setObjectName("StatuePassGraphicsPipeline");
 	}
 
 	/// <summary>Draws an assets::Mesh after the model view matrix has been set and the material prepared.</summary>
@@ -631,9 +641,17 @@ struct SkyboxPass
 		createDescriptorSetLayout(device);
 		createPipeline(assetProvider, device, renderpass, swapchain->getDimension(), pipelineCache);
 
-		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i) { descriptorSets.push_back(descriptorPool->allocateDescriptorSet(descriptorSetLayout)); }
+		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i)
+		{
+			descriptorSets.push_back(descriptorPool->allocateDescriptorSet(descriptorSetLayout));
+			descriptorSets.back()->setObjectName("SkyBoxPassSwaphcain" + std::to_string(i) + "DescriptorSet");
+		}
 
-		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i) {cmdBuffers.push_back(commandPool->allocateSecondaryCommandBuffer()); }
+		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i)
+		{
+			cmdBuffers.push_back(commandPool->allocateSecondaryCommandBuffer());
+			cmdBuffers.back()->setObjectName("SkyBoxPassCommandBufferSwapchain" + std::to_string(i));
+		}
 	}
 
 	/// <summary>Creates the texture used for rendering the skybox.</summary>
@@ -746,6 +764,7 @@ struct SkyboxPass
 		pipelineInfo.pipelineLayout = pipelineLayout;
 
 		pipeline = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
+		pipeline->setObjectName("SkyBoxGraphicsPipeline");
 	}
 
 	/// <summary>Records the secondary command buffers for rendering the skybox.</summary>
@@ -811,7 +830,11 @@ struct DownSamplePass
 		createFramebuffers(device, swapchain, blurFramebufferDimensions, outputImageViews, isComputeDownsample);
 		createPipeline(assetProvider, device, blurFramebufferDimensions, pipelineCache);
 
-		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i) { cmdBuffers.push_back(commandPool->allocateSecondaryCommandBuffer()); }
+		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i)
+		{
+			cmdBuffers.push_back(commandPool->allocateSecondaryCommandBuffer());
+			cmdBuffers.back()->setObjectName("DownsamplePassCommandBufferSwapchain" + std::to_string(i));
+		}
 	}
 
 	/// <summary>Creates the descriptor set layout.</summary>
@@ -854,6 +877,7 @@ struct DownSamplePass
 		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i)
 		{
 			descriptorSets.push_back(descriptorPool->allocateDescriptorSet(descriptorSetLayout));
+			descriptorSets.back()->setObjectName("DownsamplePassSwapchain" + std::to_string(i) + "DescriptorSet");
 
 			writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, descriptorSets[i], 0)
 										.setImageInfo(0, pvrvk::DescriptorImageInfo(inputImageViews[i], sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
@@ -901,6 +925,7 @@ struct DownSamplePass
 		pipelineInfo.subpass = 0;
 
 		pipeline = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
+		pipeline->setObjectName("DownsampleGraphicsPipeline");
 	}
 
 	/// <summary>Allocates the framebuffers used for the downsample.</summary>
@@ -953,6 +978,7 @@ struct DownSamplePass
 		renderPassInfo.addSubpassDependency(externalDependencies[1]);
 
 		renderPass = device->createRenderPass(renderPassInfo);
+		renderPass->setObjectName("DownSampleRenderPass");
 
 		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i)
 		{
@@ -1048,7 +1074,11 @@ struct KawaseBlurPass
 		// Recording of commands will take place later
 		for (uint32_t i = 0; i < MaxKawaseIteration; ++i)
 		{
-			for (uint32_t j = 0; j < swapchain->getSwapchainLength(); ++j) { cmdBuffers[i].push_back(commandPool->allocateSecondaryCommandBuffer()); }
+			for (uint32_t j = 0; j < swapchain->getSwapchainLength(); ++j)
+			{
+				cmdBuffers[i].push_back(commandPool->allocateSecondaryCommandBuffer());
+				cmdBuffers[i].back()->setObjectName("KawasePassCommandBufferIteration" + std::to_string(i) + "Swapchain" + std::to_string(j));
+			}
 		}
 	}
 
@@ -1129,6 +1159,7 @@ struct KawaseBlurPass
 			for (uint32_t j = 0; j < 2; ++j)
 			{
 				descriptorSets[j].push_back(descriptorPool->allocateDescriptorSet(descriptorSetLayout));
+				descriptorSets[j].back()->setObjectName("KawaseBlurPassSwapchain" + std::to_string(i) + "Image" + std::to_string(j) + "DescriptorSet");
 
 				writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, descriptorSets[j][i], 0)
 											.setImageInfo(0, pvrvk::DescriptorImageInfo(imageViews[j][i], sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
@@ -1176,6 +1207,7 @@ struct KawaseBlurPass
 		pipelineInfo.subpass = 0;
 
 		pipeline = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
+		pipeline->setObjectName("KawaseBlurPassGraphicsPipeline");
 	}
 
 	/// <summary>Records the commands required for the Kawase blur iterations based on the current configuration.</summary>
@@ -1357,7 +1389,11 @@ struct DualFilterBlurPass
 
 		for (uint32_t i = 0; i < MaxFilterIterations; ++i)
 		{
-			for (uint32_t j = 0; j < swapchain->getSwapchainLength(); ++j) { cmdBuffers[i].push_back(commandPool->allocateSecondaryCommandBuffer()); }
+			for (uint32_t j = 0; j < swapchain->getSwapchainLength(); ++j)
+			{
+				cmdBuffers[i].push_back(commandPool->allocateSecondaryCommandBuffer());
+				cmdBuffers[i].back()->setObjectName("DualFilterBlurPassCommandBufferIteration" + std::to_string(i) + "Swapchain" + std::to_string(j));
+			}
 		}
 	}
 
@@ -1621,6 +1657,7 @@ struct DualFilterBlurPass
 		{
 			for (uint32_t j = 0; j < MaxFilterIterations - 1; ++j) { descriptorSets[j].push_back(descriptorPool->allocateDescriptorSet(descriptorSetLayout)); }
 			finalPassDescriptorSets.push_back(descriptorPool->allocateDescriptorSet(finalPassDescriptorSetLayout));
+			finalPassDescriptorSets.back()->setObjectName("DualFilterBlurPassSwapchain" + std::to_string(i) + "DescriptorSet");
 		}
 	}
 
@@ -1706,6 +1743,7 @@ struct DualFilterBlurPass
 
 			pipelineInfo.pipelineLayout = pipelineLayout;
 			pipelines[j] = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
+			pipelines[j]->setObjectName("DownsampleFilterBlurPass" + std::to_string(j) + "GraphicsPipeline");
 			pipelineInfo.viewport.clear();
 		}
 
@@ -1721,11 +1759,13 @@ struct DualFilterBlurPass
 			pipelineInfo.fragmentShader.setShader(
 				device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(Files::DualFilterUpSampleMergedFinalPassFragSrcFile)->readToEnd<uint32_t>())));
 			finalPassPipeline = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
+			finalPassPipeline->setObjectName("DualFilterBlurPassGraphicsPipeline");
 
 			// Enable bloom only
 			int enabled = 1;
 			pipelineInfo.fragmentShader.setShaderConstant(0, pvrvk::ShaderConstantInfo(0, &enabled, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Integer))));
 			finalPassBloomOnlyPipeline = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
+			finalPassBloomOnlyPipeline->setObjectName("BloomGraphicsPipeline");
 		}
 	}
 
@@ -1949,9 +1989,17 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 	{
 		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i)
 		{
-			for (uint32_t j = 0; j < MaxFilterIterations / 2 - 1; ++j) { descriptorSets[j].push_back(descriptorPool->allocateDescriptorSet(descriptorSetLayout)); }
+			for (uint32_t j = 0; j < MaxFilterIterations / 2 - 1; ++j)
+			{
+				descriptorSets[j].push_back(descriptorPool->allocateDescriptorSet(descriptorSetLayout));
+				descriptorSets[j].back()->setObjectName("DownAndTentFilterBlurPassSwapchain" + std::to_string(i) + "Iteration" + std::to_string(j) + "DescriptorSet");
+			}
+
 			firstUpSampleDescriptorSets.push_back(descriptorPool->allocateDescriptorSet(firstUpSampleDescriptorSetLayout));
 			finalPassDescriptorSets.push_back(descriptorPool->allocateDescriptorSet(finalPassDescriptorSetLayout));
+
+			firstUpSampleDescriptorSets.back()->setObjectName("FirstUpSamplePassSwapchain" + std::to_string(i) + "DescriptorSet");
+			finalPassDescriptorSets.back()->setObjectName("FinalPassSwapchain" + std::to_string(i) + "DescriptorSet");
 		}
 	}
 
@@ -2153,6 +2201,7 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 				pvrvk::Rect2D(0, 0, static_cast<uint32_t>(maxIterationDimensions[i].x), static_cast<uint32_t>(maxIterationDimensions[i].y)));
 
 			pipelines[i] = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
+			pipelines[i]->setObjectName("DownAndTentFilterBlurPass" + std::to_string(i) + "GraphicsPipeline");
 
 			// Special cased the first up sample pipelines
 			pipelineInfo.vertexShader.setShader(
@@ -2162,6 +2211,7 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 			pipelineInfo.pipelineLayout = firstUpSamplePipelineLayout;
 
 			firstUpSamplePipelines[firstUpSampleIndex] = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
+			firstUpSamplePipelines[firstUpSampleIndex]->setObjectName("FirstUpSampleGraphicsPipeline");
 			firstUpSampleIndex++;
 
 			pipelineInfo.viewport.clear();
@@ -2181,11 +2231,13 @@ struct DownAndTentFilterBlurPass : public DualFilterBlurPass
 			pipelineInfo.fragmentShader.setShader(
 				device->createShaderModule(pvrvk::ShaderModuleCreateInfo(assetProvider.getAssetStream(Files::TentFilterUpSampleMergedFinalPassFragSrcFile)->readToEnd<uint32_t>())));
 			finalPassPipeline = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
+			finalPassPipeline->setObjectName("DownAndTentGraphicsPipeline");
 
 			// Enable bloom only
 			int enabled = 1;
 			pipelineInfo.fragmentShader.setShaderConstant(0, pvrvk::ShaderConstantInfo(0, &enabled, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Integer))));
 			finalPassBloomOnlyPipeline = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
+			finalPassBloomOnlyPipeline->setObjectName("FinalPassBloomOnlyGraphicsPipeline");
 		}
 	}
 
@@ -2404,6 +2456,9 @@ struct GaussianBlurPass
 		{
 			horizontalBlurCommandBuffers.push_back(commandPool->allocateSecondaryCommandBuffer());
 			verticalBlurCommandBuffers.push_back(commandPool->allocateSecondaryCommandBuffer());
+
+			horizontalBlurCommandBuffers.back()->setObjectName("GaussianBlurHorizontalPassCommandBufferSwapchain" + std::to_string(i));
+			verticalBlurCommandBuffers.back()->setObjectName("GaussianBlurverticalPassCommandBufferSwapchain" + std::to_string(i));
 		}
 
 		blurredImages = verticalBlurImageViews;
@@ -2468,11 +2523,13 @@ struct GaussianBlurPass
 		{
 			// Descriptor sets for the Horizontal Blur Pass
 			horizontalDescriptorSets.push_back(descriptorPool->allocateDescriptorSet(descriptorSetLayout));
+			horizontalDescriptorSets.back()->setObjectName("GaussianBlurHorizontalPassSwapchain" + std::to_string(i) + "DescriptorSet");
 			writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, horizontalDescriptorSets[i], 0)
 										.setImageInfo(0, pvrvk::DescriptorImageInfo(verticalBlurImageViews[i], sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
 
 			// Descriptor sets for the Vertical Blur Pass
 			verticalDescriptorSets.push_back(descriptorPool->allocateDescriptorSet(descriptorSetLayout));
+			verticalDescriptorSets.back()->setObjectName("GaussianBlurVerticalPassSwapchain" + std::to_string(i) + "DescriptorSet");
 			writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, verticalDescriptorSets[i], 0)
 										.setImageInfo(0, pvrvk::DescriptorImageInfo(horizontalBlurImageViews[i], sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
 		}
@@ -2547,6 +2604,7 @@ struct GaussianBlurPass
 			// Horizontal Pipeline
 			pipelineInfo.fragmentShader.setShader(horizontalFragShaderModules[i]);
 			horizontalPipelines[i] = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
+			horizontalPipelines[i]->setObjectName("GaussianHorizontalPass");
 		}
 
 		for (uint32_t i = 0; i < DemoConfigurations::NumDemoConfigurations; ++i)
@@ -2554,6 +2612,7 @@ struct GaussianBlurPass
 			// Vertical Pipeline
 			pipelineInfo.fragmentShader.setShader(verticalFragShaderModules[i]);
 			verticalPipelines[i] = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
+			verticalPipelines[i]->setObjectName("verticalGaussianBlurPass" + std::to_string(i) + "GraphicsPipeline");
 		}
 	}
 
@@ -2683,6 +2742,7 @@ struct ComputeBlurPass : public GaussianBlurPass
 		{
 			// Descriptor sets for the Horizontal Blur Pass
 			horizontalDescriptorSets.push_back(descriptorPool->allocateDescriptorSet(descriptorSetLayout));
+			horizontalDescriptorSets.back()->setObjectName("ComputeBlurHorizontal" + std::to_string(i) + "DescriptorSet");
 			writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_STORAGE_IMAGE, horizontalDescriptorSets[i], 0)
 										.setImageInfo(0, pvrvk::DescriptorImageInfo(verticalBlurImageViews[i], sampler, pvrvk::ImageLayout::e_GENERAL)));
 
@@ -2691,6 +2751,7 @@ struct ComputeBlurPass : public GaussianBlurPass
 
 			// Descriptor sets for the Vertical Blur Pass
 			verticalDescriptorSets.push_back(descriptorPool->allocateDescriptorSet(descriptorSetLayout));
+			verticalDescriptorSets.back()->setObjectName("ComputeBlurVertical" + std::to_string(i) + "DescriptorSet");
 			writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_STORAGE_IMAGE, verticalDescriptorSets[i], 0)
 										.setImageInfo(0, pvrvk::DescriptorImageInfo(horizontalBlurImageViews[i], sampler, pvrvk::ImageLayout::e_GENERAL)));
 
@@ -2779,9 +2840,11 @@ struct ComputeBlurPass : public GaussianBlurPass
 
 			pipelineInfo.computeShader.setShader(horizontalShaderModules[i]);
 			horizontalComputePipelines[i] = device->createComputePipeline(pipelineInfo, pipelineCache);
+			horizontalComputePipelines[i]->setObjectName("HorizontalBlurPass" + std::to_string(i) + "ComputePipeline");
 
 			pipelineInfo.computeShader.setShader(verticalShaderModules[i]);
 			verticalComputePipelines[i] = device->createComputePipeline(pipelineInfo, pipelineCache);
+			verticalComputePipelines[i]->setObjectName("VerticalBlurPass" + std::to_string(i) + "ComputePipeline");
 		}
 	}
 
@@ -2970,9 +3033,11 @@ struct LinearGaussianBlurPass : public GaussianBlurPass
 
 			pipelineInfo.vertexShader.setShader(horizontalVertexShaderModules[i]);
 			horizontalPipelines[i] = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
+			horizontalPipelines[i]->setObjectName("LinearGaussianBlurHorizontalPass" + std::to_string(i) + "GraphicsPipeline");
 
 			pipelineInfo.vertexShader.setShader(verticalVertexShaderModules[i]);
 			verticalPipelines[i] = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
+			verticalPipelines[i]->setObjectName("LinearGaussianBlurVerticalPass" + std::to_string(i) + "GraphicsPipeline");
 		}
 	}
 
@@ -3051,6 +3116,9 @@ struct HybridGaussianBlurPass
 		{
 			horizontalBlurCommandBuffers.push_back(commandPool->allocateSecondaryCommandBuffer());
 			verticalBlurCommandBuffers.push_back(commandPool->allocateSecondaryCommandBuffer());
+
+			horizontalBlurCommandBuffers.back()->setObjectName("HybridGaussianBlurHorizontalPassCommandBufferSwapchain" + std::to_string(i));
+			verticalBlurCommandBuffers.back()->setObjectName("HybridGaussianBlurVerticalPassCommandBufferSwapchain" + std::to_string(i));
 		}
 	}
 
@@ -3157,7 +3225,11 @@ struct PostBloomPass
 		createDescriptorSets(swapchain, descriptorPool);
 		createPipeline(assetProvider, device, swapchain, renderPass, pipelineCache);
 
-		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i) { cmdBuffers.push_back(commandPool->allocateSecondaryCommandBuffer()); }
+		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i)
+		{
+			cmdBuffers.push_back(commandPool->allocateSecondaryCommandBuffer());
+			cmdBuffers.back()->setObjectName("PostBloomPassCommandBufferSwapchain" + std::to_string(i));
+		}
 	}
 
 	/// <summary>Creates the descriptor set layout.</summary>
@@ -3189,7 +3261,11 @@ struct PostBloomPass
 	/// <param name="descriptorPool">The descriptor pool from which to allocate descriptor sets.</param>
 	void createDescriptorSets(pvrvk::Swapchain& swapchain, pvrvk::DescriptorPool& descriptorPool)
 	{
-		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i) { descriptorSets.push_back(descriptorPool->allocateDescriptorSet(descriptorSetLayout)); }
+		for (uint32_t i = 0; i < swapchain->getSwapchainLength(); ++i)
+		{
+			descriptorSets.push_back(descriptorPool->allocateDescriptorSet(descriptorSetLayout));
+			descriptorSets.back()->setObjectName("PostBloomPassSwapchain" + std::to_string(i) + "DescriptorSet");
+		}
 	}
 
 	/// <summary>Updates the descriptor sets used based on the original image and bloomed image.</summary>
@@ -3263,11 +3339,13 @@ struct PostBloomPass
 		pipelineInfo.subpass = 0;
 
 		defaultPipeline = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
+		defaultPipeline->setObjectName("GraphicsPipeline");
 
 		// Enable bloom only
 		int enabled = 1;
 		pipelineInfo.fragmentShader.setShaderConstant(0, pvrvk::ShaderConstantInfo(0, &enabled, static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::Integer))));
 		bloomOnlyPipeline = device->createGraphicsPipeline(pipelineInfo, pipelineCache);
+		bloomOnlyPipeline->setObjectName("BloomPassGraphicsPipeline");
 	}
 
 	/// <summary>Records the secondary command buffers for the post bloom composition pass.</summary>
@@ -3571,6 +3649,9 @@ pvr::Result VulkanPostProcessing::initView()
 	_deviceResources->queues[0] = _deviceResources->device->getQueue(queueAccessInfos[0].familyId, queueAccessInfos[0].queueId);
 	_deviceResources->queues[1] = _deviceResources->device->getQueue(queueAccessInfos[1].familyId, queueAccessInfos[1].queueId);
 
+	_deviceResources->queues[0]->setObjectName("Queue0");
+	_deviceResources->queues[1]->setObjectName("Queue1");
+
 	// In the future we may want to improve our flexibility with regards to making use of multiple queues but for now to support multi queue the queue must support
 	// Graphics + Compute + WSI support.
 	// Other multi queue approaches may be possible i.e. making use of additional queues which do not support graphics/WSI
@@ -3627,6 +3708,7 @@ pvr::Result VulkanPostProcessing::initView()
 
 	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
 	_deviceResources->onScreenRenderPass = swapChainCreateOutput.renderPass;
+	_deviceResources->onScreenRenderPass->setObjectName("onScreenRenderPass");
 	_deviceResources->onScreenFramebuffers = swapChainCreateOutput.framebuffer;
 
 	_swapchainLength = _deviceResources->swapchain->getSwapchainLength();
@@ -3715,6 +3797,8 @@ pvr::Result VulkanPostProcessing::initView()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, static_cast<uint16_t>(60 * _swapchainLength))
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, static_cast<uint16_t>(60 * _swapchainLength))
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, static_cast<uint16_t>(60 * _swapchainLength)));
+
+	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
 
 	// create the utility commandbuffer which will be used for image layout transitions and buffer/image uploads.
 	_deviceResources->utilityCommandBuffer = _deviceResources->commandPool->allocateCommandBuffer();
@@ -3868,7 +3952,11 @@ pvr::Result VulkanPostProcessing::initView()
 	{
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->presentationSemaphores[i]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->imageAcquiredSemaphores[i]->setObjectName("ImageAcquiredSemaphoreSwapchain" + std::to_string(i));
+
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->perFrameResourcesFences[i]->setObjectName("FenceSwapchain" + std::to_string(i));
 	}
 
 	// initialise the UI Renderers
@@ -3885,6 +3973,7 @@ pvr::Result VulkanPostProcessing::initView()
 	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		_deviceResources->mainCommandBuffers.push_back(_deviceResources->commandPool->allocateCommandBuffer());
+		_deviceResources->mainCommandBuffers.back()->setObjectName("CommandBufferSwapchain" + std::to_string(i));
 	}
 	return pvr::Result::Success;
 }
@@ -4083,6 +4172,7 @@ void VulkanPostProcessing::createSceneBuffers()
 	_deviceResources->sceneBuffer =
 		pvr::utils::createBuffer(_deviceResources->device, pvrvk::BufferCreateInfo(_deviceResources->sceneBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
 			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, _deviceResources->vmaAllocator);
+	_deviceResources->sceneBuffer->setObjectName("SceneUBO");
 
 	_deviceResources->sceneBufferView.pointToMappedMemory(_deviceResources->sceneBuffer->getDeviceMemory()->getMappedData());
 }
@@ -4450,6 +4540,7 @@ void VulkanPostProcessing::createBlurRenderPass()
 	renderPassInfo.addSubpassDependency(externalDependencies[1]);
 
 	_deviceResources->blurRenderPass = _deviceResources->device->createRenderPass(renderPassInfo);
+	_deviceResources->blurRenderPass->setObjectName("BlurRenderPass");
 }
 
 /// <summary>Create the RenderPasses used in the hybrid bloom passes.</summary>
@@ -4477,6 +4568,7 @@ void VulkanPostProcessing::createHybridBlurRenderPass()
 	renderPassInfo.addSubpassDependency(externalDependencies[1]);
 
 	_deviceResources->hybridBlurRenderPass = _deviceResources->device->createRenderPass(renderPassInfo);
+	_deviceResources->hybridBlurRenderPass->setObjectName("HybridBlurRenderPass");
 }
 
 /// <summary>Create the offscreen framebuffers used in the application.</summary>
@@ -4517,6 +4609,7 @@ void VulkanPostProcessing::createOffScreenFramebuffers()
 
 	// Create the renderpass
 	_deviceResources->offScreenRenderPass = _deviceResources->device->createRenderPass(renderPassInfo);
+	_deviceResources->offScreenRenderPass->setObjectName("OffScreenRenderPass");
 
 	const pvrvk::Extent3D& dimension = pvrvk::Extent3D(_deviceResources->swapchain->getDimension().getWidth(), _deviceResources->swapchain->getDimension().getHeight(), 1u);
 	for (uint32_t i = 0; i < _swapchainLength; ++i)
@@ -4816,6 +4909,7 @@ void VulkanPostProcessing::eventMappedInput(pvr::SimplifiedInput e)
 void VulkanPostProcessing::recordUIRendererCommands(uint32_t swapchainIndex, std::vector<pvrvk::SecondaryCommandBuffer>& cmdBuffers)
 {
 	cmdBuffers.push_back(_deviceResources->commandPool->allocateSecondaryCommandBuffer());
+	cmdBuffers.back()->setObjectName("UIRendererCommandBufferSwapchain" + std::to_string(swapchainIndex));
 
 	cmdBuffers[swapchainIndex]->begin(_deviceResources->onScreenFramebuffers[swapchainIndex], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
 

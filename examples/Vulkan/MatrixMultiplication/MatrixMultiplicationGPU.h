@@ -22,7 +22,6 @@ struct DeviceResources
 	pvrvk::Queue commandQueue;
 	pvrvk::CommandPool commandPool;
 	pvrvk::CommandBuffer primaryCommandBuffer;
-	pvrvk::SecondaryCommandBuffer secondaryCommandBuffer;
 
 	// vulkan descriptor sets objects
 	pvrvk::DescriptorPool descriptorPool;
@@ -35,7 +34,7 @@ struct DeviceResources
 	pvrvk::PipelineLayout pipelineLayout;
 	pvrvk::ComputePipeline computePipeline;
 
-	// Objects to store information about the matricies 
+	// Objects to store information about the matrices
 	const uint32_t matrixBufferCount = 8;
 	// Buffers on the Device, storing a series of transposed versions of the matricies A,B,C
 	pvrvk::Buffer matrixBufferSSBOs[8];

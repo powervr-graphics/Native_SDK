@@ -186,7 +186,7 @@ void VulkanTimelineSemaphores::createImageSamplerDescriptor(pvrvk::CommandBuffer
 	{
 		// create the descriptor set
 		_deviceResources->texDescSet.push_back(_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->texLayout));
-		_deviceResources->texDescSet[textDescriptorIndex]->setObjectName("Texture DescriptorSet");
+		_deviceResources->texDescSet[textDescriptorIndex]->setObjectName("TextureDescriptorSet");
 		pvrvk::WriteDescriptorSet writeDescSets[] = { pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->texDescSet[textDescriptorIndex], 0) };
 		writeDescSets[0].setImageInfo(0, pvrvk::DescriptorImageInfo(_deviceResources->noiseImages[0][textDescriptorIndex], samplerMipBilinear));
 
@@ -208,7 +208,7 @@ void VulkanTimelineSemaphores::updateUboDescriptorSets()
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
 		_deviceResources->uboDescSets[i] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->uboLayoutDynamic);
-		_deviceResources->uboDescSets[i]->setObjectName(std::string("Ubo DescriptorSet [") + std::to_string(i) + "]");
+		_deviceResources->uboDescSets[i]->setObjectName("UBOSwapchain" + std::to_string(i) + "DescriptorSet");
 
 		descUpdate[i]
 			.set(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _deviceResources->uboDescSets[i])
@@ -230,6 +230,7 @@ void VulkanTimelineSemaphores::createStructuredBufferView()
 		pvrvk::BufferCreateInfo(_deviceResources->structuredBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_deviceResources->ubo->setObjectName("UBO");
 	_deviceResources->structuredBufferView.pointToMappedMemory(_deviceResources->ubo->getDeviceMemory()->getMappedData());
 	_deviceResources->ubo->setObjectName("Object Ubo");
 }
@@ -304,7 +305,7 @@ void VulkanTimelineSemaphores::createGraphicsPipelineInfo()
 	pipeInfo.depthStencil.enableDepthWrite(false);
 	pvr::utils::populateInputAssemblyFromMesh(mesh, VertexAttribBindings, sizeof(VertexAttribBindings) / sizeof(VertexAttribBindings[0]), pipeInfo.vertexInput, pipeInfo.inputAssembler);
 	_deviceResources->graphicsPipeline = _deviceResources->device->createGraphicsPipeline(pipeInfo, _deviceResources->pipelineCache);
-	_deviceResources->graphicsPipeline->setObjectName("Timeline GraphicsPipeline");
+	_deviceResources->graphicsPipeline->setObjectName("TimelineGraphicsPipeline");
 }
 
 /// <summary>Code in initApplication() will be called by Shell once per run, before the rendering context is created.
@@ -414,6 +415,9 @@ void VulkanTimelineSemaphores::createDevicesAndQueues(pvrvk::Surface& surface)
 		Log(LogLevel::Error, "Multiple queues are not supported (e_GRAPHICS_BIT + e_COMPUTE_BIT + WSI)");
 	}
 	_deviceResources->computeQueue = _deviceResources->device->getQueue(queueAccessInfos[1].familyId, queueAccessInfos[1].queueId);
+
+	_deviceResources->graphicsQueue->setObjectName("GraphicsQueue");
+	_deviceResources->computeQueue->setObjectName("ComputeQueue");
 }
 
 /// <summary>Setups the view and projection matrices based on the scene's camera properties.</summary>
@@ -576,7 +580,7 @@ void VulkanTimelineSemaphores::createSyncObjectsAndCommandBuffers()
 	{
 		// create the per swapchain command buffers
 		_deviceResources->graphicsCommandBuffers[i] = _deviceResources->graphicsCommandPool->allocateCommandBuffer();
-		_deviceResources->graphicsCommandBuffers[i]->setObjectName(std::string("Main Graphics CommandBuffer [") + std::to_string(i) + "]");
+		_deviceResources->graphicsCommandBuffers[i]->setObjectName("MainCommandBufferSwapchain" + std::to_string(i));
 
 		// create compute command buffers
 		for (int k = 0; k < 4; k++)
@@ -587,19 +591,19 @@ void VulkanTimelineSemaphores::createSyncObjectsAndCommandBuffers()
 
 		// create classic sync objects
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->presentationSemaphores[i]->setObjectName(std::string("Presentation Semaphore [") + std::to_string(i) + "]");
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->imageAcquiredSemaphores[i]->setObjectName(std::string("Image Acquisition Semaphore [") + std::to_string(i) + "]");
-		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
-		_deviceResources->perFrameResourcesFences[i]->setObjectName(std::string("Per Frame Command Buffer Fence [") + std::to_string(i) + "]");
+		_deviceResources->presentationSemaphores[i]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->imageAcquiredSemaphores[i]->setObjectName("ImageAcquiredSemaphoreSwapchain" + std::to_string(i));
 
+		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 		_deviceResources->endOfComputeFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_NONE);
-		_deviceResources->endOfComputeFences[i]->setObjectName(std::string("End of compute Fence [") + std::to_string(i) + "]");
+		_deviceResources->perFrameResourcesFences[i]->setObjectName("FenceSwapchain" + std::to_string(i));
+		_deviceResources->endOfComputeFences[i]->setObjectName("EndOfComputeFenceSwapchain" + std::to_string(i));
 
 		// create timeline semaphores
 		pvrvk::SemaphoreCreateInfo createInfo{};
 		_deviceResources->timelineSemaphores[i] = _deviceResources->device->createTimelineSemaphore(createInfo);
-		_deviceResources->perFrameResourcesFences[i]->setObjectName(std::string("Timeline Semaphore [") + std::to_string(i) + "]");
+		_deviceResources->timelineSemaphores[i]->setObjectName("TimelineSemaphoreSwapchain" + std::to_string(i));
 	}
 
 	{
@@ -632,7 +636,7 @@ void VulkanTimelineSemaphores::createPools()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 16)
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 16)
 																						  .setMaxDescriptorSets(32));
-	_deviceResources->descriptorPool->setObjectName("Main Descriptor Pool");
+	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
 }
 
 /// <summary>Checks if the VK_KHR_timeline_semaphore feature was enabled.</summary>
@@ -970,7 +974,10 @@ void VulkanTimelineSemaphores::createComputePipeline()
 	//--- create the compute descritptor set
 	{
 		for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength() * 4; ++i)
+		{
 			_deviceResources->computeDescriptorSets.push_back(_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->computeDescriptorSetLayout));
+			_deviceResources->computeDescriptorSets.back()->setObjectName("ComputeSwapchain" + std::to_string(i) + "DescriptorSet");
+		}
 	}
 
 	{
@@ -1001,6 +1008,7 @@ void VulkanTimelineSemaphores::createComputePipeline()
 	createInfo.computeShader.setShader(computeShader);
 	createInfo.pipelineLayout = _deviceResources->computePipelineLayout;
 	_deviceResources->computePipeline = _deviceResources->device->createComputePipeline(createInfo, _deviceResources->pipelineCache);
+	_deviceResources->computePipeline->setObjectName("TimelineSemaphoresComputePipeline");
 }
 
 /// <summary>Records commands into the compute command buffer. This is done every frame, not pre-recorded like in case of graphics command buffer.

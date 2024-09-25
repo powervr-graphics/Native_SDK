@@ -711,15 +711,8 @@ pvr::Result VulkanAntiAliasing::initView()
 	_deviceResources->device = pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(physicalDevice), &queueCreateInfo, 1, &queueAccessInfo);
 
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
+	_deviceResources->queue->setObjectName("GraphicsQueue");
 
-	if (queueAccessInfo.familyId != -1 && queueAccessInfo.queueId != -1)
-	{
-		_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
-	}
-	else
-	{
-		Log(LogLevel::Information, "Only a single queue supports e_GRAPHICS_BIT + e_COMPUTE_BIT + WSI. We cannot ping-pong work each frame");
-	}
 	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->device->getPhysicalDevice()->getSurfaceCapabilities(surface);
 
 	// validate the supported swapchain image usage
@@ -746,6 +739,7 @@ pvr::Result VulkanAntiAliasing::initView()
 
 	_deviceResources->swapchain = swapChainCreateOutput.swapchain;
 	_deviceResources->onScreenRenderPass = swapChainCreateOutput.renderPass;
+	_deviceResources->onScreenRenderPass->setObjectName("OnScreenRenderPass");
 	_deviceResources->onScreenFramebuffers = swapChainCreateOutput.framebuffer;
 
 	// Get current swap index
@@ -772,6 +766,8 @@ pvr::Result VulkanAntiAliasing::initView()
 														   .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, static_cast<uint16_t>(80 * _swapchainLength))
 														   .addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, static_cast<uint16_t>(80 * _swapchainLength))
 														   .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, static_cast<uint16_t>(80 * _swapchainLength)));
+
+	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
 
 	// create the utility commandbuffer which will be used for image layout transitions and buffer/image uploads.
 	_deviceResources->utilityCommandBuffer = _deviceResources->commandPool->allocateCommandBuffer();
@@ -837,7 +833,12 @@ pvr::Result VulkanAntiAliasing::initView()
 	{
 		_deviceResources->presentationSemaphores[i] = (_deviceResources->device->createSemaphore());
 		_deviceResources->imageAcquiredSemaphores[i] = (_deviceResources->device->createSemaphore());
+
+		_deviceResources->presentationSemaphores[i]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->imageAcquiredSemaphores[i]->setObjectName("ImageAcquiredSemaphoreSwapchain" + std::to_string(i));
+
 		_deviceResources->perFrameResourcesFences[i] = (_deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT));
+		_deviceResources->perFrameResourcesFences[i]->setObjectName("FenceSwapchain" + std::to_string(i));
 	}
 
 	_scene->getCameraProperties(0, SceneElements::_cameraFov, SceneElements::_cameraFrom, SceneElements::_cameraTo, SceneElements::_cameraUp);
@@ -945,24 +946,31 @@ void VulkanAntiAliasing::createGraphicsPipelines()
 {
 	_deviceResources->onScreenGeometryPipeline = createScenePipeline(_deviceResources->onScreenGeometryRenderPass, _deviceResources->scenePipelineLayout,
 		ShaderFiles::NOAAVertexShaderFile, ShaderFiles::NOAAFragmentShaderFile, true, false, false);
+	_deviceResources->onScreenGeometryPipeline->setObjectName("OnScreenGeometryGraphicsPipeline");
 
 	_deviceResources->msaaOffscreenGeometryPipeline = createScenePipeline(_deviceResources->msaaOffscreenGeometryRenderPass, _deviceResources->scenePipelineLayout,
 		ShaderFiles::NOAAVertexShaderFile, ShaderFiles::NOAAFragmentShaderFile, true, true, false);
+	_deviceResources->msaaOffscreenGeometryPipeline->setObjectName("MSAAOffScreenGeometryGraphicsPipeline");
 
 	_deviceResources->msaaResolvePassPipeline = createPostProcessingPipeline(_deviceResources->msaaOffscreenGeometryRenderPass, 1, _deviceResources->postProcessPipelineLayout,
 		ShaderFiles::AttributelessVertexShaderFile, ShaderFiles::MSAAFragmentShaderFile);
+	_deviceResources->msaaResolvePassPipeline->setObjectName("MSAAResolvePassGraphicsPipeline");
 
 	_deviceResources->fxaaResolvePassPipeline = createPostProcessingPipeline(
 		_deviceResources->onScreenRenderPass, 0, _deviceResources->postProcessPipelineLayout, ShaderFiles::AttributelessVertexShaderFile, ShaderFiles::FXAAFragmentShaderFile);
+	_deviceResources->fxaaResolvePassPipeline->setObjectName("FXAAResolvePassGraphicsPipeline");
 
 	_deviceResources->offscreenPipeline1SPP = createScenePipeline(_deviceResources->onScreenGeometryRenderPass, _deviceResources->scenePipelineLayout,
 		ShaderFiles::NOAAVertexShaderFile, ShaderFiles::NOAAFragmentShaderFile, false, false, false);
+	_deviceResources->offscreenPipeline1SPP->setObjectName("OffScreenGraphicsPipeline");
 
 	_deviceResources->taaOffscreenPipeline = createScenePipeline(_deviceResources->taaOffscreenGeometryRenderPass, _deviceResources->scenePipelineLayout,
 		ShaderFiles::VelocityTXAAVertexShaderFile, ShaderFiles::VelocityTXAAFragmentShaderFile, false, false, true);
+	_deviceResources->taaOffscreenPipeline->setObjectName("TAAOffScreenGraphicsPipeline");
 
 	_deviceResources->taaResolvePassipeline = createPostProcessingPipeline(_deviceResources->onScreenRenderPass, 0, _deviceResources->taaResolvePipelineLayout,
 		ShaderFiles::AttributelessVertexShaderFile, ShaderFiles::ResolveTXAAFragmentShaderFile);
+	_deviceResources->taaResolvePassipeline->setObjectName("TAAResolvePassGraphicsPipeline");
 }
 
 void VulkanAntiAliasing::changeTAAHistoryImageLayout(pvrvk::CommandBuffer utilityCommandBuffer)
@@ -1008,6 +1016,7 @@ void VulkanAntiAliasing::createOnScreenGeometryRenderPass()
 	std::vector<pvrvk::AttachmentDescription> vectorAttachmentDescription;
 	fillAttachmentDescription(1, true, pvrvk::SampleCountFlags::e_1_BIT, vectorAttachmentDescription);
 	_deviceResources->onScreenGeometryRenderPass = createTechniqueRenderPass(vectorAttachmentDescription);
+	_deviceResources->onScreenGeometryRenderPass->setObjectName("OnScreenGeometryRenderPass");
 }
 
 void VulkanAntiAliasing::createMSAAGeometryRenderPass()
@@ -1068,6 +1077,7 @@ void VulkanAntiAliasing::createMSAAGeometryRenderPass()
 	renderPassInfo.addSubpassDependency(externalDependencies[1]);
 
 	_deviceResources->msaaOffscreenGeometryRenderPass = _deviceResources->device->createRenderPass(renderPassInfo);
+	_deviceResources->msaaOffscreenGeometryRenderPass->setObjectName("MSAAOffscreenGeometryRenderPass");
 }
 
 void VulkanAntiAliasing::createPostProcessRenderPass()
@@ -1075,6 +1085,7 @@ void VulkanAntiAliasing::createPostProcessRenderPass()
 	std::vector<pvrvk::AttachmentDescription> vectorAttachmentDescription;
 	fillAttachmentDescription(1, false, pvrvk::SampleCountFlags::e_1_BIT, vectorAttachmentDescription);
 	_deviceResources->postprocessRenderPass = createTechniqueRenderPass(vectorAttachmentDescription);
+	_deviceResources->postprocessRenderPass->setObjectName("PostProcessRenderPass");
 }
 
 void VulkanAntiAliasing::createTAAGeometryRenderPass()
@@ -1082,6 +1093,7 @@ void VulkanAntiAliasing::createTAAGeometryRenderPass()
 	std::vector<pvrvk::AttachmentDescription> vectorAttachmentDescription;
 	fillAttachmentDescription(2, true, pvrvk::SampleCountFlags::e_1_BIT, vectorAttachmentDescription);
 	_deviceResources->taaOffscreenGeometryRenderPass = createTechniqueRenderPass(vectorAttachmentDescription);
+	_deviceResources->taaOffscreenGeometryRenderPass->setObjectName("TAAOffscreenGeometryRenderPass");
 }
 
 void VulkanAntiAliasing::initializeComandBuffers()
@@ -1361,6 +1373,7 @@ void VulkanAntiAliasing::createSceneDataUniformBuffer()
 		pvrvk::BufferCreateInfo(_deviceResources->sceneStructuredBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_deviceResources->sceneUniformBuffer->setObjectName("SceneUniformBufferUBO");
 	_deviceResources->sceneStructuredBufferView.pointToMappedMemory(_deviceResources->sceneUniformBuffer->getDeviceMemory()->getMappedData());
 }
 
@@ -1383,6 +1396,7 @@ void VulkanAntiAliasing::createTAAUniformBuffer()
 		pvrvk::BufferCreateInfo(_deviceResources->taaStructuredBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_deviceResources->taaUniformBuffer->setObjectName("TAAUniformBufferUBO");
 	_deviceResources->taaStructuredBufferView.pointToMappedMemory(_deviceResources->taaUniformBuffer->getDeviceMemory()->getMappedData());
 }
 
@@ -1408,6 +1422,9 @@ void VulkanAntiAliasing::createSceneDescriptorSets()
 	{
 		_deviceResources->sceneVertexDescriptorSets.push_back(_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->sceneVertexDescriptorSetLayout));
 		_deviceResources->sceneFragmentDescriptorSets.push_back(_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->sceneFragmentDescriptorSetLayout));
+
+		_deviceResources->sceneVertexDescriptorSets.back()->setObjectName("SceneVertexSwapchain" + std::to_string(i) + "DescriptorSet");
+		_deviceResources->sceneFragmentDescriptorSets.back()->setObjectName("SceneFragmentSwapchain" + std::to_string(i) + "DescriptorSet");
 
 		writeDescSets.push_back(
 			pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->sceneFragmentDescriptorSets[i], 0)
@@ -1448,6 +1465,7 @@ void VulkanAntiAliasing::createTAAResolveDescriptorSet()
 	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		_deviceResources->taaResolveDescriptorSet.push_back(_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->taaResolveDescriptorSetLayout));
+		_deviceResources->taaResolveDescriptorSet.back()->setObjectName("TAASwapchain" + std::to_string(i) + "DescriptorSet");
 
 		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->taaResolveDescriptorSet[i], 0)
 									.setImageInfo(0,
@@ -1475,6 +1493,9 @@ void VulkanAntiAliasing::createTAADescriptorSets()
 	{
 		_deviceResources->taaVertexDescriptorSets.push_back(_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->sceneVertexDescriptorSetLayout));
 		_deviceResources->taaFragmentDescriptorSets.push_back(_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->sceneFragmentDescriptorSetLayout));
+
+		_deviceResources->taaVertexDescriptorSets.back()->setObjectName("TAAVertexSwapchain" + std::to_string(i) + "DescriptorSet");
+		_deviceResources->taaFragmentDescriptorSets.back()->setObjectName("TAAFragmentSwapchain" + std::to_string(i) + "DescriptorSet");
 
 		writeDescSets.push_back(
 			pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->taaFragmentDescriptorSets[i], 0)
@@ -1563,6 +1584,8 @@ void VulkanAntiAliasing::recordNoAntialiasingComandBuffers()
 {
 	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
+		_deviceResources->noAntiAliasingCommandBuffer[i]->setObjectName("NoAACommandBufferSwapchain" + std::to_string(i));
+
 		_deviceResources->noAntiAliasingCommandBuffer[i]->begin();
 
 		pvr::utils::beginCommandBufferDebugLabel(_deviceResources->noAntiAliasingCommandBuffer[i], pvrvk::DebugUtilsLabel("No antialiasing"));
@@ -1589,6 +1612,8 @@ void VulkanAntiAliasing::recordMSAAComandBuffers()
 {
 	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
+		_deviceResources->msaaCommandBuffer[i]->setObjectName("MSAACommandBufferSwapchain" + std::to_string(i));
+
 		_deviceResources->msaaCommandBuffer[i]->begin();
 
 		pvr::utils::beginCommandBufferDebugLabel(_deviceResources->msaaCommandBuffer[i], pvrvk::DebugUtilsLabel("MSAA offscreen pass"));
@@ -1629,6 +1654,8 @@ void VulkanAntiAliasing::recordFXAAComandBuffers()
 {
 	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
+		_deviceResources->fxaaCommandBuffer[i]->setObjectName("FXAACommandBufferSwapchain" + std::to_string(i));
+
 		_deviceResources->fxaaCommandBuffer[i]->begin();
 
 		pvr::utils::beginCommandBufferDebugLabel(_deviceResources->fxaaCommandBuffer[i], pvrvk::DebugUtilsLabel("FXAA offscreen pass"));
@@ -1667,6 +1694,8 @@ void VulkanAntiAliasing::recordTAACommandBuffers()
 {
 	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
+		_deviceResources->taaCommandBuffer[i]->setObjectName("TAACommandBufferSwapchain" + std::to_string(i));
+
 		_deviceResources->taaCommandBuffer[i]->begin();
 
 		// Do an initial offscreen pass writing to two color attachments (scene and velocity)
@@ -1746,8 +1775,8 @@ void VulkanAntiAliasing::recordTAACommandBuffers()
 
 		// Submit barriers to transition layout
 		_deviceResources->taaCommandBuffer[i]->pipelineBarrier(pvrvk::PipelineStageFlags::e_TRANSFER_BIT, pvrvk::PipelineStageFlags::e_FRAGMENT_SHADER_BIT, barrierSet);
-		_deviceResources->taaCommandBuffer[i]->end();
 		pvr::utils::endCommandBufferDebugLabel(_deviceResources->taaCommandBuffer[i]);
+		_deviceResources->taaCommandBuffer[i]->end();
 	}
 }
 
@@ -1759,6 +1788,7 @@ void VulkanAntiAliasing::createPostprocessPassDescriptorSets()
 	{
 		// Descriptor sets for MSAAResolvePass
 		_deviceResources->msaaResolvePassDescriptorSets.push_back(_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->postProcessDescriptorSetLayout));
+		_deviceResources->msaaResolvePassDescriptorSets.back()->setObjectName("MSAAResolvePassSwapchain" + std::to_string(i) + "DescriptorSet");
 
 		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->msaaResolvePassDescriptorSets[i], 0)
 									.setImageInfo(0,
@@ -1767,6 +1797,7 @@ void VulkanAntiAliasing::createPostprocessPassDescriptorSets()
 
 		// Descriptor sets for FXAAResolvePass
 		_deviceResources->fxaaResolvePassDescriptorSet.push_back(_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->postProcessDescriptorSetLayout));
+		_deviceResources->fxaaResolvePassDescriptorSet.back()->setObjectName("FXAAResolvePassSwapchain" + std::to_string(i) + "DescriptorSet");
 
 		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->fxaaResolvePassDescriptorSet[i], 0)
 									.setImageInfo(0,

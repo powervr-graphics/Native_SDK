@@ -59,7 +59,6 @@ glm::mat4x4 Model::getWorldMatrix(uint32_t id) const
 	}
 	else if (nodeData.hasAnimation)
 	{
-		debug_assertion(nodeData.transformFlags & Node::InternalData::TransformFlags::SRT, "Animation data must be stores as SRT");
 		srtMatrix = pvr::math::constructSRT(nodeData.getFrameScaleAnimation(), nodeData.getFrameRotationAnimation(), nodeData.getFrameTranslationAnimation());
 	}
 	else if ((nodeData.transformFlags & Node::InternalData::TransformFlags::SRT))

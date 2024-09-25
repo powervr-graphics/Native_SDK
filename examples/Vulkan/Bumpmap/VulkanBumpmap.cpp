@@ -140,15 +140,23 @@ void VulkanBumpmap::createImageSamplerDescriptor(pvrvk::CommandBuffer& imageUplo
 
 	texBase = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, (StatueTexFile + (astcSupported ? "_astc.pvr" : ".pvr")).c_str(), true, imageUploadCmd, *this,
 		pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
-	texNormalMap = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, (StatueNormalMapFile + (astcSupported ? "_astc.pvr" : ".pvr")).c_str(), true, imageUploadCmd, *this,
-		pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
+	texNormalMap = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, (StatueNormalMapFile + (astcSupported ? "_astc.pvr" : ".pvr")).c_str(), true, imageUploadCmd,
+		*this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 
-	texBase->setObjectName("Base diffuse ImageView");
-	texNormalMap->setObjectName("Normal map ImgaeView");
+	std::string texBaseName = "Base Diffuse ImageView";
+	texBase->setObjectName(texBaseName);
+	texBase->setObjectTag(static_cast<uint64_t>(0), texBaseName.size(), texBaseName.c_str());
+
+	std::string texNormalMapName = "Base Diffuse ImageView";
+	texNormalMap->setObjectName(texNormalMapName);
+	texNormalMap->setObjectTag(static_cast<uint64_t>(1), texNormalMapName.size(), texNormalMapName.c_str());
 
 	// create the descriptor set
 	_deviceResources->texDescSet = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->texLayout);
-	_deviceResources->texDescSet->setObjectName("Texture DescriptorSet");
+
+	std::string textureDescriptorSetName = "TextureDescriptorSet";
+	_deviceResources->texDescSet->setObjectName(textureDescriptorSetName);
+	_deviceResources->texDescSet->setObjectTag(static_cast<uint64_t>(2), textureDescriptorSetName.size(), textureDescriptorSetName.c_str());
 
 	pvrvk::WriteDescriptorSet writeDescSets[2] = { pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->texDescSet, 0),
 		pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->texDescSet, 1) };
@@ -173,13 +181,19 @@ void VulkanBumpmap::createUbo()
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 		_deviceResources->structuredBufferView.pointToMappedMemory(_deviceResources->ubo->getDeviceMemory()->getMappedData());
-		_deviceResources->ubo->setObjectName("Object Ubo");
+
+		std::string ObjectUBOName = "Object Ubo";
+		_deviceResources->ubo->setObjectName(ObjectUBOName);
+		_deviceResources->ubo->setObjectTag(static_cast<uint64_t>(2), ObjectUBOName.size(), ObjectUBOName.c_str());
 	}
 
 	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		_deviceResources->uboDescSets.push_back(_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->uboLayoutDynamic));
-		_deviceResources->uboDescSets[i]->setObjectName(std::string("Ubo DescriptorSet [") + std::to_string(i) + "]");
+
+		std::string uboDescriptorSetName = "UboDescriptorSetSwapchain" + std::to_string(i);
+		_deviceResources->uboDescSets[i]->setObjectName(uboDescriptorSetName);
+		_deviceResources->queue->setObjectTag(static_cast<uint64_t>(2), uboDescriptorSetName.size(), uboDescriptorSetName.c_str());
 
 		descUpdate[i]
 			.set(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _deviceResources->uboDescSets[i])
@@ -246,7 +260,10 @@ void VulkanBumpmap::createPipeline()
 	pipeInfo.depthStencil.enableDepthWrite(true);
 	pvr::utils::populateInputAssemblyFromMesh(mesh, VertexAttribBindings, sizeof(VertexAttribBindings) / sizeof(VertexAttribBindings[0]), pipeInfo.vertexInput, pipeInfo.inputAssembler);
 	_deviceResources->pipe = _deviceResources->device->createGraphicsPipeline(pipeInfo, _deviceResources->pipelineCache);
-	_deviceResources->pipe->setObjectName("Bumpmap GraphicsPipeline");
+
+	std::string graphicsPipelineName = "BumpmapGraphicsPipeline";
+	_deviceResources->pipe->setObjectName(graphicsPipelineName);
+	_deviceResources->pipe->setObjectTag(static_cast<uint64_t>(2), graphicsPipelineName.size(), graphicsPipelineName.c_str());
 }
 
 /// <summary>Code in initApplication() will be called by Shell once per run, before the rendering context is created.
@@ -301,6 +318,10 @@ pvr::Result VulkanBumpmap::initView()
 	_deviceResources->device = pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(0), &queuePopulateInfo, 1, &queueAccessInfo);
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
 
+	std::string queueName = "GraphicsQueue";
+	_deviceResources->queue->setObjectName(queueName);
+	_deviceResources->queue->setObjectTag(static_cast<uint64_t>(2), queueName.size(), queueName.c_str());
+
 	pvr::utils::beginQueueDebugLabel(_deviceResources->queue, pvrvk::DebugUtilsLabel("initView"));
 
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
@@ -330,14 +351,20 @@ pvr::Result VulkanBumpmap::initView()
 	//---------------
 	// Create the command pool and descriptor set pool
 	_deviceResources->commandPool = _deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(_deviceResources->queue->getFamilyIndex()));
-	_deviceResources->commandPool->setObjectName("Main Command Pool");
+
+	std::string mainCommandPoolName = "Main Command Pool";
+	_deviceResources->commandPool->setObjectName(mainCommandPoolName);
+	_deviceResources->commandPool->setObjectTag(static_cast<uint64_t>(2), mainCommandPoolName.size(), mainCommandPoolName.c_str());
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16)
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 16)
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 16)
 																						  .setMaxDescriptorSets(16));
-	_deviceResources->descriptorPool->setObjectName("Main Descriptor Pool");
+
+	std::string descriptorPoolName = "DescriptorPool";
+	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
+	_deviceResources->descriptorPool->setObjectTag(static_cast<uint64_t>(2), descriptorPoolName.size(), descriptorPoolName.c_str());
 
 	// Create the pipeline cache
 	_deviceResources->pipelineCache = _deviceResources->device->createPipelineCache();
@@ -350,19 +377,36 @@ pvr::Result VulkanBumpmap::initView()
 	{
 		// create the per swapchain command buffers
 		_deviceResources->cmdBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
-		_deviceResources->cmdBuffers[i]->setObjectName(std::string("Main CommandBuffer [") + std::to_string(i) + "]");
+
+		std::string cmdBufferName = "Main CommandBuffer [" + std::to_string(i) + "]";
+		_deviceResources->cmdBuffers[i]->setObjectName(cmdBufferName);
+		_deviceResources->cmdBuffers[i]->setObjectTag(static_cast<uint64_t>(3), cmdBufferName.size(), cmdBufferName.c_str());
 
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->presentationSemaphores[i]->setObjectName(std::string("Presentation Semaphore [") + std::to_string(i) + "]");
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->imageAcquiredSemaphores[i]->setObjectName(std::string("Image Acquisition Semaphore [") + std::to_string(i) + "]");
+
+		std::string presentationSemaphoreName = "PresentationSemaphoreSwapchain" + std::to_string(i);
+		_deviceResources->presentationSemaphores[i]->setObjectName(presentationSemaphoreName);
+		_deviceResources->presentationSemaphores[i]->setObjectTag(static_cast<uint64_t>(2), presentationSemaphoreName.size(), presentationSemaphoreName.c_str());
+
+		std::string imageAcquiredSemaphoreName = "ImageAcquiredSemaphoreSwapchain" + std::to_string(i);
+		_deviceResources->imageAcquiredSemaphores[i]->setObjectName(imageAcquiredSemaphoreName);
+		_deviceResources->imageAcquiredSemaphores[i]->setObjectTag(static_cast<uint64_t>(2), imageAcquiredSemaphoreName.size(), imageAcquiredSemaphoreName.c_str());
+
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
-		_deviceResources->perFrameResourcesFences[i]->setObjectName(std::string("Per Frame Command Buffer Fence [") + std::to_string(i) + "]");
+
+		std::string fenceSwapchainName = "FenceSwapchain" + std::to_string(i);
+		_deviceResources->perFrameResourcesFences[i]->setObjectName(fenceSwapchainName);
+		_deviceResources->perFrameResourcesFences[i]->setObjectTag(static_cast<uint64_t>(2), fenceSwapchainName.size(), fenceSwapchainName.c_str());
 	}
 
 	// Create a single time submit command buffer for uploading resources
 	pvrvk::CommandBuffer uploadBuffer = _deviceResources->commandPool->allocateCommandBuffer();
-	uploadBuffer->setObjectName("InitView : Upload Command Buffer");
+
+	std::string uploadBufferName = "InitView : Upload Command Buffer";
+	uploadBuffer->setObjectName(uploadBufferName);
+	uploadBuffer->setObjectTag(static_cast<uint64_t>(2), uploadBufferName.size(), uploadBufferName.c_str());
+
 	uploadBuffer->begin(pvrvk::CommandBufferUsageFlags::e_ONE_TIME_SUBMIT_BIT);
 
 	// load the vbo and ibo data
@@ -480,6 +524,9 @@ pvr::Result VulkanBumpmap::renderFrame()
 	submitInfo.waitDstStageMask = &pipeWaitStageFlags;
 	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameResourcesFences[swapchainIndex]);
 
+	pvr::utils::insertDebugUtilsLabel(_deviceResources->cmdBuffers[swapchainIndex], pvrvk::DebugUtilsLabel("Swap chain index " + std::to_string(swapchainIndex)));
+	_deviceResources->queue->insertDebugUtilsLabel(pvrvk::DebugUtilsLabel("Swap chain index " + std::to_string(swapchainIndex)));
+
 	pvr::utils::endQueueDebugLabel(_deviceResources->queue);
 
 	if (this->shouldTakeScreenshot())
@@ -566,6 +613,10 @@ void VulkanBumpmap::recordCommandBuffer()
 	pvrvk::ClearValue clearValues[2] = { pvrvk::ClearValue(0.0f, 0.45f, 0.41f, 1.f), pvrvk::ClearValue(1.f, 0u) };
 	for (uint32_t i = 0; i < numSwapchains; ++i)
 	{
+		std::string commandBufferName = "CommandBufferSwapchain" + std::to_string(i);
+		_deviceResources->cmdBuffers[i]->setObjectName(commandBufferName);
+		_deviceResources->cmdBuffers[i]->setObjectTag(static_cast<uint64_t>(2), commandBufferName.size(), commandBufferName.c_str());
+
 		// begin recording commands for the current swap chain command buffer
 		_deviceResources->cmdBuffers[i]->begin();
 		pvr::utils::beginCommandBufferDebugLabel(_deviceResources->cmdBuffers[i], pvrvk::DebugUtilsLabel("Render Frame Commands"));

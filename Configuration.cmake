@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.3)
 
 # EVERYTHING IN THIS FILE IS BASICALLY OPTIONAL. It is our recommended compiler configuration and some tools. This is applied to all targets via the "enable_sdk_options_for_target"
 

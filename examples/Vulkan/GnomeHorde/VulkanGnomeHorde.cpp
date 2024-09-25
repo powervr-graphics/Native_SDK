@@ -651,6 +651,7 @@ pvr::Result VulkanGnomeHorde::initView()
 
 	_deviceResources->device = pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(0), &queuePopulateInfo, 1, &queueAccessInfo);
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
+	_deviceResources->queue->setObjectName("GraphicsQueue");
 
 	// Create memory allocator
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
@@ -689,6 +690,8 @@ pvr::Result VulkanGnomeHorde::initView()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, static_cast<uint16_t>(8 * _swapchainLength))
 																						  .setMaxDescriptorSets(static_cast<uint16_t>(8 * _swapchainLength)));
 
+	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
+
 	_deviceResources->multiBuffering.resize(_swapchainLength);
 
 	setupUI();
@@ -699,7 +702,12 @@ pvr::Result VulkanGnomeHorde::initView()
 	{
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->presentationSemaphores[i]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->imageAcquiredSemaphores[i]->setObjectName("ImageAcquiredSemaphoreSwapchain" + std::to_string(i));
+
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->perFrameResourcesFences[i]->setObjectName("FenceSwapchain" + std::to_string(i));
+
 		_deviceResources->multiBuffering[i].cmdBuffers = _deviceResources->commandPool->allocateCommandBuffer();
 	}
 
@@ -772,6 +780,7 @@ pvr::Result VulkanGnomeHorde::initView()
 		pipeCreate.colorBlend.setAttachmentState(0, cbStateNoBlend);
 
 		_deviceResources->pipelines.solid = _deviceResources->device->createGraphicsPipeline(pipeCreate, _deviceResources->pipelineCache);
+		_deviceResources->pipelines.solid->setObjectName("SolidGraphicsPipeline");
 
 		pipeCreate.depthStencil.enableDepthWrite(false);
 		// create the alpha pre-multiply pipeline
@@ -779,6 +788,7 @@ pvr::Result VulkanGnomeHorde::initView()
 		pipeCreate.fragmentShader = premulFsh;
 		pipeCreate.colorBlend.setAttachmentState(0, cbStatePremulAlpha);
 		_deviceResources->pipelines.alphaPremul = _deviceResources->device->createGraphicsPipeline(pipeCreate, _deviceResources->pipelineCache);
+		_deviceResources->pipelines.alphaPremul->setObjectName("AlphaPremultiplicationGraphicsPipeline");
 
 		// create the shadow pipeline
 		pipeCreate.colorBlend.setAttachmentState(0, cbStateBlend);
@@ -786,6 +796,7 @@ pvr::Result VulkanGnomeHorde::initView()
 		pipeCreate.fragmentShader = shadowFsh;
 
 		_deviceResources->pipelines.shadow = _deviceResources->device->createGraphicsPipeline(pipeCreate, _deviceResources->pipelineCache);
+		_deviceResources->pipelines.shadow->setObjectName("ShadowGraphicsPipeline");
 	}
 
 	pvrvk::CommandBuffer cb = _deviceResources->commandPool->allocateCommandBuffer();
@@ -939,7 +950,10 @@ void GnomeHordeTileThreadData::generateTileBuffer(const TileProcessingResult* ti
 
 				auto& cb = tile.cbs[swapIdx];
 				std::unique_lock<std::mutex> lock(threadApiObj->poolMutex);
+				cb.first->setObjectName("SceneCommandBufferTile" + std::to_string(tilenum) + "Swapchain" + std::to_string(swapIdx));
 				cb.first->begin(app->_deviceResources->onScreenFramebuffer[swapIdx], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
+
+				pvr::utils::beginCommandBufferDebugLabel(cb.first, pvrvk::DebugUtilsLabel("SceneTile" + std::to_string(tilenum) + "Swapchain" + std::to_string(swapIdx)));
 
 				for (uint32_t objId = 0; objId < NUM_OBJECTS_PER_TILE; ++objId)
 				{
@@ -972,6 +986,8 @@ void GnomeHordeTileThreadData::generateTileBuffer(const TileProcessingResult* ti
 					// array of items, at array index #(second param).
 					cb.first->drawIndexed(0, mesh.mesh->getNumIndices());
 				}
+				pvr::utils::endCommandBufferDebugLabel(cb.first);
+
 				cb.first->end();
 			}
 		}
@@ -1281,12 +1297,14 @@ void VulkanGnomeHorde::createDescSetsAndTiles(const pvrvk::DescriptorSetLayout& 
 	std::vector<pvrvk::WriteDescriptorSet> descSetWrites{ _swapchainLength + 2 };
 
 	_deviceResources->descSetScene = _deviceResources->descriptorPool->allocateDescriptorSet(layoutScene);
+	_deviceResources->descSetScene->setObjectName("SceneDescriptorSet");
 
 	descSetWrites[0]
 		.set(pvrvk::DescriptorType::e_UNIFORM_BUFFER, _deviceResources->descSetScene, 0)
 		.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_deviceResources->sceneUbo, 0, _deviceResources->sceneUboBufferView.getDynamicSliceSize()));
 
 	_deviceResources->descSetAllObjects = _deviceResources->descriptorPool->allocateDescriptorSet(layoutPerObject);
+	_deviceResources->descSetAllObjects->setObjectName("AllObjectsDescriptorSet");
 
 	descSetWrites[1]
 		.set(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _deviceResources->descSetAllObjects, 0)
@@ -1298,6 +1316,7 @@ void VulkanGnomeHorde::createDescSetsAndTiles(const pvrvk::DescriptorSetLayout& 
 		// Since it is updated every frame, it is multi-buffered to avoid stalling the GPU
 		auto& current = _deviceResources->multiBuffering[i];
 		current.descSetPerFrame = _deviceResources->descriptorPool->allocateDescriptorSet(layoutPerFrameUbo);
+		current.descSetPerFrame->setObjectName("Swapchain" + std::to_string(i) + "DescriptorSet");
 
 		descSetWrites[i + 2]
 			.set(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, current.descSetPerFrame, 0)
@@ -1464,6 +1483,7 @@ pvrvk::DescriptorSet VulkanGnomeHorde::createDescriptorSetUtil(const pvrvk::Desc
 	pvrvk::ImageView tex = pvr::utils::loadAndUploadImageAndView(_deviceResources->device, texture.c_str(), true, uploadCmdBuffer, *this, pvrvk::ImageUsageFlags::e_SAMPLED_BIT,
 		pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, nullptr, _deviceResources->vmaAllocator, _deviceResources->vmaAllocator);
 	pvrvk::DescriptorSet tmp = _deviceResources->descriptorPool->allocateDescriptorSet(layout);
+	tmp->setObjectName("TempDescriptorSet");
 	bool hasMipmaps = tex->getImage()->getNumMipLevels() > 1;
 	pvrvk::WriteDescriptorSet write(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, tmp, 0);
 	write.setImageInfo(0, pvrvk::DescriptorImageInfo(tex, hasMipmaps ? mipMapped : nonMipMapped, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
@@ -1483,6 +1503,7 @@ void VulkanGnomeHorde::initUboStructuredObjects()
 			pvrvk::BufferCreateInfo(_deviceResources->sceneUboBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		_deviceResources->sceneUbo->setObjectName("DirectionToLightUBO");
 
 		_deviceResources->sceneUboBufferView.pointToMappedMemory(_deviceResources->sceneUbo->getDeviceMemory()->getMappedData());
 	}
@@ -1498,6 +1519,7 @@ void VulkanGnomeHorde::initUboStructuredObjects()
 			pvrvk::BufferCreateInfo(_deviceResources->uboBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		_deviceResources->ubo->setObjectName("ViewProjectionMatUBO");
 
 		_deviceResources->uboBufferView.pointToMappedMemory(_deviceResources->ubo->getDeviceMemory()->getMappedData());
 	}
@@ -1514,6 +1536,7 @@ void VulkanGnomeHorde::initUboStructuredObjects()
 			pvrvk::BufferCreateInfo(_deviceResources->uboPerObjectBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		_deviceResources->uboPerObject->setObjectName("PerObjectUBO");
 
 		_deviceResources->uboPerObjectBufferView.pointToMappedMemory(_deviceResources->uboPerObject->getDeviceMemory()->getMappedData());
 	}

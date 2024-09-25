@@ -443,6 +443,7 @@ pvr::Result VulkanHybridSoftShadows::initView()
 
 	// Get queue
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
+	_deviceResources->queue->setObjectName("GraphicsQueue");
 
 	// Create vulkan memory allocatortea
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
@@ -512,6 +513,8 @@ pvr::Result VulkanHybridSoftShadows::initView()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, static_cast<uint16_t>(16 * _numSwapImages))
 																						  .setMaxDescriptorSets(static_cast<uint16_t>(16 * _numSwapImages)));
 
+	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
+
 	// Setup command buffers
 	for (uint32_t i = 0; i < _numSwapImages; ++i)
 	{
@@ -519,10 +522,18 @@ pvr::Result VulkanHybridSoftShadows::initView()
 		_deviceResources->cmdBufferGBuffer[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
 		_deviceResources->cmdBufferDeferredShading[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
 		_deviceResources->cmdBufferDownsample[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
+		_deviceResources->cmdBufferMainDeferred[i]->setObjectName("DeferredCommandBufferSwapchain" + std::to_string(i));
+		_deviceResources->cmdBufferGBuffer[i]->setObjectName("GBufferSecondaryCommandBufferSwapchain" + std::to_string(i));
+		_deviceResources->cmdBufferDeferredShading[i]->setObjectName("DeferredShadingSecondaryCommandBufferSwapchain" + std::to_string(i));
+		_deviceResources->cmdBufferDownsample[i]->setObjectName("DownsampleSecondaryCommandBufferSwapchain" + std::to_string(i));
 
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->presentationSemaphores[i]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->imageAcquiredSemaphores[i]->setObjectName("ImageAcquiredSemaphoreSwapchain" + std::to_string(i));
+
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->perFrameResourcesFences[i]->setObjectName("FenceSwapchain" + std::to_string(i));
 	}
 
 	_nearClipDistance = _scene->getCamera(static_cast<uint32_t>(SceneNodes::Cameras::SceneCamera)).getNear();
@@ -764,6 +775,9 @@ void VulkanHybridSoftShadows::createDescriptorSets()
 	_deviceResources->commonDescriptorSet = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->commonDescriptorSetLayout);
 	_deviceResources->gbufferDescriptorSet = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->gbufferDescriptorSetLayout);
 
+	_deviceResources->commonDescriptorSet->setObjectName("CommonDescriptorSet");
+	_deviceResources->gbufferDescriptorSet->setObjectName("GBufferDescriptorSet");
+
 	// Write Common Descriptor Set
 	std::vector<pvrvk::WriteDescriptorSet> writeDescSets;
 
@@ -919,6 +933,7 @@ void VulkanHybridSoftShadows::createGBufferPipelines()
 
 	renderGBufferPipelineCreateInfo.pipelineLayout = _deviceResources->gbufferPipelineLayout;
 	_deviceResources->gbufferPipeline = _deviceResources->device->createGraphicsPipeline(renderGBufferPipelineCreateInfo, _deviceResources->pipelineCache);
+	_deviceResources->gbufferPipeline->setObjectName("GBufferGraphicsPipeline");
 }
 
 /// <summary>Creates the pipeline for the Deferred shading pass.</summary>
@@ -990,6 +1005,7 @@ void VulkanHybridSoftShadows::createDeferredShadingPipelines()
 		_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream(Files::DeferredShadingFragmentShader)->readToEnd<uint32_t>())));
 
 	_deviceResources->defferedShadingPipeline = _deviceResources->device->createGraphicsPipeline(pipelineCreateInfo, _deviceResources->pipelineCache);
+	_deviceResources->defferedShadingPipeline->setObjectName("DefferedShadingGraphicsPipeline");
 }
 
 /// <summary>Create the pipelines for this example.</summary>
@@ -1090,6 +1106,7 @@ void VulkanHybridSoftShadows::createFramebufferAndRenderPass()
 	pvrvk::ImageView imageViews[] = { _deviceResources->gbufferImages[0], _deviceResources->gbufferImages[1], _deviceResources->gbufferDepthStencilImage };
 
 	_deviceResources->gbufferRenderPass = _deviceResources->device->createRenderPass(renderPassCreateInfo);
+	_deviceResources->gbufferRenderPass->setObjectName("GBufferRenderPass");
 
 	_deviceResources->gbufferFramebuffer = _deviceResources->device->createFramebuffer(
 		pvrvk::FramebufferCreateInfo(dimension.getWidth(), dimension.getHeight(), 1, _deviceResources->gbufferRenderPass, 3, &imageViews[0]));
@@ -1267,6 +1284,7 @@ void VulkanHybridSoftShadows::createModelBuffers(pvrvk::CommandBuffer& uploadCmd
 
 		_deviceResources->vertexBuffers.push_back(pvr::utils::createBuffer(_deviceResources->device, vertexBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
 			pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT));
+		_deviceResources->vertexBuffers.back()->setObjectName("VBO");
 
 		pvr::utils::updateBufferUsingStagingBuffer(
 			_deviceResources->device, _deviceResources->vertexBuffers[meshIdx], uploadCmd, vertices.data(), 0, sizeof(pvr::utils::ASVertexFormat) * vertices.size());
@@ -1279,6 +1297,7 @@ void VulkanHybridSoftShadows::createModelBuffers(pvrvk::CommandBuffer& uploadCmd
 
 		_deviceResources->indexBuffers.push_back(pvr::utils::createBuffer(_deviceResources->device, indexBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
 			pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT));
+		_deviceResources->vertexBuffers.back()->setObjectName("IBO");
 
 		pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, _deviceResources->indexBuffers[meshIdx], uploadCmd, indices.data(), 0, sizeof(uint32_t) * indices.size());
 
@@ -1331,6 +1350,7 @@ void VulkanHybridSoftShadows::createModelBuffers(pvrvk::CommandBuffer& uploadCmd
 	materialColorBufferInfo.setSize(sizeof(Material) * materials.size());
 	materialColorBufferInfo.setUsageFlags(pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT);
 	_deviceResources->materialBuffer = pvr::utils::createBuffer(_deviceResources->device, materialColorBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT);
+	_deviceResources->vertexBuffers.back()->setObjectName("MaterialSBO");
 	pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, _deviceResources->materialBuffer, uploadCmd, materials.data(), 0, sizeof(Material) * materials.size());
 }
 
@@ -1352,6 +1372,7 @@ void VulkanHybridSoftShadows::createCameraBuffer()
 		pvrvk::BufferCreateInfo(_deviceResources->cameraBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_deviceResources->cameraBuffer->setObjectName("CameraUBO");
 
 	_deviceResources->cameraBufferView.pointToMappedMemory(_deviceResources->cameraBuffer->getDeviceMemory()->getMappedData());
 }
@@ -1369,6 +1390,7 @@ void VulkanHybridSoftShadows::createMeshTransformBuffer()
 		pvrvk::BufferCreateInfo(_deviceResources->perMeshBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_deviceResources->perMeshBuffer->setObjectName("PerMeshUBO");
 
 	_deviceResources->perMeshBufferView.pointToMappedMemory(_deviceResources->perMeshBuffer->getDeviceMemory()->getMappedData());
 }
@@ -1393,6 +1415,7 @@ void VulkanHybridSoftShadows::createRandomRotationsBuffer()
 		pvrvk::BufferCreateInfo(_deviceResources->randomRotationsBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_deviceResources->randomRotationsBuffer->setObjectName("RandomRotationsUBO");
 
 	float currentRandom = 0.0f;
 
@@ -1430,6 +1453,7 @@ void VulkanHybridSoftShadows::createLightBuffer()
 		pvrvk::BufferCreateInfo(_deviceResources->perLightBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_deviceResources->perLightBuffer->setObjectName("PerLightUBO");
 
 	_deviceResources->perLightBufferView.pointToMappedMemory(_deviceResources->perLightBuffer->getDeviceMemory()->getMappedData());
 }
@@ -1528,6 +1552,8 @@ void VulkanHybridSoftShadows::recordMainCommandBuffer()
 		// Record deferred version
 		_deviceResources->cmdBufferMainDeferred[i]->begin();
 
+		pvr::utils::beginCommandBufferDebugLabel(_deviceResources->cmdBufferMainDeferred[i], pvrvk::DebugUtilsLabel("MainRenderPass"));
+
 		pvrvk::Rect2D renderArea(0, 0, _windowWidth, _windowHeight);
 
 		// specify a clear colour per attachment
@@ -1552,6 +1578,8 @@ void VulkanHybridSoftShadows::recordMainCommandBuffer()
 
 		_deviceResources->cmdBufferMainDeferred[i]->endRenderPass();
 
+		pvr::utils::endCommandBufferDebugLabel(_deviceResources->cmdBufferMainDeferred[i]);
+
 		_deviceResources->cmdBufferMainDeferred[i]->end();
 	}
 }
@@ -1570,16 +1598,24 @@ void VulkanHybridSoftShadows::recordSecondaryCommandBuffers()
 	for (uint32_t i = 0; i < _numSwapImages; ++i)
 	{
 		_deviceResources->cmdBufferGBuffer[i]->begin(_deviceResources->gbufferFramebuffer);
+		pvr::utils::beginCommandBufferDebugLabel(_deviceResources->cmdBufferGBuffer[i], pvrvk::DebugUtilsLabel("GBufferRenderPass"));
 		recordCommandBufferRenderGBuffer(_deviceResources->cmdBufferGBuffer[i], i);
+		pvr::utils::endCommandBufferDebugLabel(_deviceResources->cmdBufferGBuffer[i]);
 		_deviceResources->cmdBufferGBuffer[i]->end();
 
 		_deviceResources->cmdBufferDeferredShading[i]->begin(_deviceResources->onScreenFramebuffer[i]);
+		pvr::utils::beginCommandBufferDebugLabel(_deviceResources->cmdBufferGBuffer[i], pvrvk::DebugUtilsLabel("DeferredShadingRenderPass"));
 		recordCommandBufferDeferredShading(_deviceResources->cmdBufferDeferredShading[i], i);
+		pvr::utils::endCommandBufferDebugLabel(_deviceResources->cmdBufferGBuffer[i]);
+		pvr::utils::beginCommandBufferDebugLabel(_deviceResources->cmdBufferGBuffer[i], pvrvk::DebugUtilsLabel("UIRenderPass"));
 		recordCommandUIRenderer(_deviceResources->cmdBufferDeferredShading[i]);
+		pvr::utils::endCommandBufferDebugLabel(_deviceResources->cmdBufferGBuffer[i]);
 		_deviceResources->cmdBufferDeferredShading[i]->end();
 
 		_deviceResources->cmdBufferDownsample[i]->begin();
+		pvr::utils::beginCommandBufferDebugLabel(_deviceResources->cmdBufferDownsample[i], pvrvk::DebugUtilsLabel("DownsampleRenderPass"));
 		recordCommandBufferDownsample(_deviceResources->cmdBufferDownsample[i]);
+		pvr::utils::endCommandBufferDebugLabel(_deviceResources->cmdBufferGBuffer[i]);
 		_deviceResources->cmdBufferDownsample[i]->end();
 	}
 }

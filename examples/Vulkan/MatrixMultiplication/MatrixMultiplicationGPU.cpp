@@ -55,6 +55,7 @@ void initiateVulkan(char* pathToExecutable)
 	// create the device and retrieve the caommand queue from it
 	_resources->device = pvr::utils::createDeviceAndQueues(_resources->instance->getPhysicalDevice(0), &queuePopulateInfo, 1, &queueAccessInfo);
 	_resources->commandQueue = _resources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
+	_resources->commandQueue->setObjectName("ComputeQueue");
 
 	// create the memory allocator
 	_resources->vma = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_resources->device));
@@ -64,13 +65,14 @@ void initiateVulkan(char* pathToExecutable)
 
 	// allocate the command buffers out of the command pool
 	_resources->primaryCommandBuffer = _resources->commandPool->allocateCommandBuffer();
-	_resources->secondaryCommandBuffer = _resources->commandPool->allocateSecondaryCommandBuffer();
+	_resources->primaryCommandBuffer->setObjectName("PrimaryCommandBuffer");
 
 	// create the descriptor pool where descriptor sets will be allocated from
 	pvrvk::DescriptorPoolCreateInfo descPoolCreateInfo;
 	descPoolCreateInfo.addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_BUFFER, 8);
 	descPoolCreateInfo.setMaxDescriptorSets(1);
 	_resources->descriptorPool = _resources->device->createDescriptorPool(descPoolCreateInfo);
+	_resources->descriptorPool->setObjectName("DescriptorPool");
 }
 
 void makeDescriptors()
@@ -107,6 +109,7 @@ void makeDescriptors()
 
 	// allocate the descriptors out of the descriptor pool using the layout
 	_resources->descriptorSet = _resources->descriptorPool->allocateDescriptorSet(_resources->descriptorSetLayout);
+	_resources->descriptorSet->setObjectName("DescriptorSet");
 }
 
 void makeSingleMatrixBuffer(int bufferIndex, int numOfElements)
@@ -114,6 +117,7 @@ void makeSingleMatrixBuffer(int bufferIndex, int numOfElements)
 	_resources->matrixBufferSSBOs[bufferIndex] =
 		pvr::utils::createBuffer(_resources->device, pvrvk::BufferCreateInfo(sizeof(float) * numOfElements, pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT),
 			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, _resources->vma, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_resources->matrixBufferSSBOs[bufferIndex]->setObjectName("MatrixBufferSBO");
 }
 
 pvrvk::WriteDescriptorSet makeSingleMatrixDescSet(int bufferIndex, int numOfElements)
@@ -291,6 +295,7 @@ void makePipeline(int shaderIndex, int xWorkgroupSize, int yWorkgroupSize, int n
 	try
 	{
 		_resources->computePipeline = _resources->device->createComputePipeline(pipelineCreateInfo);
+		_resources->computePipeline->setObjectName("ComputePipeline");
 	}
 	catch (pvrvk::ErrorOutOfHostMemory err)
 	{
@@ -378,9 +383,11 @@ void doComputeWork(int xWorkgroupNumber, int yWorkgroupNumber)
 	// Fill the command buffer
 	_resources->commandPool->reset(pvrvk::CommandPoolResetFlags::e_RELEASE_RESOURCES_BIT);
 	_resources->primaryCommandBuffer->begin();
+	pvr::utils::beginCommandBufferDebugLabel(_resources->primaryCommandBuffer, pvrvk::DebugUtilsLabel("MainComputePass"));
 	_resources->primaryCommandBuffer->bindPipeline(_resources->computePipeline);
 	_resources->primaryCommandBuffer->bindDescriptorSet(pvrvk::PipelineBindPoint::e_COMPUTE, _resources->pipelineLayout, 0, _resources->descriptorSet);
 	_resources->primaryCommandBuffer->dispatch(xWorkgroupNumber, yWorkgroupNumber, 1);
+	pvr::utils::endCommandBufferDebugLabel(_resources->primaryCommandBuffer);
 	_resources->primaryCommandBuffer->end();
 
 	// create the submit command queue

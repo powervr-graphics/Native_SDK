@@ -15,6 +15,22 @@
 namespace pvr {
 namespace assets {
 
+void AnimationData::computeDuration()
+{
+	_data.startTime = std::numeric_limits<float>::max();
+	_data.endTime = std::numeric_limits<float>::lowest();
+
+	for (std::size_t k = 0; k < _data.keyFrames.size(); k++)
+	{
+		const auto& keyframeData = _data.keyFrames[k];
+		for (std::size_t i = 0; i < keyframeData.timeInSeconds.size(); i++)
+		{
+			_data.startTime = glm::min(_data.startTime, keyframeData.timeInSeconds[i]);
+			_data.endTime = glm::max(_data.endTime, keyframeData.timeInSeconds[i]);
+		}
+	}
+}
+
 uint32_t AnimationData::getNumFrames() const { return _data.numFrames; }
 
 const uint32_t* AnimationData::getPositionIndices() const { return _data.positionIndices.data(); }
@@ -104,6 +120,61 @@ void AnimationInstance::updateAnimation(float time)
 				Node& n = *static_cast<Node*>(keyframeNodes.nodes[ii]);
 				pvr::assets::Node::InternalData& internalData = n.getInternalData();
 				internalData.getFrameTranslationAnimation() = trans;
+			}
+		}
+
+		else if (keyFrame.mat4.size())
+		{
+			glm::mat4 transX = keyFrame.mat4[f1];
+			// animate all the node.
+			for (uint32_t ii = 0; ii < keyframeNodes.nodes.size(); ++ii)
+			{
+				pvr::assets::Node::InternalData& internalData = static_cast<Node*>(keyframeNodes.nodes[ii])->getInternalData();
+				glm::mat4 srtMatrix = pvr::math::constructSRT(internalData.getScale(), internalData.getRotate(), internalData.getTranslation());
+				srtMatrix = transX * srtMatrix;
+				memcpy(internalData.frameTransform, glm::value_ptr(srtMatrix), sizeof(glm::mat4));
+			}
+		}
+	}
+}
+
+
+void AnimationInstance::updateAnimationFromKey(uint32_t frameNumber)
+{
+	for (uint32_t i = 0; i < keyframeChannels.size(); ++i)
+	{
+		KeyframeChannel& keyframeNodes = keyframeChannels[i];
+		KeyFrameData& keyFrame = animationData->getInternalData().keyFrames[keyframeNodes.keyFrame];
+
+		// find the time slice.
+		uint32_t f1 = frameNumber;
+
+		//----------------------------
+		// SRT
+		if (keyFrame.scale.size())
+		{
+			// animate all the nodes.
+			for (uint32_t nodeId = 0; nodeId < keyframeNodes.nodes.size(); ++nodeId)
+			{
+				static_cast<Node*>(keyframeNodes.nodes[nodeId])->getInternalData().getFrameScaleAnimation() = keyFrame.scale[f1];
+			}
+		}
+		else if (keyFrame.rotate.size())
+		{
+			// animate all the node.
+			for (uint32_t nodeId = 0; nodeId < keyframeNodes.nodes.size(); ++nodeId)
+			{
+				static_cast<Node*>(keyframeNodes.nodes[nodeId])->getInternalData().getFrameRotationAnimation() = keyFrame.rotate[f1];
+			}
+		}
+		else if (keyFrame.translation.size())
+		{
+			// animate all the node.
+			for (uint32_t ii = 0; ii < keyframeNodes.nodes.size(); ++ii)
+			{
+				Node& n = *static_cast<Node*>(keyframeNodes.nodes[ii]);
+				pvr::assets::Node::InternalData& internalData = n.getInternalData();
+				internalData.getFrameTranslationAnimation() = keyFrame.translation[f1];
 			}
 		}
 

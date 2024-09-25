@@ -108,6 +108,10 @@ uint64_t Time::getCurrentTimeStamp() const
 	uint64_t currentTime;
 #if defined(_WIN32)
 	currentTime = helperQueryPerformanceCounter();
+#elif defined(__QNX__)
+	timeval tv;
+	gettimeofday(&tv, NULL);
+	currentTime = static_cast<uint64_t>((tv.tv_sec * (unsigned long)1000) + (tv.tv_usec / 1000.0)) * 1000000;
 #else
 	timespec time;
 	clock_gettime(PVR_TIMER_CLOCK, &time);

@@ -12,7 +12,7 @@
 #include <iostream>
 namespace pvrvk {
 namespace impl {
-class TimelineSemaphore_ : public Semaphore_, public DeviceObjectDebugUtils<TimelineSemaphore_>
+class TimelineSemaphore_ : public Semaphore_
 {
 private:
 	friend class Device_;

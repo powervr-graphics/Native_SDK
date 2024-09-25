@@ -305,6 +305,7 @@ struct ShadowMapPass
 			pvrvk::RenderPassCreateInfo().setAttachmentDescription(0, depthAttachment).setSubpass(0, subpassDesc).addSubpassDependencies(dependency, 2);
 
 		_renderPass = deviceResources->device->createRenderPass(renderPassCreateInfo);
+		_renderPass->setObjectName("ShadowMapRenderPass");
 	}
 
 	void createShaderModules(DeviceResources* deviceResources, pvr::Shell& shell)
@@ -375,6 +376,8 @@ struct ShadowMapPass
 			renderShadowPipelineCreateInfo.pipelineLayout = _pipelineLayout;
 
 			_pipelines[i] = deviceResources->device->createGraphicsPipeline(renderShadowPipelineCreateInfo, deviceResources->pipelineCache);
+			_pipelines[i]->setObjectName("ShadowMapPass" + std::to_string(i) + "GraphicsPipeline");
+			_pipelines[i]->setObjectName("Mesh" + std::to_string(i) + "ShadowMapGraphicsPipeline");
 		}
 	}
 
@@ -526,6 +529,7 @@ struct NoShadowsSample
 			renderShadowPipelineCreateInfo.pipelineLayout = _pipelineLayout;
 
 			_pipelines[i] = deviceResources->device->createGraphicsPipeline(renderShadowPipelineCreateInfo, deviceResources->pipelineCache);
+			_pipelines[i]->setObjectName("Mesh" + std::to_string(i) + "NoShadowsGraphicsPipeline");
 		}
 	}
 
@@ -686,6 +690,7 @@ struct PCFShadowsSample
 			renderShadowPipelineCreateInfo.pipelineLayout = _pipelineLayoutFinalScene;
 
 			_pipelines[i] = deviceResources->device->createGraphicsPipeline(renderShadowPipelineCreateInfo, deviceResources->pipelineCache);
+			_pipelines[i]->setObjectName("Mesh" + std::to_string(i) + "PCFShadowsGraphicsPipeline");
 		}
 	}
 
@@ -694,6 +699,7 @@ struct PCFShadowsSample
 		for (int i = 0; i < 2; i++)
 		{
 			_dsFinalScene[i] = deviceResources->descriptorPool->allocateDescriptorSet(deviceResources->dsLayoutShadowMap);
+			_dsFinalScene[i]->setObjectName("PCFShadowsIndex" + std::to_string(i) + "DescriptorSet");
 
 			// Update descriptor sets
 			std::vector<pvrvk::WriteDescriptorSet> writeDescSets;
@@ -880,6 +886,7 @@ struct GaussianBlurFragmentPass : public GaussianBlurPass
 			pvrvk::RenderPassCreateInfo().setAttachmentDescription(0, colorAttachment).setSubpass(0, subpassDesc).addSubpassDependencies(dependency, 2);
 
 		_renderPass = deviceResources->device->createRenderPass(renderPassCreateInfo);
+		_renderPass->setObjectName("GaussianBlurRenderPass");
 	}
 
 	void createShaderModules(const char* horizontalFragmentShaderPath, pvr::Shell& shell, DeviceResources* deviceResources)
@@ -896,6 +903,7 @@ struct GaussianBlurFragmentPass : public GaussianBlurPass
 			for (int i = 0; i < 2; i++)
 			{
 				_descriptorSets[queueIndex][i] = deviceResources->descriptorPool->allocateDescriptorSet(deviceResources->dsLayoutShadowMap);
+				_descriptorSets[queueIndex][i]->setObjectName("GaussianBlurShadowMap" + std::to_string(queueIndex) + "Index" + std::to_string(i) + "DescriptorSet");
 
 				// Update descriptor sets
 				std::vector<pvrvk::WriteDescriptorSet> writeDescSets;
@@ -978,10 +986,12 @@ struct GaussianBlurFragmentPass : public GaussianBlurPass
 		renderShadowPipelineCreateInfo.fragmentShader.setShader(_fsHorizontal);
 
 		_pipelineHorizontal = deviceResources->device->createGraphicsPipeline(renderShadowPipelineCreateInfo, deviceResources->pipelineCache);
+		_pipelineHorizontal->setObjectName("GaussianBlurHorizontalPassGraphicsPipeline");
 
 		renderShadowPipelineCreateInfo.fragmentShader.setShader(_fsVertical);
 
 		_pipelineVertical = deviceResources->device->createGraphicsPipeline(renderShadowPipelineCreateInfo, deviceResources->pipelineCache);
+		_pipelineVertical->setObjectName("GaussianBlurVerticalPassGraphicsPipeline");
 	}
 
 	pvrvk::DescriptorSet samplingDS(uint32_t queueIndex) override { return _descriptorSets[queueIndex][1]; }
@@ -1093,6 +1103,7 @@ struct GaussianBlurComputePass : public GaussianBlurPass
 		{
 			{
 				_dsSampling[queueIndex] = deviceResources->descriptorPool->allocateDescriptorSet(deviceResources->dsLayoutShadowMap);
+				_dsSampling[queueIndex]->setObjectName("GaussianBlurComputeQueueIndex" + std::to_string(queueIndex) + "DescriptorSet");
 
 				// Update descriptor sets
 				std::vector<pvrvk::WriteDescriptorSet> writeDescSets;
@@ -1106,6 +1117,7 @@ struct GaussianBlurComputePass : public GaussianBlurPass
 
 			{
 				_dsOutput[queueIndex] = deviceResources->descriptorPool->allocateDescriptorSet(_dsLayoutOutput);
+				_dsOutput[queueIndex]->setObjectName("GaussianBlurOutputComputePassQueueIndex" + std::to_string(queueIndex) + "DescriptorSet");
 
 				// Update descriptor sets
 				std::vector<pvrvk::WriteDescriptorSet> writeDescSets;
@@ -1140,6 +1152,7 @@ struct GaussianBlurComputePass : public GaussianBlurPass
 		pipelineCreateInfo.pipelineLayout = _pipelineLayout;
 
 		_pipeline = deviceResources->device->createComputePipeline(pipelineCreateInfo, deviceResources->pipelineCache);
+		_pipeline->setObjectName("GaussianBlurComputePipeline");
 	}
 
 	pvrvk::DescriptorSet samplingDS(uint32_t queueIndex) override { return _dsSampling[queueIndex]; }
@@ -1298,6 +1311,7 @@ struct VSMShadowsSample
 			renderShadowPipelineCreateInfo.pipelineLayout = _pipelineLayoutFinalScene;
 
 			_pipelines[i] = deviceResources->device->createGraphicsPipeline(renderShadowPipelineCreateInfo, deviceResources->pipelineCache);
+			_pipelines[i]->setObjectName("Mesh" + std::to_string(i) + "VSMShadowsGraphicsPipeline");
 		}
 	}
 
@@ -1321,6 +1335,7 @@ struct VSMShadowsSample
 		for (int i = 0; i < 2; i++)
 		{
 			_dsDepthMap[i] = deviceResources->descriptorPool->allocateDescriptorSet(deviceResources->dsLayoutShadowMap);
+			_dsDepthMap[i]->setObjectName("VSMShadowsIndex" + std::to_string(i) + "DescriptorSet");
 
 			// Update descriptor sets
 			std::vector<pvrvk::WriteDescriptorSet> writeDescSets;
@@ -1464,6 +1479,9 @@ pvr::Result VulkanShadows::initView()
 	_deviceResources->queue[0] = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
 	_deviceResources->queue[1] = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
 
+	_deviceResources->queue[0]->setObjectName("GraphicsQueue0");
+	_deviceResources->queue[1]->setObjectName("GraphicsQueue1");
+
 	// validate the supported swapchain image usage for source transfer option for capturing screenshots.
 	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = physicalDevice->getSurfaceCapabilities(surface);
 	pvrvk::ImageUsageFlags swapchainImageUsage = pvrvk::ImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
@@ -1508,15 +1526,23 @@ pvr::Result VulkanShadows::initView()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, static_cast<uint16_t>(32 * _swapchainLength))
 																						  .setMaxDescriptorSets(static_cast<uint16_t>(32 * _swapchainLength)));
 
+	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
+
 	// create the commandbuffers, semaphores & the fence
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
 		_deviceResources->commandPool[i] = _deviceResources->device->createCommandPool(pvrvk::CommandPoolCreateInfo(_deviceResources->queue[0]->getFamilyIndex()));
 
 		_deviceResources->cmdBuffers[i] = _deviceResources->commandPool[i]->allocateCommandBuffer();
+		_deviceResources->cmdBuffers[i]->setObjectName("MainCommandBufferSwapchain" + std::to_string(i));
+
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->presentationSemaphores[i]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->imageAcquiredSemaphores[i]->setObjectName("ImageAcquiredSemaphoreSwapchain" + std::to_string(i));
+
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->perFrameResourcesFences[i]->setObjectName("FenceSwapchain" + std::to_string(i));
 	}
 
 	_deviceResources->cmdBuffers[0]->begin();
@@ -1610,6 +1636,8 @@ pvr::Result VulkanShadows::renderFrame()
 
 	_deviceResources->cmdBuffers[swapchainIndex]->begin();
 
+	pvr::utils::beginCommandBufferDebugLabel(_deviceResources->cmdBuffers[swapchainIndex], pvrvk::DebugUtilsLabel("MainRenderPassSwapchain" + std::to_string(swapchainIndex)));
+
 	ShadowType type = (ShadowType)(_selectedShadowTypeIdx % (int32_t)ShadowType::Count);
 
 	switch (type)
@@ -1682,6 +1710,7 @@ pvr::Result VulkanShadows::renderFrame()
 	_deviceResources->uiRenderer.endRendering();
 
 	_deviceResources->cmdBuffers[swapchainIndex]->endRenderPass();
+	pvr::utils::endCommandBufferDebugLabel(_deviceResources->cmdBuffers[swapchainIndex]);
 	_deviceResources->cmdBuffers[swapchainIndex]->end();
 
 	// Update all the bones matrices
@@ -1737,6 +1766,7 @@ void VulkanShadows::createUbos()
 	_deviceResources->globalUBO.buffer = pvr::utils::createBuffer(_deviceResources->device, pvrvk::BufferCreateInfo(size, pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
 		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
 		_deviceResources->vmaAllocator);
+	_deviceResources->globalUBO.buffer->setObjectName("GlobalUBO");
 
 	_deviceResources->globalUBO.view.pointToMappedMemory(_deviceResources->globalUBO.buffer->getDeviceMemory()->getMappedData());
 }
@@ -1776,6 +1806,7 @@ void VulkanShadows::createResources()
 		if (_scene->getMaterial(i).defaultSemantics().getDiffuseTextureIndex() == static_cast<uint32_t>(-1)) { continue; }
 
 		_deviceResources->materials[i].materialDescriptorSet = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->dsLayoutMaterial);
+		_deviceResources->materials[i].materialDescriptorSet->setObjectName("Material" + std::to_string(i) + "DescriptorSet");
 
 		const pvr::assets::Model::Material& material = _scene->getMaterial(i);
 
@@ -1796,20 +1827,14 @@ void VulkanShadows::createResources()
 
 	_deviceResources->cmdBuffers[0]->end();
 
-	if (reqSubmission)
-	{
-		pvrvk::SubmitInfo submitInfo;
-		submitInfo.commandBuffers = &_deviceResources->cmdBuffers[0];
-		submitInfo.numCommandBuffers = 1;
+	pvrvk::SubmitInfo submitInfo;
+	submitInfo.commandBuffers = &_deviceResources->cmdBuffers[0];
+	submitInfo.numCommandBuffers = 1;
 
-		_deviceResources->perFrameResourcesFences[0]->reset();
-
-		_deviceResources->queue[0]->submit(&submitInfo, 1, _deviceResources->perFrameResourcesFences[0]);
-
-		_deviceResources->perFrameResourcesFences[0]->wait();
-
-		_deviceResources->commandPool[0]->reset(pvrvk::CommandPoolResetFlags::e_RELEASE_RESOURCES_BIT);
-	}
+	_deviceResources->perFrameResourcesFences[0]->reset();
+	_deviceResources->queue[0]->submit(&submitInfo, 1, _deviceResources->perFrameResourcesFences[0]);
+	_deviceResources->perFrameResourcesFences[0]->wait();
+	_deviceResources->commandPool[0]->reset(pvrvk::CommandPoolResetFlags::e_RELEASE_RESOURCES_BIT);
 
 	pvrvk::SamplerCreateInfo samplerNearestInfo;
 	samplerNearestInfo.minFilter = samplerNearestInfo.magFilter = pvrvk::Filter::e_LINEAR;
@@ -1839,6 +1864,7 @@ void VulkanShadows::createResources()
 
 	// Allocate and update global descriptor set
 	_deviceResources->dsGlobal = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->dsLayoutGlobal);
+	_deviceResources->dsGlobal->setObjectName("GlobalDescriptorSet");
 
 	// Update descriptor sets
 	writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _deviceResources->dsGlobal, 0));

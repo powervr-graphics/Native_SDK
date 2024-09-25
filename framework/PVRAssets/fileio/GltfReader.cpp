@@ -8,6 +8,7 @@
 
 #pragma warning(push)
 #pragma warning(disable : 4456 4189 4774)
+//#include "../../../external/tinygltf/tiny_gltf.h"
 #include "tiny_gltf.h"
 #pragma warning(pop)
 #ifdef ANDROID
@@ -78,6 +79,37 @@ struct NodeMapping
 	NodeMapping() : node(nullptr) {}
 };
 
+pvr::assets::CustomData gltfExtraToCustomData(const tinygltf::Value& value)
+{
+	switch (value.Type())
+	{
+	case tinygltf::OBJECT_TYPE: {
+		pvr::assets::CustomData::Object obj;
+		const std::vector<std::string> keys = value.Keys();
+		for (std::size_t i = 0, s = keys.size(); i < s; i++)
+		{
+			const std::string& key = keys[i];
+			obj[key] = gltfExtraToCustomData(value.Get(key));
+		}
+		return pvr::assets::CustomData(obj);
+	}
+	case tinygltf::NUMBER_TYPE: return pvr::assets::CustomData(value.Get<double>());
+	case tinygltf::INT_TYPE: return pvr::assets::CustomData(value.Get<int>());
+	case tinygltf::BOOL_TYPE: return pvr::assets::CustomData(value.Get<bool>());
+	case tinygltf::STRING_TYPE: return pvr::assets::CustomData(value.Get<std::string>());
+	case tinygltf::ARRAY_TYPE: {
+		const tinygltf::Value::Array& gltfarray = value.Get<tinygltf::Value::Array>();
+		pvr::assets::CustomData::Array modelArray;
+		for (std::size_t ai = 0; ai < gltfarray.size(); ai++) { modelArray.push_back(gltfExtraToCustomData(gltfarray[ai])); }
+		return pvr::assets::CustomData(modelArray);
+	}
+
+	break;
+	}
+
+	return pvr::assets::CustomData();
+}
+
 // Parse the node transformation data. The Trasformation data can be either stored in a matrix or as a SRT
 void parseNodeTransformation(const tinygltf::Node& tinyNode, pvr::assets::Node& outNode)
 {
@@ -122,10 +154,9 @@ void parseNodeTransformation(const tinygltf::Node& tinyNode, pvr::assets::Node& 
 		if (tinyNode.translation.size())
 		{
 			data.getTranslation() = glm::vec3(static_cast<float>(tinyNode.translation[0]), static_cast<float>(tinyNode.translation[1]), static_cast<float>(tinyNode.translation[2]));
+			data.getFrameTranslationAnimation() = data.getTranslation(); // Safety default in case there is an animation but not on this channel
 			data.transformFlags |= Node::InternalData::TransformFlags::Translate;
 		}
-		// construct the initial frame.
-		*(glm::mat4*)data.frameTransform = pvr::math::constructSRT(data.getScale(), data.getRotate(), data.getTranslation());
 	}
 }
 
@@ -148,6 +179,8 @@ void parseAllAnimation(const tinygltf::Model& tinyModel, pvr::assets::Model& mod
 		pvr::assets::AnimationData& animData = model.getInternalData().animationsData[a];
 		pvr::assets::AnimationInstance& animInstance = model.getInternalData().animationInstances[a];
 
+		animData.getInternalData().formattedUserData = gltfExtraToCustomData(tinyAnim.extras);
+
 		animInstance.animationData = &animData;
 		animData.allocateKeyFrames(static_cast<uint32_t>(tinyAnim.samplers.size()));
 		animInstance.keyframeChannels.resize(static_cast<uint32_t>(tinyAnim.samplers.size()));
@@ -166,6 +199,7 @@ void parseAllAnimation(const tinygltf::Model& tinyModel, pvr::assets::Model& mod
 			const int32_t tinySampleIndex = tinyAnimChannel.sampler;
 			debug_assertion(tinySampleIndex >= 0, "Invalid sampler id");
 			pvr::assets::KeyFrameData& keyFrameData = animData.getAnimationData(static_cast<uint32_t>(tinySampleIndex));
+			bool translationChannelFound = false;
 
 			// Process the key frame data only if its not processed already.
 			if (!processedKeyFrame[static_cast<uint32_t>(tinySampleIndex)])
@@ -207,7 +241,7 @@ void parseAllAnimation(const tinygltf::Model& tinyModel, pvr::assets::Model& mod
 				{
 					debug_assertion(tinyOutAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT, "Invalid Component type");
 					keyFrameData.scale.resize(tinyOutAccessor.count);
-
+					animData.getInternalData().numFrames = std::max(animData.getNumFrames(), static_cast<uint32_t>(tinyOutAccessor.count));
 					// copy the data
 					memcpy(&keyFrameData.scale[0], tinyOutBuffer.data.data() + tinyOutAccessor.byteOffset + tinyOutBufferView.byteOffset, sizeof(float) * 3 * tinyOutAccessor.count);
 				}
@@ -220,6 +254,7 @@ void parseAllAnimation(const tinygltf::Model& tinyModel, pvr::assets::Model& mod
 
 					// copy the data
 					keyFrameData.rotate.resize(tinyOutAccessor.count);
+					animData.getInternalData().numFrames = std::max(animData.getNumFrames(), static_cast<uint32_t>(tinyOutAccessor.count));
 
 					switch (tinyOutAccessor.componentType)
 					{
@@ -292,13 +327,18 @@ void parseAllAnimation(const tinygltf::Model& tinyModel, pvr::assets::Model& mod
 				{
 					debug_assertion(tinyOutAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT, "Invalid Component type");
 
+					translationChannelFound = true;
+
 					// copy the data
 					keyFrameData.translation.resize(tinyOutAccessor.count);
+					animData.getInternalData().numFrames = std::max(animData.getNumFrames(), static_cast<uint32_t>(tinyOutAccessor.count));
 
 					memcpy(&keyFrameData.translation[0], tinyOutBuffer.data.data() + tinyOutAccessor.byteOffset + tinyOutBufferView.byteOffset, sizeof(float) * 3 * tinyOutAccessor.count);
 				}
 				processedKeyFrame[static_cast<uint32_t>(tinyAnimChannel.sampler)] = true; // mark as processed
 			}
+
+			if (!translationChannelFound) {}
 
 			// assign all the nodes influenced by this sampler.
 			pvr::assets::AnimationInstance::KeyframeChannel& channel = animInstance.keyframeChannels[static_cast<uint32_t>(tinySampleIndex)];
@@ -310,7 +350,7 @@ void parseAllAnimation(const tinygltf::Model& tinyModel, pvr::assets::Model& mod
 			}
 		}
 
-		animData.getInternalData().durationTime = durationTime;
+		animData.computeDuration();
 	}
 }
 
@@ -345,6 +385,8 @@ void parseNode(tinygltf::Model& tinyModel, uint32_t tinyNodeId, std::vector<Mesh
 	// Create a Mesh node and set its parent node.
 	if (tinyNode.mesh != -1)
 	{
+		auto extraData = gltfExtraToCustomData(tinyNode.extras);
+
 		MeshprimitivesIterator& primitive = meshPrimitives[tinyNode.mesh];
 		const tinygltf::Mesh& tinyMesh = tinyModel.meshes[tinyNode.mesh];
 
@@ -368,6 +410,8 @@ void parseNode(tinygltf::Model& tinyModel, uint32_t tinyNodeId, std::vector<Mesh
 
 			// MATERIAL
 			if (tinyMesh.primitives[i].material >= 0) { meshnode.setMaterialIndex(tinyMesh.primitives[i].material); }
+
+			meshnode.setFormattedUserData(extraData);
 		}
 	}
 
@@ -411,7 +455,10 @@ void parseAllTextureAndMaterials(const tinygltf::Model& tinyModel, pvr::assets::
 		pvr::assets::Model::Material mat;
 		pvr::assets::Model::Material::GLTFMetallicRoughnessSemantics pbrSemantics(mat);
 
+		mat.getInternalData().name = tinyMaterial.name;
 		mat.setEffectName(tinyMaterial.name);
+		mat.getInternalData().formattedUserData = gltfExtraToCustomData(tinyMaterial.extras);
+
 		//-----------------------------
 		// PBR metal/roughness workflow
 		for (auto it : tinyMaterial.values)
@@ -456,7 +503,13 @@ void parseAllTextureAndMaterials(const tinygltf::Model& tinyModel, pvr::assets::
 			}
 			else if (it.first == "emissiveFactor")
 			{
-				pbrSemantics.setEmissiveColor(glm::vec3(parameter.number_array[0], parameter.number_array[1], parameter.number_array[2]));
+				glm::vec3 emissiveColour = glm::vec3(parameter.number_array[0], parameter.number_array[1], parameter.number_array[2]);
+				for (auto extit : tinyMaterial.extPBRValues)
+				{
+					if (extit.first == "emissiveStrength") emissiveColour *= static_cast<float>(extit.second.number_value);
+				}
+
+				pbrSemantics.setEmissiveColor(emissiveColour);
 			}
 			else if (it.first == "alphaMode")
 			{
@@ -556,10 +609,10 @@ void parseAllMesh(const tinygltf::Model& tinyModel, pvr::assets::Model& asset, s
 		// process primitive meshes
 		std::vector<char> attributeInterleaved;
 
-		GltfAttribute gltfAttributes[static_cast<uint32_t>(VertexAttributeIndex::Count)];
-
 		for (uint32_t p = 0; p < tinyMesh.primitives.size(); ++p)
 		{
+			std::vector<GltfAttribute> gltfAttributes;
+
 			pvr::assets::Mesh& mesh = asset.getMesh(meshIndex);
 			const tinygltf::Primitive& tinyPrimitive = tinyMesh.primitives[p];
 			mesh.setPrimitiveType(tinyGltf_primitiveTopology(static_cast<int32_t>(tinyPrimitive.mode)));
@@ -567,87 +620,41 @@ void parseAllMesh(const tinygltf::Model& tinyModel, pvr::assets::Model& asset, s
 			// VERTEX ATTRIBUTES
 			uint32_t numvertices = 0;
 
-			// save string comparison if the attributes is found.
-			bool positionAttribFound = false;
-			bool texAttrib0Found = false;
-			bool texAttrib1Found = false;
-			bool normalAttribFound = false;
-			bool tangentAttribFound = false;
-			bool colorAttribFound = false;
-			bool boneIndicesAttribFound = false;
-			bool boneWeightsAttribFound = false;
-
 			uint32_t dataAttribsStride = 0;
 
 			uint32_t totalBufferSizeInBytes = 0;
 			bool isInterleaved = false;
+
+			auto& meshInfo = mesh.getMeshInfo();
+
+			meshInfo.min = glm::vec3(std::numeric_limits<float>::max());
+			meshInfo.max = glm::vec3(std::numeric_limits<float>::lowest());
+
 			for (auto attrib : tinyPrimitive.attributes)
 			{
 				const tinygltf::Accessor& tinyAccessor = tinyAccessors[attrib.second];
 				const tinygltf::BufferView& tinyBufferView = tinyModel.bufferViews[tinyAccessor.bufferView];
 				const tinygltf::Buffer& tinyBuffer = tinyModel.buffers[tinyBufferView.buffer];
-				VertexAttributeIndex attribIndex = VertexAttributeIndex::Count;
-				// bounding box
-				if (!positionAttribFound && attrib.first == "POSITION")
-				{
-					mesh.getMeshInfo().min = glm::vec3(tinyAccessor.minValues[0], tinyAccessor.minValues[1], tinyAccessor.minValues[2]);
-					mesh.getMeshInfo().max = glm::vec3(tinyAccessor.maxValues[0], tinyAccessor.maxValues[1], tinyAccessor.maxValues[2]);
-					attribIndex = VertexAttributeIndex::Position;
 
-					positionAttribFound = true;
-				}
-				else if (!texAttrib0Found && attrib.first == "TEXCOORD_0")
+				// bounding box
+				if (attrib.first == "POSITION")
 				{
-					// rename the semantic
-					texAttrib0Found = true;
-					attribIndex = VertexAttributeIndex::UV0;
+					meshInfo.min = glm::min(glm::vec3(tinyAccessor.minValues[0], tinyAccessor.minValues[1], tinyAccessor.minValues[2]), meshInfo.min);
+					meshInfo.max = glm::max(glm::vec3(tinyAccessor.maxValues[0], tinyAccessor.maxValues[1], tinyAccessor.maxValues[2]), meshInfo.max);
 				}
-				else if (!texAttrib1Found && attrib.first == "TEXCOORD_1")
-				{
-					// rename the semantic
-					texAttrib1Found = true;
-					attribIndex = VertexAttributeIndex::UV1;
-				}
-				else if (!normalAttribFound && attrib.first == "NORMAL")
-				{
-					attribIndex = VertexAttributeIndex::Normal;
-					normalAttribFound = true;
-				}
-				else if (!boneIndicesAttribFound && attrib.first == "JOINTS_0")
-				{
-					attribIndex = VertexAttributeIndex::BoneIndices;
-					boneIndicesAttribFound = true;
-				}
-				else if (!boneWeightsAttribFound && attrib.first == "WEIGHTS_0")
-				{
-					attribIndex = VertexAttributeIndex::BoneWeights;
-					boneWeightsAttribFound = true;
-				}
-				else if (!tangentAttribFound && attrib.first == "TANGENT")
-				{
-					attribIndex = VertexAttributeIndex::Tangent;
-					tangentAttribFound = true;
-				}
-				else if (!colorAttribFound && attrib.first == "COLOR")
-				{
-					attribIndex = VertexAttributeIndex::Color;
-					colorAttribFound = true;
-				}
-				gltfAttributes[static_cast<uint32_t>(attribIndex)].data = tinyBuffer.data.data() + tinyBufferView.byteOffset + tinyAccessor.byteOffset;
-				gltfAttributes[static_cast<uint32_t>(attribIndex)].strideInBytes = tinyBufferView.byteStride
+
+				gltfAttributes.push_back(GltfAttribute());
+				gltfAttributes.back().data = tinyBuffer.data.data() + tinyBufferView.byteOffset + tinyAccessor.byteOffset;
+				gltfAttributes.back().strideInBytes = tinyBufferView.byteStride
 					? static_cast<uint32_t>(tinyBufferView.byteStride)
 					: tinyGltf_getTypeNumComponents(tinyAccessor.type) * tinyGltf_getComponentTypeToDataType(tinyAccessor.componentType).second;
-				gltfAttributes[static_cast<uint32_t>(attribIndex)].N = tinyGltf_getTypeNumComponents(tinyAccessor.type); // Get number of component this type has. e.g vec3, vec4
-				gltfAttributes[static_cast<uint32_t>(attribIndex)].dataType = tinyGltf_getComponentTypeToDataType(tinyAccessor.componentType);
-				gltfAttributes[static_cast<uint32_t>(attribIndex)].semantic = attrib.first;
+				gltfAttributes.back().N = tinyGltf_getTypeNumComponents(tinyAccessor.type); // Get number of component this type has. e.g vec3, vec4
+				gltfAttributes.back().dataType = tinyGltf_getComponentTypeToDataType(tinyAccessor.componentType);
+				gltfAttributes.back().semantic = attrib.first;
 				numvertices = static_cast<uint32_t>(tinyAccessor.count);
-				dataAttribsStride += static_cast<uint32_t>(gltfAttributes[static_cast<uint32_t>(attribIndex)].strideInBytes);
+				dataAttribsStride += static_cast<uint32_t>(gltfAttributes.back().strideInBytes);
 
-				if (gltfAttributes[static_cast<uint32_t>(attribIndex)].strideInBytes >
-					(gltfAttributes[static_cast<uint32_t>(attribIndex)].N * gltfAttributes[static_cast<uint32_t>(attribIndex)].dataType.second))
-				{
-					isInterleaved = true;
-				}
+				if (gltfAttributes.back().strideInBytes > (gltfAttributes.back().N * gltfAttributes.back().dataType.second)) { isInterleaved = true; }
 			}
 
 			totalBufferSizeInBytes = dataAttribsStride * numvertices;
@@ -658,9 +665,10 @@ void parseAllMesh(const tinygltf::Model& tinyModel, pvr::assets::Model& asset, s
 			if (!isInterleaved)
 			{
 				attributeInterleaved.resize(totalBufferSizeInBytes);
+
 				for (uint32_t i = 0; i < numvertices; ++i)
 				{
-					for (uint32_t j = 0; j < ARRAY_SIZE(gltfAttributes); ++j)
+					for (std::size_t j = 0, attrSize = gltfAttributes.size(); j < attrSize; ++j)
 					{
 						if (gltfAttributes[j].data != nullptr)
 						{
@@ -677,17 +685,18 @@ void parseAllMesh(const tinygltf::Model& tinyModel, pvr::assets::Model& asset, s
 								attribData.setDataIndex(0);
 								attribData.setOffset(bufferOffset);
 
-								if (j == static_cast<uint32_t>(VertexAttributeIndex::UV0)) { attribData.setSemantic("UV0"); }
-								else if (j == static_cast<uint32_t>(VertexAttributeIndex::UV1))
+								std::string semantic = tinyAttrib.semantic;
+								// Rename the TEXCOORD semantic to UV (for compatibility with POD)
+								if (pvr::strings::startsWith(semantic, "TEXCOORD_"))
 								{
-									attribData.setSemantic("UV1");
+									uint32_t index = 0;
+									const int r = sscanf(semantic.c_str(), "TEXCOORD_%d", &index);
+									if (r == 1) { semantic = pvr::strings::createFormatted("UV%d", index); }
 								}
-								else
-								{
-									attribData.setSemantic(tinyAttrib.semantic);
-								}
+								attribData.setSemantic(semantic);
 								mesh.addVertexAttribute(attribData);
 							}
+
 							bufferOffset += static_cast<uint32_t>(tinyAttrib.dataType.second) * tinyAttrib.N;
 						}
 					}
@@ -707,6 +716,7 @@ void parseAllMesh(const tinygltf::Model& tinyModel, pvr::assets::Model& asset, s
 				mesh.addFaces(tinyBuffer.data.data() + tinyBufferView.byteOffset + tinyAccessor.byteOffset,
 					(indexType == pvr::IndexType::IndexType16Bit ? sizeof(uint16_t) : sizeof(uint32_t)) * static_cast<uint32_t>(tinyAccessor.count), indexType);
 			}
+
 			++meshIndex; // next mesh
 		}
 	}
@@ -727,6 +737,9 @@ void parseAllCameras(const tinygltf::Model& tinyModel, pvr::assets::Model& asset
 				camera.setNear(tinyCamData.znear);
 				camera.setFar(tinyCamData.zfar);
 				camera.setFOV(tinyCamData.yfov);
+
+				auto extraData = gltfExtraToCustomData(tinyCamera.extras);
+				camera.getFormattedUserData() = extraData;
 			}
 		}
 	}
@@ -786,11 +799,15 @@ void readGLTF(const ::pvr::Stream& stream, const IAssetProvider& assetProvider, 
 
 	GltfFileLoader gltfStreamProvider(assetProvider);
 
-	if (!tinyLoader.LoadASCIIFromString(gltfStreamProvider, &tinyModel, &err, static_cast<const char*>(data.data()), static_cast<uint32_t>(data.size()), dir))
+	if (!tinyLoader.LoadASCIIFromString(
+			gltfStreamProvider, &tinyModel, &err, static_cast<const char*>(data.data()), static_cast<uint32_t>(data.size()), dir, tinygltf::SectionCheck::NO_REQUIRE))
 	{
 		Log("%s", err.c_str());
 		throw pvr::FileNotFoundError(err);
 	}
+
+	auto extraData = gltfExtraToCustomData(tinyModel.scenes[0].extras);
+	asset.getFormattedUserData() = extraData;
 
 	// Count total number of meshes
 	uint32_t totalNumMeshes = 0;

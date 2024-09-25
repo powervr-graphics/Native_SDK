@@ -366,6 +366,7 @@ struct ForwardIndirectPass
 		renderPassCreateInfo.addSubpassDependencies(dependencies, 2);
 
 		_renderPass = deviceResources->device->createRenderPass(renderPassCreateInfo);
+		_renderPass->setObjectName("ForwardIndirectRenderPass");
 	}
 
 	/// <summary> Create the vertex and fragment shader modules to be used with the pipeline.</summary>
@@ -418,6 +419,7 @@ struct ForwardIndirectPass
 		pipelineCreateInfo.inputAssembler.setPrimitiveTopology(pvr::utils::convertToPVRVk(mesh.getPrimitiveType()));
 
 		_pipe = deviceResources->device->createGraphicsPipeline(pipelineCreateInfo, deviceResources->pipelineCache);
+		_pipe->setObjectName("ForwardIndirectGraphicsPipeline");
 	}
 
 	/// <summary> Create the pipeline layouts to be used with the graphics pipeline.</summary>
@@ -573,6 +575,7 @@ struct OnScreenPass
 		pipelineCreateInfo.inputAssembler.setPrimitiveTopology(pvrvk::PrimitiveTopology::e_TRIANGLE_LIST);
 
 		_pipe = deviceResources->device->createGraphicsPipeline(pipelineCreateInfo, deviceResources->pipelineCache);
+		_pipe->setObjectName("OnScreenGraphicsPipeline");
 	}
 
 	/// <summary> Create the pipeline layouts to be used with the graphics pipeline.</summary>
@@ -605,6 +608,7 @@ struct OnScreenPass
 		for (int i = 0; i < 2; i++)
 		{
 			_descSet[i] = deviceResources->descriptorPool->allocateDescriptorSet(_descSetLayout);
+			_descSet[i]->setObjectName("OnScreen" + std::to_string(i) + "DescriptorSet");
 			// Update descriptor sets
 			std::vector<pvrvk::WriteDescriptorSet> writeDescSets;
 
@@ -692,6 +696,7 @@ struct IndirectCullComputePass
 	void createAndUpdateDescriptorSets(DeviceResources* deviceResources)
 	{
 		deviceResources->indirectCullDescSet = deviceResources->descriptorPool->allocateDescriptorSet(deviceResources->indirectCullDescSetLayout);
+		deviceResources->indirectCullDescSet->setObjectName("IndirectCullDescriptorSet");
 
 		uint32_t gpuInstanceOutputBufferSize = static_cast<uint32_t>(pvr::getSize(pvr::GpuDatatypes::uinteger)) * TOTAL_NUM_INSTANCES;
 		uint32_t uboSize = static_cast<uint32_t>(sizeof(DrawCullData));
@@ -734,6 +739,7 @@ struct IndirectCullComputePass
 		pipelineCreateInfo.pipelineLayout = _pipelineLayout;
 
 		_pipeline = deviceResources->device->createComputePipeline(pipelineCreateInfo, deviceResources->pipelineCache);
+		_pipeline->setObjectName("IndirectCullComputePipeline");
 	}
 
 	/// <summary> Create the compute shader constant buffer to be used with the indirect cull compute stage.</summary>
@@ -742,6 +748,7 @@ struct IndirectCullComputePass
 		deviceResources->drawCullDataUBOBuffer = pvr::utils::createBuffer(deviceResources->device,
 			pvrvk::BufferCreateInfo(sizeof(DrawCullData), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_NONE, deviceResources->vmaAllocator);
+		deviceResources->drawCullDataUBOBuffer->setObjectName("DrawCullDataUBO");
 	}
 
 	uint32_t _depthPyramidWidth;
@@ -1001,10 +1008,12 @@ void VulkanGpuControlledRendering::mergeSceneIbosVbos(pvrvk::CommandBuffer uploa
 	_deviceResources->batchedVBO = pvr::utils::createBuffer(_deviceResources->device,
 		pvrvk::BufferCreateInfo(static_cast<uint32_t>(batchVBOSize), pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
 		requiredMemoryFlags, pvrvk::MemoryPropertyFlags::e_NONE, _deviceResources->vmaAllocator);
+	_deviceResources->batchedVBO->setObjectName("BatchedVBO");
 
 	_deviceResources->batchedIBO = pvr::utils::createBuffer(_deviceResources->device,
 		pvrvk::BufferCreateInfo(static_cast<uint32_t>(batchIBOSize), pvrvk::BufferUsageFlags::e_INDEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
 		requiredMemoryFlags, pvrvk::MemoryPropertyFlags::e_NONE, _deviceResources->vmaAllocator);
+	_deviceResources->batchedIBO->setObjectName("BatchedIBO");
 
 	uint32_t currVertexOffset = 0;
 	uint32_t currIndexOffset = 0;
@@ -1076,13 +1085,13 @@ void VulkanGpuControlledRendering::createUbo()
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 		_deviceResources->uboStructuredBufferView.pointToMappedMemory(_deviceResources->uboBuffer->getDeviceMemory()->getMappedData());
-		_deviceResources->uboBuffer->setObjectName("Object Ubo");
+		_deviceResources->uboBuffer->setObjectName("ObjectUBO");
 	}
 
 	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		_deviceResources->uboDescSets.push_back(_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->uboLayoutDynamic));
-		_deviceResources->uboDescSets[i]->setObjectName(std::string("Ubo DescriptorSet [") + std::to_string(i) + "]");
+		_deviceResources->uboDescSets[i]->setObjectName("UBOSwapchain" + std::to_string(i) + "DescriptorSet");
 
 		descUpdate[i]
 			.set(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _deviceResources->uboDescSets[i])
@@ -1437,6 +1446,9 @@ pvr::Result VulkanGpuControlledRendering::initView()
 		? _deviceResources->graphicsQueue
 		: _deviceResources->device->getQueue(queueAccessInfos[1].familyId, queueAccessInfos[1].queueId);
 
+	_deviceResources->graphicsQueue->setObjectName("GraphicsQueue");
+	_deviceResources->computeQueue->setObjectName("ComputeQueue");
+
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
 	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(surface);
@@ -1477,7 +1489,7 @@ pvr::Result VulkanGpuControlledRendering::initView()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 16)
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_BUFFER_DYNAMIC, 128)
 																						  .setMaxDescriptorSets(256));
-	_deviceResources->descriptorPool->setObjectName("Main Descriptor Pool");
+	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
 
 	// Create the pipeline cache
 	_deviceResources->pipelineCache = _deviceResources->device->createPipelineCache();
@@ -1499,15 +1511,16 @@ pvr::Result VulkanGpuControlledRendering::initView()
 		_deviceResources->computeCommandBuffers[i]->setObjectName(std::string("Compute CommandBuffer [") + std::to_string(i) + "]");
 
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->presentationSemaphores[i]->setObjectName(std::string("Presentation Semaphore [") + std::to_string(i) + "]");
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->imageAcquiredSemaphores[i]->setObjectName(std::string("Image Acquisition Semaphore [") + std::to_string(i) + "]");
 		_deviceResources->computeSemaphores[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->computeSemaphores[i]->setObjectName(std::string("Compute Semaphore [") + std::to_string(i) + "]");
+		_deviceResources->presentationSemaphores[i]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->imageAcquiredSemaphores[i]->setObjectName("ImageAcquiredSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->computeSemaphores[i]->setObjectName("ComputeSemaphoreSwapchain" + std::to_string(i));
+
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
-		_deviceResources->perFrameResourcesFences[i]->setObjectName(std::string("Per Frame Command Buffer Fence [") + std::to_string(i) + "]");
 		_deviceResources->perFrameResourcesFencesCompute[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
-		_deviceResources->perFrameResourcesFencesCompute[i]->setObjectName(std::string("Per Frame Compute Buffer Fence [") + std::to_string(i) + "]");
+		_deviceResources->perFrameResourcesFences[i]->setObjectName("FenceSwapchain" + std::to_string(i));
+		_deviceResources->perFrameResourcesFences[i]->setObjectName("ComputeFenceSwapchain" + std::to_string(i));
 	}
 
 	// Create a single time submit command buffer for uploading resources

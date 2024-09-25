@@ -42,6 +42,7 @@ set(PVRUtilsGles_HEADERS
 set(PVRUtilsGles_SRC 
 	ConvertToGlesTypes.cpp
 	ErrorsGles.cpp
+	HelperGles.cpp
 	ModelGles.cpp
 	PBRUtilsGles.cpp
 	ShaderUtilsGles.cpp

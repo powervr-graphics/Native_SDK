@@ -75,6 +75,7 @@ bool PVRScopeGraph::init(pvrvk::Device& device, const pvrvk::Extent2D& dimension
 				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, _vmaAllocator,
 				pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			_indexBuffer->setObjectName("IBO");
 
 			pvr::utils::updateHostVisibleBuffer(_indexBuffer, indexData, 0, sizeof(indexData), true);
 		}
@@ -85,6 +86,7 @@ bool PVRScopeGraph::init(pvrvk::Device& device, const pvrvk::Extent2D& dimension
 					pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 					pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 					_vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			_vertexBufferGraphBorder->setObjectName("VBO");
 		}
 	}
 
@@ -100,6 +102,7 @@ bool PVRScopeGraph::init(pvrvk::Device& device, const pvrvk::Extent2D& dimension
 		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, _vmaAllocator,
 		pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_uboColor->setObjectName("ColorUBO");
 
 	// fill the buffer
 	_uboViewColor.pointToMappedMemory(_uboColor->getDeviceMemory()->getMappedData());
@@ -110,6 +113,7 @@ bool PVRScopeGraph::init(pvrvk::Device& device, const pvrvk::Extent2D& dimension
 	{ _uboColor->getDeviceMemory()->flushRange(0, _uboViewColor.getSize()); }
 
 	_uboColorDescriptor = descriptorPool->allocateDescriptorSet(_pipeDrawLine->getPipelineLayout()->getDescriptorSetLayout(0));
+	_uboColorDescriptor->setObjectName("ColorUBODescriptorSet");
 
 	pvrvk::WriteDescriptorSet writeDescSet;
 	writeDescSet.set(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _uboColorDescriptor).setBufferInfo(0, pvrvk::DescriptorBufferInfo(_uboColor, 0, _uboViewColor.getDynamicSliceSize()));
@@ -377,6 +381,7 @@ void PVRScopeGraph::update(float dt)
 				pvrvk::BufferCreateInfo(sizeof(verticesGraphContent[0]) * sizeCB, pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, _vmaAllocator,
 				pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			activeCounters[ii].vbo->setObjectName("ActiveCounterVBO");
 		}
 		// Need updating anyway...
 		pvr::utils::updateHostVisibleBuffer(activeCounters[ii].vbo, verticesGraphContent.data(), 0, sizeof(verticesGraphContent[0]) * sizeCB, true);
@@ -421,6 +426,7 @@ bool PVRScopeGraph::createPipeline(const pvrvk::RenderPass& renderPass, const pv
 	pipeInfo.colorBlend.setAttachmentState(0, pvrvk::PipelineColorBlendAttachmentState());
 	pipeInfo.flags = pvrvk::PipelineCreateFlags::e_ALLOW_DERIVATIVES_BIT;
 	_pipeDrawLine = _device->createGraphicsPipeline(pipeInfo);
+	_pipeDrawLine->setObjectName("LineDrawGraphicsPipeline");
 	if (!_pipeDrawLine)
 	{
 		errorStr = "Failed to create Draw Line pipeline";
@@ -432,6 +438,7 @@ bool PVRScopeGraph::createPipeline(const pvrvk::RenderPass& renderPass, const pv
 	pipeInfo.flags = pvrvk::PipelineCreateFlags::e_DERIVATIVE_BIT;
 	pipeInfo.basePipeline = _pipeDrawLine;
 	_pipeDrawLineStrip = _device->createGraphicsPipeline(pipeInfo);
+	_pipeDrawLineStrip->setObjectName("DrawLineStripGraphicsPipeline");
 	if (!_pipeDrawLineStrip)
 	{
 		errorStr = "Failed to create Draw Line Strip pipeline";

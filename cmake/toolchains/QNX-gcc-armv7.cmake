@@ -1,4 +1,4 @@
-# qcc should be directly callable which can be done by prependeding them onto your PATH environment variable.
+# qcc should be directly callable which can be done by prepending them onto your PATH environment variable.
 # The compiler should be able to infer the location of any libraries and include files which are reasonably included as part of a toolchain package.
 # This means that to link against a library such as libscreen.a you can add it directly as a library to link against and the compiler will find it.
 

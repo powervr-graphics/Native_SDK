@@ -527,12 +527,13 @@ void readNodeBlock(const Stream& stream, pvr::assets::Model& model, assets::Mode
 				if (nodeInternData.transformFlags & pvr::assets::Node::InternalData::TransformFlags::Scale) { memcpy(&nodeInternData.getScale(), scale, sizeof(scale)); }
 				if (nodeInternData.transformFlags & pvr::assets::Node::InternalData::TransformFlags::Matrix) { memcpy(nodeInternData.frameTransform, matrix, sizeof(matrix)); }
 			}
-			animationData.getInternalData().durationTime = std::max(animationTotalDurration, animationData.getInternalData().durationTime);
 
 			for (uint32_t i = 0; i < ARRAY_SIZE(nodeKeyframe); ++i)
 			{
 				if (nodeKeyframe[i].nodes.size()) { animationInstance.keyframeChannels.emplace_back(nodeKeyframe[i]); }
 			}
+
+			animationData.computeDuration();
 
 			return;
 		}
@@ -692,6 +693,7 @@ void readNodeBlock(const Stream& stream, pvr::assets::Model& model, assets::Mode
 		default: stream.seek(dataLength, Stream::SeekOriginFromCurrent); break;
 		}
 	}
+
 }
 
 static void fixInterleavedEndiannessUsingVertexData(StridedBuffer& interleaved, const assets::Mesh::VertexAttributeData& data, uint32_t numVertices)

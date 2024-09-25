@@ -9,6 +9,7 @@ add_subdirectory_if_exists(PVRAssets PVRAssets)
 add_subdirectory_if_exists(PVRShell PVRShell)
 add_subdirectory_if_exists(PVRCamera PVRCamera)
 add_subdirectory_if_exists(PVRUtilsGles PVRUtils/OpenGLES)
+add_subdirectory_if_exists(PVRUtilsGlsc PVRUtils/OpenGLSC)
 
 set_property(GLOBAL APPEND PROPERTY PVR_FRAMEWORK_TARGETS PVRCore PVRShell PVRAssets PVRCamera PVRUtilsGles)
 

@@ -17,7 +17,7 @@ buildscript {
 
 	// Adds the Android plugin for Gradle as a classpath dependency
 	dependencies {
-		classpath 'com.android.tools.build:gradle:3.5.3'
+		classpath 'com.android.tools.build:gradle:4.0.1'
 	}
 }
 
@@ -31,6 +31,7 @@ allprojects {
 
 android {
 	compileSdkVersion 29
+	ndkVersion "26.2.11394342"
 	defaultConfig {
 		applicationId "com.powervr.OpenGLESIntroducingUIRenderer"
 		minSdkVersion 21

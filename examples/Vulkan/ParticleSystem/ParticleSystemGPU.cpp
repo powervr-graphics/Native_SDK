@@ -66,6 +66,7 @@ void ParticleSystemGPU::init(uint32_t inMaxParticles, const std::vector<Sphere> 
 			pvrvk::BufferCreateInfo(static_cast<VkDeviceSize>(particleSystemBufferSliceSize),
 				pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, allocator, pvr::utils::vma::AllocationCreateFlags::e_NONE);
+		particleSystemBuffers[i]->setObjectName("ParticleSystemSBO");
 	}
 
 	// Create a configuration buffer for the particle system to be used for controlling the particle system behaviour
@@ -77,6 +78,7 @@ void ParticleSystemGPU::init(uint32_t inMaxParticles, const std::vector<Sphere> 
 			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, allocator,
 			pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		particleConfigUbo->setObjectName("particleConfigUBO");
 
 		particleConfigUboBufferView.pointToMappedMemory(particleConfigUbo->getDeviceMemory()->getMappedData());
 	}
@@ -86,6 +88,7 @@ void ParticleSystemGPU::init(uint32_t inMaxParticles, const std::vector<Sphere> 
 	for (uint8_t i = 0; i < MultiBuffers; ++i)
 	{
 		descSets[i] = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
+		descSets[i]->setObjectName("ParticleUBO" + std::to_string(i) + "DescriptorSet");
 
 		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER, descSets[i], BufferBindingPoint::SPHERES_UBO_BINDING_INDEX)
 									.setBufferInfo(0, pvrvk::DescriptorBufferInfo(collisonSpheresUbo, 0, collisonSpheresUboBufferView.getDynamicSliceSize())));
@@ -109,15 +112,21 @@ void ParticleSystemGPU::init(uint32_t inMaxParticles, const std::vector<Sphere> 
 	stagingBuffer = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(particleSystemBuffers[0]->getSize(), pvrvk::BufferUsageFlags::e_TRANSFER_SRC_BIT),
 		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, allocator,
 		pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	stagingBuffer->setObjectName("stagingBuffer");
 
 	stagingFence = device->createFence();
 	commandStaging = commandPool->allocateCommandBuffer();
+	commandStaging->setObjectName("StagingBufferCopyCommandBuffer");
 
 	for (uint8_t i = 0; i < MultiBuffers; ++i)
 	{
 		particleSystemSemaphores[i] = device->createSemaphore();
 		outputSemaphores[i] = device->createSemaphore();
+		particleSystemSemaphores[i]->setObjectName("ParticleSystemSemaphoreBuffer" + std::to_string(i));
+		outputSemaphores[i]->setObjectName("OutputSemaphoreBuffer" + std::to_string(i));
+
 		perStepResourcesFences[i] = device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		perStepResourcesFences[i]->setObjectName("FenceBuffer" + std::to_string(i));
 	}
 }
 
@@ -142,6 +151,7 @@ void ParticleSystemGPU::createComputePipeline()
 	pipeCreateInfo.computeShader.setShader(shader);
 	pipeCreateInfo.pipelineLayout = pipelineLayout;
 	pipeline = device->createComputePipeline(pipeCreateInfo, pipelineCache);
+	pipeline->setObjectName("ComputePipeline");
 }
 
 void ParticleSystemGPU::updateTime(float dt)
@@ -180,6 +190,7 @@ void ParticleSystemGPU::setNumberOfParticles(uint32_t numParticles_)
 	// First fill the particle system buffers with 0's for the entire buffer
 	// Then copy from the staging buffer to the particle system buffers
 	commandStaging->begin();
+	pvr::utils::beginCommandBufferDebugLabel(commandStaging, pvrvk::DebugUtilsLabel("StagingBufferCopy"));
 	for (uint32_t i = 0; i < MultiBuffers; ++i)
 	{
 		commandStaging->fillBuffer(particleSystemBuffers[i], 0, 0, particleSystemBuffers[i]->getSize());
@@ -195,6 +206,7 @@ void ParticleSystemGPU::setNumberOfParticles(uint32_t numParticles_)
 		// Second copy the staging buffer contents up into the particle system buffers
 		commandStaging->copyBuffer(stagingBuffer, particleSystemBuffers[i], 1, &bufferCopy);
 	}
+	pvr::utils::endCommandBufferDebugLabel(commandStaging);
 	commandStaging->end();
 
 	pvrvk::SubmitInfo submitInfo;
@@ -233,6 +245,7 @@ void ParticleSystemGPU::setCollisionSpheres(const std::vector<Sphere> spheres)
 		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, allocator,
 		pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	collisonSpheresUbo->setObjectName("collisonSpheresUBO");
 
 	collisonSpheresUboBufferView.pointToMappedMemory(collisonSpheresUbo->getDeviceMemory()->getMappedData());
 	for (uint32_t i = 0; i < spheres.size(); ++i)
@@ -245,13 +258,17 @@ void ParticleSystemGPU::recordCommandBuffers()
 	{
 		computeCommandBuffers[i]->reset();
 		computeCommandBuffers[i]->begin();
+		pvr::utils::beginCommandBufferDebugLabel(computeCommandBuffers[i], pvrvk::DebugUtilsLabel("ComputePassBufer" + std::to_string(i)));
 		computeCommandBuffers[i]->bindPipeline(pipeline);
 		computeCommandBuffers[i]->bindDescriptorSets(pvrvk::PipelineBindPoint::e_COMPUTE, pipelineLayout, 0, &descSets[i], 1);
 		computeCommandBuffers[i]->dispatch(numParticles / workgroupSize, 1, 1);
+		pvr::utils::endCommandBufferDebugLabel(computeCommandBuffers[i]);
 		computeCommandBuffers[i]->end();
 
 		mainCommandBuffers[i]->begin();
+		pvr::utils::beginCommandBufferDebugLabel(mainCommandBuffers[i], pvrvk::DebugUtilsLabel("MainPassBuffer" + std::to_string(i)));
 		mainCommandBuffers[i]->executeCommands(computeCommandBuffers[i]);
+		pvr::utils::endCommandBufferDebugLabel(mainCommandBuffers[i]);
 		mainCommandBuffers[i]->end();
 	}
 }
@@ -262,6 +279,9 @@ void ParticleSystemGPU::createCommandBuffers()
 	{
 		computeCommandBuffers[i] = commandPool->allocateSecondaryCommandBuffer();
 		mainCommandBuffers[i] = commandPool->allocateCommandBuffer();
+
+		computeCommandBuffers[i]->setObjectName("ComputeCommandBufferBuffer" + std::to_string(i));
+		mainCommandBuffers[i]->setObjectName("MainCommandBufferBuffer" + std::to_string(i));
 	}
 }
 

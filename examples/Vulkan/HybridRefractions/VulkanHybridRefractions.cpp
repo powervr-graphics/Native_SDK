@@ -752,13 +752,9 @@ pvr::Result VulkanHybridRefractions::buildDeviceAndQueues()
 	VkPhysicalDeviceScalarBlockLayoutFeaturesEXT scalarFeatures{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES) };
 	deviceBufferAddressFeatures.pNext = &scalarFeatures;
 
-	// Ray Querey
-	VkPhysicalDeviceRayQueryFeaturesKHR queryFeatures{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR) };
-	scalarFeatures.pNext = &queryFeatures;
-
 	// Descriptor Indexing Features
 	VkPhysicalDeviceDescriptorIndexingFeatures indexFeatures{ static_cast<VkStructureType>(pvrvk::StructureType::e_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES) };
-	queryFeatures.pNext = &indexFeatures;
+	scalarFeatures.pNext = &indexFeatures;
 
 	// Fill in all of these device features with one call
 	_deviceResources->instance->getVkBindings().vkGetPhysicalDeviceFeatures2(_deviceResources->instance->getPhysicalDevice(vectorPhysicalDevicesIndex[0])->getVkHandle(), &deviceFeatures);
@@ -808,6 +804,7 @@ pvr::Result VulkanHybridRefractions::initView()
 
 	// get queue
 	_deviceResources->queue = _deviceResources->device->getQueue(_deviceResources->queueAccessInfo.familyId, _deviceResources->queueAccessInfo.queueId);
+	_deviceResources->queue->setObjectName("GraphicsQueue");
 
 	// create the command pool
 	_deviceResources->commandPool = _deviceResources->device->createCommandPool(
@@ -855,6 +852,8 @@ pvr::Result VulkanHybridRefractions::initView()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, static_cast<uint16_t>(16 * _numSwapImages))
 																						  .setMaxDescriptorSets(static_cast<uint16_t>(16 * _numSwapImages)));
 
+	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
+
 	// calculate the frame buffer width and heights
 	_framebufferWidth = this->getWidth();
 	_windowWidth = this->getWidth();
@@ -886,9 +885,20 @@ pvr::Result VulkanHybridRefractions::initView()
 		_deviceResources->cmdBufferGaussianBlurVertical[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
 		_deviceResources->cmdBufferRayTracedRefractions[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
 
+		_deviceResources->cmdBufferMainDeferred[i]->setObjectName("DeferredCommandBufferSwapchain" + std::to_string(i));
+		_deviceResources->cmdBufferGBuffer[i]->setObjectName("GBufferSecondaryCommandBufferSwapchain" + std::to_string(i));
+		_deviceResources->cmdBufferDeferredShading[i]->setObjectName("DeferredShadingSecondaryCommandBufferSwapchain" + std::to_string(i));
+		_deviceResources->cmdBufferGaussianBlurHorizontal[i]->setObjectName("GaussianBlurHorizontalSecondaryCommandBufferSwapchain" + std::to_string(i));
+		_deviceResources->cmdBufferGaussianBlurVertical[i]->setObjectName("GaussianBlurVerticalSecondaryCommandBufferSwapchain" + std::to_string(i));
+		_deviceResources->cmdBufferRayTracedRefractions[i]->setObjectName("RayTracedRefractionsSecondaryCommandBufferSwapchain" + std::to_string(i));
+
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->presentationSemaphores[i]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->imageAcquiredSemaphores[i]->setObjectName("ImageAcquiredSemaphoreSwapchain" + std::to_string(i));
+
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->perFrameResourcesFences[i]->setObjectName("FenceSwapchain" + std::to_string(i));
 	}
 
 	// Handle device rotation
@@ -1154,6 +1164,7 @@ void VulkanHybridRefractions::buildCommonDescriptorSet()
 
 	// Allocate Descriptor Set
 	_deviceResources->commonDescriptorSet = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->commonDescriptorSetLayout);
+	_deviceResources->commonDescriptorSet->setObjectName("CommonDescriptorSet");
 
 	pvrvk::WriteDescriptorSet globalBufferWDS = pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _deviceResources->commonDescriptorSet, 0);
 	pvrvk::WriteDescriptorSet lightDataWDS = pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _deviceResources->commonDescriptorSet, 1);
@@ -1212,6 +1223,7 @@ void VulkanHybridRefractions::buildGBufferSkyboxDescriptorSet()
 
 	// Allocate Descriptor Set
 	_deviceResources->gbufferSkyBoxDescriptorSet = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->gbufferSkyBoxDescriptorSetLayout);
+	_deviceResources->gbufferSkyBoxDescriptorSet->setObjectName("GBufferSkyBoxDescriptorSet");
 
 	pvrvk::WriteDescriptorSet reflectanceImageWDS = pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->gbufferSkyBoxDescriptorSet, 0);
 	pvrvk::WriteDescriptorSet normalMaterialIDImageWDS = pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->gbufferSkyBoxDescriptorSet, 1);
@@ -1235,6 +1247,7 @@ void VulkanHybridRefractions::buildWriteRefractionsImageDescriptorSet()
 
 	// Allocate Descriptor Set
 	_deviceResources->rtImageStoreDescriptorSet = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->rtImageStoreDescriptorSetLayout);
+	_deviceResources->rtImageStoreDescriptorSet->setObjectName("RTImageStoreDescriptorSet");
 
 	pvrvk::WriteDescriptorSet writeImageWDS = pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_STORAGE_IMAGE, _deviceResources->rtImageStoreDescriptorSet, 0);
 	writeImageWDS.setImageInfo(0, pvrvk::DescriptorImageInfo(_deviceResources->raytraceRefractionsImage, pvrvk::ImageLayout::e_GENERAL));
@@ -1250,6 +1263,7 @@ void VulkanHybridRefractions::buildGaussianBlurHorizontalDescriptorSet()
 
 	// Allocate Descriptor Set
 	_deviceResources->gaussianBlurHorizontalDescriptorSet = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->gaussianBlurDescriptorSetLayout);
+	_deviceResources->gaussianBlurHorizontalDescriptorSet->setObjectName("GaussianBlurHorizontalDescriptorSet");
 
 	pvrvk::WriteDescriptorSet gaussianBlurHorizontalPassWDS =
 		pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->gaussianBlurHorizontalDescriptorSet, 0);
@@ -1267,6 +1281,7 @@ void VulkanHybridRefractions::buildGaussianBlurVerticalDescriptorSet()
 
 	// Allocate Descriptor Set
 	_deviceResources->gaussianBlurVerticalDescriptorSet = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->gaussianBlurDescriptorSetLayout);
+	_deviceResources->gaussianBlurVerticalDescriptorSet->setObjectName("GaussianBlurVerticalDescriptorSet");
 
 	pvrvk::WriteDescriptorSet gaussianBlurVerticalPassWDS =
 		pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->gaussianBlurVerticalDescriptorSet, 0);
@@ -1401,6 +1416,7 @@ void VulkanHybridRefractions::buildGBufferPipeline()
 
 	renderGBufferPipelineCreateInfo.pipelineLayout = _deviceResources->gbufferPipelineLayout;
 	_deviceResources->gbufferPipeline = _deviceResources->device->createGraphicsPipeline(renderGBufferPipelineCreateInfo, _deviceResources->pipelineCache);
+	_deviceResources->gbufferPipeline->setObjectName("GBufferGraphicsPipeline");
 }
 
 void VulkanHybridRefractions::buildRayTracingPipeline()
@@ -1465,6 +1481,7 @@ void VulkanHybridRefractions::buildRayTracingPipeline()
 	raytracingPipeline.pipelineLayout = _deviceResources->raytraceRefractionsPipelineLayout;
 
 	_deviceResources->raytraceRefractionPipeline = _deviceResources->device->createRaytracingPipeline(raytracingPipeline, nullptr);
+	_deviceResources->raytraceRefractionPipeline->setObjectName("RefractionRaytracingPipeline");
 }
 
 void VulkanHybridRefractions::buildDeferredShadingPipeline()
@@ -1534,6 +1551,7 @@ void VulkanHybridRefractions::buildDeferredShadingPipeline()
 		_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream("DeferredShadingFragmentShader.fsh.spv")->readToEnd<uint32_t>())));
 
 	_deviceResources->deferredShadingPipeline = _deviceResources->device->createGraphicsPipeline(_deviceResources->_postProcessingPipelineCreateInfo, _deviceResources->pipelineCache);
+	_deviceResources->deferredShadingPipeline->setObjectName("DeferredShadingGraphicsPipeline");
 }
 
 void VulkanHybridRefractions::buildGaussianBlurHorizontalPipeline()
@@ -1558,6 +1576,7 @@ void VulkanHybridRefractions::buildGaussianBlurHorizontalPipeline()
 
 	_deviceResources->gaussianBlurHorizontalPassPipeline =
 		_deviceResources->device->createGraphicsPipeline(_deviceResources->_postProcessingPipelineCreateInfo, _deviceResources->pipelineCache);
+	_deviceResources->gaussianBlurHorizontalPassPipeline->setObjectName("GaussianBlurHorizontalPassGraphicsPipeline");
 }
 
 void VulkanHybridRefractions::buildGaussianBlurVerticalPipeline()
@@ -1582,6 +1601,7 @@ void VulkanHybridRefractions::buildGaussianBlurVerticalPipeline()
 
 	_deviceResources->gaussianBlurVerticalPassPipeline =
 		_deviceResources->device->createGraphicsPipeline(_deviceResources->_postProcessingPipelineCreateInfo, _deviceResources->pipelineCache);
+	_deviceResources->gaussianBlurVerticalPassPipeline->setObjectName("GaussianBlurVerticalPassGraphicsPipeline");
 }
 
 void VulkanHybridRefractions::buildShaderBindingTable()
@@ -1602,6 +1622,7 @@ void VulkanHybridRefractions::buildShaderBindingTable()
 			sbtSize, pvrvk::BufferUsageFlags::e_TRANSFER_SRC_BIT | pvrvk::BufferUsageFlags::e_SHADER_BINDING_TABLE_BIT_KHR | pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT),
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT);
+	_deviceResources->raytraceRefractionShaderBindingTable->setObjectName("RaytraceRefractionShaderBindingTable");
 
 	// Write the handles in the SBT
 	void* mapped = _deviceResources->raytraceRefractionShaderBindingTable->getDeviceMemory()->map(0, VK_WHOLE_SIZE);
@@ -1724,6 +1745,7 @@ void VulkanHybridRefractions::buildRenderPass()
 														   .addSubpassDependencies(dependency, 2);
 
 	_deviceResources->gbufferRenderPass = _deviceResources->device->createRenderPass(renderPassCreateInfo);
+	_deviceResources->gbufferRenderPass->setObjectName("GBufferRenderPass");
 
 	const pvrvk::Extent3D dimension = pvrvk::Extent3D(_deviceResources->swapchain->getDimension().getWidth(), _deviceResources->swapchain->getDimension().getHeight(), 1u);
 
@@ -1767,6 +1789,7 @@ void VulkanHybridRefractions::buildGaussianBlurRenderPass()
 		pvrvk::RenderPassCreateInfo().setAttachmentDescription(0, attachmentDescription).setSubpass(0, subpassDesc).addSubpassDependencies(dependency, 2);
 
 	_deviceResources->gaussianBlurRenderPass = _deviceResources->device->createRenderPass(renderPassCreateInfo);
+	_deviceResources->gaussianBlurRenderPass->setObjectName("GaussianBlurRenderPass");
 
 	const pvrvk::Extent3D dimension = pvrvk::Extent3D(_deviceResources->swapchain->getDimension().getWidth(), _deviceResources->swapchain->getDimension().getHeight(), 1u);
 
@@ -1818,6 +1841,7 @@ void VulkanHybridRefractions::buildSceneDescriptionBuffer()
 
 	_deviceResources->sceneDescription = pvr::utils::createBuffer(_deviceResources->device, bufferCreateInfo, memoryPropertyFlags);
 	pvrvk::DeviceSize dataSize = sizeof(pvr::utils::SceneDescription) * _deviceResources->_sceneDescription.size();
+	_deviceResources->sceneDescription->setObjectName("sceneDescriptionSBO");
 	pvr::utils::updateHostVisibleBuffer(_deviceResources->sceneDescription, &_deviceResources->_sceneDescription, 0, dataSize, true);
 }
 
@@ -1919,6 +1943,7 @@ void VulkanHybridRefractions::buildModelBuffers(pvrvk::CommandBuffer& uploadCmd)
 			pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR);
 		_deviceResources->vertexBuffers.push_back(pvr::utils::createBuffer(_deviceResources->device, vertexBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
 			pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT));
+		_deviceResources->vertexBuffers.back()->setObjectName("VBO");
 		pvr::utils::updateBufferUsingStagingBuffer(
 			_deviceResources->device, _deviceResources->vertexBuffers[j], uploadCmd, vertices.data(), 0, sizeof(pvr::utils::ASVertexFormat) * vertices.size());
 
@@ -1929,6 +1954,7 @@ void VulkanHybridRefractions::buildModelBuffers(pvrvk::CommandBuffer& uploadCmd)
 			pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR);
 		_deviceResources->indexBuffers.push_back(pvr::utils::createBuffer(_deviceResources->device, indexBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
 			pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT));
+		_deviceResources->indexBuffers.back()->setObjectName("IBO");
 		pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, _deviceResources->indexBuffers[j], uploadCmd, indices.data(), 0, sizeof(uint32_t) * indices.size());
 
 		// create material index buffer
@@ -1936,6 +1962,7 @@ void VulkanHybridRefractions::buildModelBuffers(pvrvk::CommandBuffer& uploadCmd)
 		materialIndexBufferInfo.setSize(sizeof(uint32_t) * materialIndices.size());
 		materialIndexBufferInfo.setUsageFlags(pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT);
 		_deviceResources->materialIndexBuffers.push_back(pvr::utils::createBuffer(_deviceResources->device, materialIndexBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT));
+		_deviceResources->materialIndexBuffers.back()->setObjectName("MaterialSBO");
 		pvr::utils::updateBufferUsingStagingBuffer(
 			_deviceResources->device, _deviceResources->materialIndexBuffers[j], uploadCmd, materialIndices.data(), 0, sizeof(uint32_t) * materialIndices.size());
 
@@ -1958,6 +1985,7 @@ void VulkanHybridRefractions::buildCameraBuffer()
 		pvrvk::BufferCreateInfo(_deviceResources->globalBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_deviceResources->globalBuffer->setObjectName("GlobalUBO");
 
 	_deviceResources->globalBufferView.pointToMappedMemory(_deviceResources->globalBuffer->getDeviceMemory()->getMappedData());
 }
@@ -1974,6 +2002,7 @@ void VulkanHybridRefractions::buildSceneElementTransformBuffer()
 		pvrvk::BufferCreateInfo(_deviceResources->perMeshTransformBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_deviceResources->perMeshTransformBuffer->setObjectName("PerMeshTransformUBO");
 	_deviceResources->perMeshTransformBufferView.pointToMappedMemory(_deviceResources->perMeshTransformBuffer->getDeviceMemory()->getMappedData());
 	_deviceResources->perMeshTransformBuffer->setObjectName("PerMeshTransformBuffer");
 
@@ -2008,6 +2037,7 @@ void VulkanHybridRefractions::buildLightDataBuffer()
 		pvrvk::BufferCreateInfo(_deviceResources->lightDataBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_deviceResources->lightDataBuffer->setObjectName("lightDataUBO");
 
 	_deviceResources->lightDataBufferView.pointToMappedMemory(_deviceResources->lightDataBuffer->getDeviceMemory()->getMappedData());
 }
@@ -2048,6 +2078,7 @@ void VulkanHybridRefractions::buildMaterialBuffer(pvrvk::CommandBuffer& uploadCm
 	materialColorBufferInfo.setSize(sizeof(Material) * vectorMaterial.size());
 	materialColorBufferInfo.setUsageFlags(pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT);
 	_deviceResources->materialBuffer = pvr::utils::createBuffer(_deviceResources->device, materialColorBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT);
+	_deviceResources->materialBuffer->setObjectName("materialSBO");
 	pvr::utils::updateBufferUsingStagingBuffer(
 		_deviceResources->device, _deviceResources->materialBuffer, uploadCmd, vectorMaterial.data(), 0, sizeof(Material) * vectorMaterial.size());
 }

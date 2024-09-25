@@ -38,7 +38,7 @@ add_assets_to_target(OpenGLESOpenCLExample
 	ASSET_FOLDER ${ASSET_FOLDER} 
 	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Postprocessing
 	FILE_LIST 
-		Lenna.pvr)
+		Mandrill.pvr)
 
 ### Textural shaders (OpenGL ES) ###
 add_assets_to_target(OpenGLESOpenCLExample 

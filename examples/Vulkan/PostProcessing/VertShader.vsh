@@ -7,7 +7,7 @@
 
 layout(location = VERTEX_ARRAY) in highp vec3 inVertex;
 layout(location = NORMAL_ARRAY) in highp vec3 inNormal;
-layout(location = TEXCOORD_ARRAY) in mediump vec2 inTexCoord;
+layout(location = TEXCOORD_ARRAY) in highp vec2 inTexCoord;
 layout(location = TANGENT_ARRAY) in highp vec3 inTangent;
 
 layout(set = 0, binding = 3) uniform PerMesh
@@ -16,7 +16,7 @@ layout(set = 0, binding = 3) uniform PerMesh
 	highp mat4 worldMatrix;
 };
 
-layout(location = 0) out mediump vec2 vTexCoord;
+layout(location = 0) out highp vec2 vTexCoord;
 layout(location = 1) out highp vec3 worldPosition;
 layout(location = 2) out highp mat3 TBN_worldSpace;
 

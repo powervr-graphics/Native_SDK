@@ -6,6 +6,7 @@
 */
 #pragma once
 #include "PVRCore/math/MathUtils.h"
+#include "PVRAssets/model/FormattedUserData.h"
 
 namespace pvr {
 namespace assets {
@@ -58,10 +59,13 @@ public:
 
 		std::vector<KeyFrameData> keyFrames; //!< Specifies key frame animation data
 
-		float durationTime; //!< Total durration time of this animation
+		float startTime; //! Time at the first keyframe (in seconds)
+		float endTime; //! Time at the last keyframe (in seconds)
+
+		CustomData formattedUserData; //!< Optionally, formatted user data (json-style)
 
 		/// <summary>Constructor. Initializing.</summary>
-		InternalData() : flags(0), numFrames(0), durationTime(0.0f) {}
+		InternalData() : flags(0), numFrames(0), startTime(0), endTime(0) {}
 	};
 
 public:
@@ -75,6 +79,9 @@ public:
 	/// <summary>Getter for the name of the animation.</summary>
 	/// <returns>The name of the animation</returns>
 	const std::string& getAnimationName() const { return _data.animationName; }
+
+	/// <summary>Computes the begin and end times of the animation.</summary>
+	void computeDuration();
 
 	/// <summary>Getter for the number of key frames.</summary>
 	/// <returns>The number of key frames</returns>
@@ -90,12 +97,20 @@ public:
 	KeyFrameData& getAnimationData(uint32_t index) { return _data.keyFrames[index]; }
 
 	/// <summary>Getter for the total time taken for the animation in seconds</summary>
-	/// <returns>The total time in seconds taken for the animation in seconds</returns>
-	float getTotalTimeInSec() { return _data.durationTime; }
+	/// <returns>The total time taken for the animation in seconds</returns>
+	float getTotalTimeInSec() const { return _data.endTime - _data.startTime; }
 
 	/// <summary>Getter for the total time taken for the animation in milli seconds</summary>
-	/// <returns>The total time in seconds taken for the animation in milli seconds</returns>
-	float getTotalTimeInMs() { return getTotalTimeInSec() * 1000.f; }
+	/// <returns>The total time taken for the animation in milli seconds</returns>
+	float getTotalTimeInMs() const { return getTotalTimeInSec() * 1000.f; }
+
+	/// <summary>Getter for the start time of the animation in seconds</summary>
+	/// <returns>The time (in seconds) at the first keyframe</returns>
+	float getStartTimeInSec() const { return _data.startTime; }
+
+	/// <summary>Getter for the end time of the animation in seconds</summary>
+	/// <returns>The time (in seconds) at the last keyframe</returns>
+	float getEndTimeInSec() const { return _data.endTime; }
 
 	/// <summary>Get the transformation matrix of specific frame and amount of interpolation.</summary>
 	/// <param name="frame">The first frame for which the transformation matrix will be returned</param>
@@ -224,9 +239,21 @@ public:
 	/// <returns>The time in seconds at which the animation will occur</returns>
 	float getTotalTimeInSec() const { return animationData->getTotalTimeInSec(); }
 
+	/// <summary>Retrieves the time in seconds at which the animation will start.</summary>
+	/// <returns>The time in seconds at which the animation will start</returns>
+	float getStartTimeInSec() const { return animationData->getStartTimeInSec(); }
+
+	/// <summary>Retrieves the time in seconds at which the animation will end.</summary>
+	/// <returns>The time in seconds at which the animation will end</returns>
+	float getEndTimeInSec() const { return animationData->getEndTimeInSec(); }
+
 	/// <summary>update animation</summary>
 	/// <param name="timeInMs">The time in milli seconds to set for the animation</param>
 	void updateAnimation(float timeInMs);
+
+	/// <summary>update animation</summary>
+	/// <param name="frameNumber">Which keyframe to set for the animation</param>
+	void updateAnimationFromKey(uint32_t frameNumber);
 };
 
 } // namespace assets

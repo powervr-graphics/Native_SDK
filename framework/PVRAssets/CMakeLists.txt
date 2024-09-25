@@ -33,7 +33,8 @@ set(PVRAssets_HEADERS
 	model/Animation.h
 	model/Camera.h
 	model/Light.h
-	model/Mesh.h)
+	model/Mesh.h
+	model/FormattedUserData.h)
 
 # PVRAssets sources
 set(PVRAssets_SRC

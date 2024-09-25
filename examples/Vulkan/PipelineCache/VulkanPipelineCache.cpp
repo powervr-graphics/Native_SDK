@@ -242,6 +242,7 @@ pvr::Result VulkanPipelineCache::initView()
 
 	// Get the queue
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
+	_deviceResources->queue->setObjectName("GraphicsQueue");
 
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
@@ -281,6 +282,8 @@ pvr::Result VulkanPipelineCache::initView()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, static_cast<uint16_t>(8 * _swapchainLength))
 																						  .setMaxDescriptorSets(static_cast<uint16_t>(8 * _swapchainLength)));
 
+	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
+
 	// create demo buffers
 	createBuffers();
 
@@ -289,9 +292,14 @@ pvr::Result VulkanPipelineCache::initView()
 	{
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->presentationSemaphores[i]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->imageAcquiredSemaphores[i]->setObjectName("ImageAcquiredSemaphoreSwapchain" + std::to_string(i));
+
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->perFrameResourcesFences[i]->setObjectName("FenceSwapchain" + std::to_string(i));
 
 		_deviceResources->cmdBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
+		_deviceResources->cmdBuffers[i]->setObjectName("CommandBufferSwapchain" + std::to_string(i));
 	}
 
 	// Allocate a single use command buffer to upload resources to the GPU
@@ -478,6 +486,8 @@ void VulkanPipelineCache::recordCommandBuffers()
 		// begin recording commands
 		_deviceResources->cmdBuffers[i]->begin();
 
+		pvr::utils::beginCommandBufferDebugLabel(_deviceResources->cmdBuffers[i], pvrvk::DebugUtilsLabel("MainRenderPassSwapchain" + std::to_string(i)));
+
 		// begin the renderpass
 		_deviceResources->cmdBuffers[i]->beginRenderPass(
 			_deviceResources->onScreenFramebuffer[i], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), true, clearValues, ARRAY_SIZE(clearValues));
@@ -538,6 +548,7 @@ void VulkanPipelineCache::recordCommandBuffers()
 		_deviceResources->uiRenderer.getSdkLogo()->render();
 		_deviceResources->uiRenderer.endRendering();
 		_deviceResources->cmdBuffers[i]->endRenderPass();
+		pvr::utils::endCommandBufferDebugLabel(_deviceResources->cmdBuffers[i]);
 		_deviceResources->cmdBuffers[i]->end();
 	}
 }
@@ -598,6 +609,7 @@ void VulkanPipelineCache::createPipeline()
 	pipeDesc.pipelineLayout = _deviceResources->pipelineLayout;
 
 	_deviceResources->pipeline = _deviceResources->device->createGraphicsPipeline(pipeDesc, _deviceResources->pipelineCache);
+	_deviceResources->pipeline->setObjectName("GraphicsPipeline");
 }
 
 /// <summary>Creates the buffers used throughout the demo.</summary>
@@ -614,6 +626,7 @@ void VulkanPipelineCache::createBuffers()
 			pvrvk::BufferCreateInfo(_deviceResources->matrixMemoryView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		_deviceResources->matrixBuffer->setObjectName("MatrixUBO");
 		_deviceResources->matrixMemoryView.pointToMappedMemory(_deviceResources->matrixBuffer->getDeviceMemory()->getMappedData());
 	}
 
@@ -627,6 +640,7 @@ void VulkanPipelineCache::createBuffers()
 			pvrvk::BufferCreateInfo(_deviceResources->lightMemoryView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		_deviceResources->lightBuffer->setObjectName("LightUBO");
 		_deviceResources->lightMemoryView.pointToMappedMemory(_deviceResources->lightBuffer->getDeviceMemory()->getMappedData());
 	}
 }
@@ -648,6 +662,7 @@ void VulkanPipelineCache::createDescriptorSets(pvrvk::CommandBuffer& cmdBuffers)
 		if (_scene->getMaterial(i).defaultSemantics().getDiffuseTextureIndex() == static_cast<uint32_t>(-1)) { continue; }
 
 		MaterialDescSet matDescSet = std::make_pair(i, _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->texDescSetLayout));
+		matDescSet.second->setObjectName("Material" + std::to_string(i) + "DescriptorSet");
 		_deviceResources->texDescSets.push_back(matDescSet);
 
 		writeDescSets.push_back(pvrvk::WriteDescriptorSet());
@@ -670,8 +685,10 @@ void VulkanPipelineCache::createDescriptorSets(pvrvk::CommandBuffer& cmdBuffers)
 		_deviceResources->lightUboDescSets[i] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->uboDescSetLayoutStatic);
 		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _deviceResources->lightUboDescSets[i], 0)
 									.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_deviceResources->lightBuffer, 0, _deviceResources->lightMemoryView.getDynamicSliceSize())));
+		_deviceResources->lightUboDescSets[i]->setObjectName("LightUBOSwapchain" + std::to_string(i) + "DescriptorSet");
 
 		_deviceResources->matrixUboDescSets[i] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->uboDescSetLayoutDynamic);
+		_deviceResources->matrixUboDescSets[i]->setObjectName("MatrixUBOSwapchain" + std::to_string(i) + "DescriptorSet");
 
 		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _deviceResources->matrixUboDescSets[i], 0));
 		pvrvk::WriteDescriptorSet& writeDescSet = writeDescSets.back();

@@ -121,7 +121,7 @@ struct PresentInfo
 
 namespace impl {
 /// <summary>Wraps vulkan queue object.</summary>
-class Queue_ : public PVRVkDeviceObjectBase<VkQueue, ObjectType::e_DEVICE>, public DeviceObjectDebugUtils<Queue_>
+class Queue_ : public PVRVkDeviceObjectBase<VkQueue, ObjectType::e_QUEUE>, public DeviceObjectDebugUtils<Queue_>
 {
 private:
 	friend class Device_;

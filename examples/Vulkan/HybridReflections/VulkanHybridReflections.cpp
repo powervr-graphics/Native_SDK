@@ -460,6 +460,7 @@ pvr::Result VulkanHybridReflections::initView()
 
 	// get queue
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
+	_deviceResources->queue->setObjectName("GraphicsQueue");
 
 	// create vulkan memory allocatortea
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
@@ -528,25 +529,33 @@ pvr::Result VulkanHybridReflections::initView()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, static_cast<uint16_t>(16 * _numSwapImages))
 																						  .setMaxDescriptorSets(static_cast<uint16_t>(16 * _numSwapImages)));
 
+	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
+
 	// setup command buffers
 	for (uint32_t i = 0; i < _numSwapImages; ++i)
 	{
 		// main command buffer
 		_deviceResources->cmdBufferMainDeferred[i] = _deviceResources->commandPool->allocateCommandBuffer();
-
 		_deviceResources->cmdBufferMainForward[i] = _deviceResources->commandPool->allocateCommandBuffer();
-
 		_deviceResources->cmdBufferGBuffer[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
-
 		_deviceResources->cmdBufferDeferredShading[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
-
 		_deviceResources->cmdBufferForwadShading[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
-
 		_deviceResources->cmdBufferRayTracedReflections[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
+
+		_deviceResources->cmdBufferMainDeferred[i]->setObjectName("DeferredCommandBufferSwapchain" + std::to_string(i));
+		_deviceResources->cmdBufferMainForward[i]->setObjectName("ForwardCommandBufferSwapchain" + std::to_string(i));
+		_deviceResources->cmdBufferGBuffer[i]->setObjectName("GBufferSecondaryCommandBufferSwapchain" + std::to_string(i));
+		_deviceResources->cmdBufferDeferredShading[i]->setObjectName("DeferredShadingSecondaryCommandBufferSwapchain" + std::to_string(i));
+		_deviceResources->cmdBufferForwadShading[i]->setObjectName("ForwadShadingSecondaryCommandBufferSwapchain" + std::to_string(i));
+		_deviceResources->cmdBufferRayTracedReflections[i]->setObjectName("RayTracedReflectionsSecondaryCommandBufferSwapchain" + std::to_string(i));
 
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->presentationSemaphores[i]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->imageAcquiredSemaphores[i]->setObjectName("ImageAcquiredSemaphoreSwapchain" + std::to_string(i));
+
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->perFrameResourcesFences[i]->setObjectName("FenceSwapchain" + std::to_string(i));
 	}
 
 	// Handle device rotation
@@ -851,6 +860,12 @@ void VulkanHybridReflections::createDescriptorSets()
 	_deviceResources->deferredShadingDescriptorSet = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->deferredShadingDescriptorSetLayout);
 	_deviceResources->iblDescriptorSet = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->iblDescriptorSetLayout);
 
+	_deviceResources->commonDescriptorSet->setObjectName("CommonDescriptorSet");
+	_deviceResources->gbufferDescriptorSet->setObjectName("GBufferDescriptorSet");
+	_deviceResources->imageDescriptorSet->setObjectName("ImageDescriptorSet");
+	_deviceResources->deferredShadingDescriptorSet->setObjectName("DeferredShadingDescriptorSet");
+	_deviceResources->iblDescriptorSet->setObjectName("IBLDescriptorSet");
+
 	// Write Common Descriptor Set
 
 	std::vector<pvrvk::WriteDescriptorSet> writeDescSets;
@@ -1054,6 +1069,7 @@ void VulkanHybridReflections::createGBufferPipeline()
 
 	renderGBufferPipelineCreateInfo.pipelineLayout = _deviceResources->gbufferPipelineLayout;
 	_deviceResources->gbufferPipeline = _deviceResources->device->createGraphicsPipeline(renderGBufferPipelineCreateInfo, _deviceResources->pipelineCache);
+	_deviceResources->gbufferPipeline->setObjectName("GBufferGraphicsPipeline");
 }
 
 /// <summary>Creates the pipeline for the Ray-Traced reflections pass.</summary>
@@ -1120,6 +1136,7 @@ void VulkanHybridReflections::createRayTracingPipeline()
 	raytracingPipeline.pipelineLayout = _deviceResources->raytraceReflectionsPipelineLayout;
 
 	_deviceResources->raytraceReflectionPipeline = _deviceResources->device->createRaytracingPipeline(raytracingPipeline, nullptr);
+	_deviceResources->raytraceReflectionPipeline->setObjectName("ReflectionRaytracingPipeline");
 }
 
 /// <summary>Creates the pipeline for the Deferred shading pass.</summary>
@@ -1192,6 +1209,7 @@ void VulkanHybridReflections::createDeferredShadingPipeline()
 		_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream(Files::DeferredShadingFragmentShader)->readToEnd<uint32_t>())));
 
 	_deviceResources->defferedShadingPipeline = _deviceResources->device->createGraphicsPipeline(pipelineCreateInfo, _deviceResources->pipelineCache);
+	_deviceResources->defferedShadingPipeline->setObjectName("DefferedShadingGraphicsPipeline");
 }
 
 /// <summary>Creates the pipeline for the Forward shading pass.</summary>
@@ -1302,6 +1320,7 @@ void VulkanHybridReflections::createForwardShadingPipeline()
 
 	pipelineCreateInfo.pipelineLayout = _deviceResources->forwardShadingPipelineLayout;
 	_deviceResources->forwardShadingPipeline = _deviceResources->device->createGraphicsPipeline(pipelineCreateInfo, _deviceResources->pipelineCache);
+	_deviceResources->forwardShadingPipeline->setObjectName("ForwardShadingGraphicsPipeline");
 }
 
 /// <summary>Creates the pipeline for the Skybox pass.</summary>
@@ -1374,6 +1393,7 @@ void VulkanHybridReflections::createSkyboxPipeline()
 		_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream(Files::SkyboxFragmentShader)->readToEnd<uint32_t>())));
 
 	_deviceResources->skyboxPipeline = _deviceResources->device->createGraphicsPipeline(pipelineCreateInfo, _deviceResources->pipelineCache);
+	_deviceResources->skyboxPipeline->setObjectName("SkyBoxGraphicsPipeline");
 }
 
 /// <summary>Creates the shader binding table for the Ray-Traced reflections pass.</summary>
@@ -1397,6 +1417,7 @@ void VulkanHybridReflections::createShaderBindingTable()
 			sbtSize, pvrvk::BufferUsageFlags::e_TRANSFER_SRC_BIT | pvrvk::BufferUsageFlags::e_SHADER_BINDING_TABLE_BIT_KHR | pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT),
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT);
+	_deviceResources->raytraceReflectionShaderBindingTable->setObjectName("RaytraceReflectionShaderBindingTable");
 
 	// Write the handles in the SBT
 	void* mapped = _deviceResources->raytraceReflectionShaderBindingTable->getDeviceMemory()->map(0, VK_WHOLE_SIZE);
@@ -1518,6 +1539,7 @@ void VulkanHybridReflections::createFramebufferAndRenderPass()
 			_deviceResources->gbufferDepthStencilImage };
 
 		_deviceResources->gbufferRenderPass = _deviceResources->device->createRenderPass(renderPassCreateInfo);
+		_deviceResources->gbufferRenderPass->setObjectName("GBufferRenderPass");
 
 		_deviceResources->gbufferFramebuffer = _deviceResources->device->createFramebuffer(
 			pvrvk::FramebufferCreateInfo(dimension.getWidth(), dimension.getHeight(), 1, _deviceResources->gbufferRenderPass, 4, &imageViews[0]));
@@ -1695,6 +1717,7 @@ void VulkanHybridReflections::createModelBuffers(pvrvk::CommandBuffer& uploadCmd
 
 		_deviceResources->vertexBuffers.push_back(pvr::utils::createBuffer(_deviceResources->device, vertexBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
 			pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT));
+		_deviceResources->vertexBuffers.back()->setObjectName("VBO");
 
 		pvr::utils::updateBufferUsingStagingBuffer(
 			_deviceResources->device, _deviceResources->vertexBuffers[meshIdx], uploadCmd, vertices.data(), 0, sizeof(pvr::utils::ASVertexFormat) * vertices.size());
@@ -1707,6 +1730,7 @@ void VulkanHybridReflections::createModelBuffers(pvrvk::CommandBuffer& uploadCmd
 
 		_deviceResources->indexBuffers.push_back(pvr::utils::createBuffer(_deviceResources->device, indexBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
 			pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT));
+		_deviceResources->indexBuffers.back()->setObjectName("IBO");
 
 		pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, _deviceResources->indexBuffers[meshIdx], uploadCmd, indices.data(), 0, sizeof(uint32_t) * indices.size());
 
@@ -1716,6 +1740,7 @@ void VulkanHybridReflections::createModelBuffers(pvrvk::CommandBuffer& uploadCmd
 		materialIndexBufferInfo.setUsageFlags(pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT);
 
 		_deviceResources->materialIndexBuffers.push_back(pvr::utils::createBuffer(_deviceResources->device, materialIndexBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT));
+		_deviceResources->materialIndexBuffers.back()->setObjectName("MaterialIndexSBO");
 
 		pvr::utils::updateBufferUsingStagingBuffer(
 			_deviceResources->device, _deviceResources->materialIndexBuffers[meshIdx], uploadCmd, materialIndices.data(), 0, sizeof(uint32_t) * materialIndices.size());
@@ -1730,6 +1755,7 @@ void VulkanHybridReflections::createModelBuffers(pvrvk::CommandBuffer& uploadCmd
 	materialColorBufferInfo.setUsageFlags(pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT);
 	_deviceResources->materialBuffer = pvr::utils::createBuffer(_deviceResources->device, materialColorBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT);
 	pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, _deviceResources->materialBuffer, uploadCmd, materials.data(), 0, sizeof(Material) * materials.size());
+	_deviceResources->materialBuffer->setObjectName("MaterialSBO");
 }
 
 /// <summary>Creates the scene wide buffer used throughout the demo.</summary>
@@ -1747,6 +1773,7 @@ void VulkanHybridReflections::createCameraBuffer()
 		pvrvk::BufferCreateInfo(_deviceResources->globalBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_deviceResources->globalBuffer->setObjectName("GlobalUBO");
 
 	_deviceResources->globalBufferView.pointToMappedMemory(_deviceResources->globalBuffer->getDeviceMemory()->getMappedData());
 }
@@ -1781,6 +1808,7 @@ void VulkanHybridReflections::createLightBuffer()
 		pvrvk::BufferCreateInfo(_deviceResources->lightDataBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_deviceResources->lightDataBuffer->setObjectName("LightDataUBO");
 
 	_deviceResources->lightDataBufferView.pointToMappedMemory(_deviceResources->lightDataBuffer->getDeviceMemory()->getMappedData());
 }
@@ -1798,6 +1826,7 @@ void VulkanHybridReflections::createMeshTransformBuffer()
 		pvrvk::BufferCreateInfo(_deviceResources->perMeshBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_deviceResources->perMeshBuffer->setObjectName("PerMeshUBO");
 
 	_deviceResources->perMeshBufferView.pointToMappedMemory(_deviceResources->perMeshBuffer->getDeviceMemory()->getMappedData());
 }

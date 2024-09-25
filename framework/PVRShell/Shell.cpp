@@ -349,7 +349,7 @@ bool Shell::isFullScreen() const { return _data->attributes.fullscreen; }
 
 Result Shell::setDimensions(uint32_t w, uint32_t h)
 {
-	if (ShellOS::getCapabilities().resizable != Capability::Unsupported)
+	if ((ShellOS::getCapabilities().resizable != Capability::Unsupported) && (w != 0) && (h != 0))
 	{
 		_data->attributes.width = w;
 		_data->attributes.height = h;

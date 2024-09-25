@@ -6,6 +6,7 @@
 */
 #pragma once
 #include "PVRCore/math/MathUtils.h"
+#include "PVRAssets/model/FormattedUserData.h"
 
 namespace pvr {
 namespace assets {
@@ -81,7 +82,10 @@ public:
 	/// <returns>A (modifiable) reference to the internal data.
 	inline InternalData& getInternalData() { return _data; }
 
+	CustomData& getFormattedUserData() { return _customData; }
+
 private:
+	CustomData _customData;
 	InternalData _data;
 };
 } // namespace assets

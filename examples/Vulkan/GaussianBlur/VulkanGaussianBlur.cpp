@@ -16,7 +16,7 @@ const char VertShaderSrcFile[] = "VertShader.vsh.spv";
 const char CompShaderSrcFile[] = "CompShader.csh.spv";
 
 // PVR texture files
-const char StatueTexFile[] = "Lenna.pvr";
+const char StatueTexFile[] = "Mandrill.pvr";
 
 const uint32_t GaussianKernelSize = 19;
 
@@ -230,6 +230,7 @@ void VulkanGaussianBlur::createResources()
 			pvr::utils::createBuffer(_deviceResources->device, pvrvk::BufferCreateInfo(_graphicsSsboSize, pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
 				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 				_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		_deviceResources->graphicsGaussianConfigBuffer->setObjectName("GraphicsGaussianConfigUBO");
 	}
 
 	{
@@ -240,6 +241,7 @@ void VulkanGaussianBlur::createResources()
 			// Compute descriptor sets
 			{
 				_deviceResources->computeDescriptorSets[i] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->computeDescriptorSetLayout);
+				_deviceResources->computeDescriptorSets[i]->setObjectName("Compute" + std::to_string(i) + "DescriptorSets");
 
 				writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_STORAGE_IMAGE, _deviceResources->computeDescriptorSets[i], 0)
 											.setImageInfo(0, pvrvk::DescriptorImageInfo(_deviceResources->inputImageView, pvrvk::ImageLayout::e_GENERAL)));
@@ -251,6 +253,7 @@ void VulkanGaussianBlur::createResources()
 			// Graphics descriptor sets
 			{
 				_deviceResources->graphicsDescriptorSets[i] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->graphicsDescriptorSetLayout);
+				_deviceResources->graphicsDescriptorSets[i]->setObjectName("Graphics" + std::to_string(i) + "DescriptorSets");
 				writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER, _deviceResources->graphicsDescriptorSets[i], 0)
 											.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_deviceResources->graphicsGaussianConfigBuffer, 0, _graphicsSsboSize)));
 
@@ -302,6 +305,7 @@ void VulkanGaussianBlur::createPipelines()
 		createInfo.computeShader.setShader(computeShader);
 		createInfo.pipelineLayout = _deviceResources->computePipelinelayout;
 		_deviceResources->computePipeline = _deviceResources->device->createComputePipeline(createInfo, _deviceResources->pipelineCache);
+		_deviceResources->computePipeline->setObjectName("ComputePipeline");
 	}
 
 	// Create the graphics pipeline
@@ -335,6 +339,7 @@ void VulkanGaussianBlur::createPipelines()
 		createInfo.subpass = 0;
 
 		_deviceResources->graphicsPipeline = _deviceResources->device->createGraphicsPipeline(createInfo, _deviceResources->pipelineCache);
+		_deviceResources->graphicsPipeline->setObjectName("GraphicsPipeline");
 	}
 }
 
@@ -346,6 +351,7 @@ void VulkanGaussianBlur::recordCommandBuffer()
 	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		// UI Renderer
+		_deviceResources->uiRendererCommandBuffers[i]->setObjectName("UICommandBufferSwapchain" + std::to_string(i));
 		_deviceResources->uiRendererCommandBuffers[i]->begin(_deviceResources->onScreenFramebuffer[i], 0, pvrvk::CommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
 		_deviceResources->uiRenderer.beginRendering(_deviceResources->uiRendererCommandBuffers[i]);
 		_deviceResources->uiRenderer.getSdkLogo()->render();
@@ -356,6 +362,7 @@ void VulkanGaussianBlur::recordCommandBuffer()
 
 		// Compute Command Buffer
 		{
+			_deviceResources->computeCommandBuffers[i]->setObjectName("ComputeCommandBufferSwapchain" + std::to_string(i));
 			_deviceResources->computeCommandBuffers[i]->begin();
 			pvr::utils::beginCommandBufferDebugLabel(_deviceResources->computeCommandBuffers[i], pvrvk::DebugUtilsLabel("Compute Blur Horizontal"));
 			{
@@ -416,6 +423,7 @@ void VulkanGaussianBlur::recordCommandBuffer()
 		}
 
 		// Begin recording to the command buffer
+		_deviceResources->mainCommandBuffers[i]->setObjectName("MainCommandBufferSwapchain" + std::to_string(i));
 		_deviceResources->mainCommandBuffers[i]->begin();
 		_deviceResources->mainCommandBuffers[i]->executeCommands(_deviceResources->computeCommandBuffers[i]);
 		_deviceResources->mainCommandBuffers[i]->beginRenderPass(
@@ -499,6 +507,7 @@ pvr::Result VulkanGaussianBlur::initView()
 	_deviceResources->device = pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(0), queueCreateInfos, 2, queueAccessInfos);
 
 	_deviceResources->queues[0] = _deviceResources->device->getQueue(queueAccessInfos[0].familyId, queueAccessInfos[0].queueId);
+	_deviceResources->queues[0]->setObjectName("GraphicsQueue");
 
 	// In the future we may want to improve our flexibility with regards to making use of multiple queues but for now to support multi queue the queue must support
 	// Graphics + Compute + WSI support.
@@ -517,6 +526,7 @@ pvr::Result VulkanGaussianBlur::initView()
 		else
 		{
 			Log(LogLevel::Information, "Queues are from a different Family. We cannot ping-pong work each frame");
+			_deviceResources->queues[1]->setObjectName("ComputeQueue");
 		}
 	}
 	else
@@ -560,6 +570,8 @@ pvr::Result VulkanGaussianBlur::initView()
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(
 		pvrvk::DescriptorPoolCreateInfo(static_cast<uint16_t>(8 * _swapchainLength)).addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, static_cast<uint16_t>(8 * _swapchainLength)));
 
+	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
+
 	// Create per frame resource
 	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
@@ -570,7 +582,11 @@ pvr::Result VulkanGaussianBlur::initView()
 
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->presentationSemaphores[i]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->imageAcquiredSemaphores[i]->setObjectName("ImageAcquiredSemaphoreSwapchain" + std::to_string(i));
+
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->perFrameResourcesFences[i]->setObjectName("FenceSwapchain" + std::to_string(i));
 	}
 
 	// Allocate a single use command buffer to upload the texture to the GPU

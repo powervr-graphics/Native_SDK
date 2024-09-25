@@ -146,7 +146,7 @@ inline bool checkFboStatus()
 #else
 		GL_DRAW_FRAMEBUFFER
 #endif
-		);
+	);
 	switch (fboStatus)
 	{
 #ifdef GL_FRAMEBUFFER_UNDEFINED
@@ -486,7 +486,9 @@ inline void generateTextureAtlas(
 		if (sortedImage[i].texture.getPixelFormat().getPixelTypeId() == static_cast<uint64_t>(pvr::CompressedPixelFormat::PVRTCI_2bpp_RGBA) ||
 			sortedImage[i].texture.getPixelFormat().getPixelTypeId() == static_cast<uint64_t>(pvr::CompressedPixelFormat::PVRTCI_4bpp_RGBA) || pixelString[0] == 'a' ||
 			pixelString[1] == 'a' || pixelString[2] == 'a' || pixelString[3] == 'a')
-		{ sortedImage[i].hasAlpha = true; }
+		{
+			sortedImage[i].hasAlpha = true;
+		}
 		else
 		{
 			sortedImage[i].hasAlpha = false;
@@ -667,7 +669,9 @@ struct VertexConfiguration
 	VertexConfiguration& addVertexAttributes(uint16_t bufferBinding, const VertexAttributeInfo* attrib, uint32_t numAttributes)
 	{
 		for (uint32_t i = 0; i < numAttributes; ++i)
-		{ pvr::utils::insertSorted_overwrite(attributes, VertexAttributeInfoWithBinding(attrib[i], bufferBinding), VertexAttributeInfoCmp_BindingLess_IndexLess()); }
+		{
+			pvr::utils::insertSorted_overwrite(attributes, VertexAttributeInfoWithBinding(attrib[i], bufferBinding), VertexAttributeInfoCmp_BindingLess_IndexLess());
+		}
 		return *this;
 	}
 
@@ -1024,5 +1028,97 @@ inline void create3dPlaneMesh(uint32_t width, uint32_t length, bool vertexAttrib
 	outMesh.setNumFaces(ARRAY_SIZE(indexData) / 3);
 	outMesh.setNumVertices(ARRAY_SIZE(pos));
 }
+
+/// <summary>Class used to generate vertex information following a specific vertex format.</summary>
+class VertexStreamDescription
+{
+public:
+	/// <summary>Type of vertex information.</summary>
+	enum DataSemantic
+	{
+		POSITION,
+		NORMAL,
+		TANGENT,
+		COLOR,
+		UV0,
+		UV1,
+		BONE_WEIGHTS,
+		BONE_INDICES,
+	};
+
+	VertexStreamDescription();
+	void Add(uint16_t bufferBinding, pvr::DataType dataType, uint8_t width, const std::string& name, DataSemantic semantic);
+	const pvr::utils::VertexConfiguration& GetVertexConfig() const;
+	bool HasChannel(DataSemantic semantic) const;
+	bool RetrieveChannelDescription(DataSemantic semantic, pvr::utils::VertexAttributeInfoWithBinding& out) const;
+	uint16_t GetBindingCount() const;
+	uint32_t GetBindingVertexStride(uint16_t binding) const;
+	uint16_t GetSemanticBinding(DataSemantic semantic) const;
+
+private:
+	pvr::utils::VertexConfiguration vertexConfig;
+	std::vector<DataSemantic> semantics;
+	std::map<uint16_t, uint32_t> currentDataOffset;
+	std::map<DataSemantic, uint16_t> semanticBindingLut;
+};
+
+// void WriteVertexAttributes(uint8_t* srcData, uint8_t* destData, uint32_t nbVertices, uint32_t vertexStride, uint32_t attributeOffset, uint32_t attributeSize);
+
+/// <summary>Write vertex atrribute information for a particular channel.</summary>
+/// <param name="input">Vertex information to write.</param>
+/// <param name="input">Vertex information to output.</param>
+/// <param name="description">Vertex stream description.</param>
+/// <param name="semantic">Vertex stream data semantic.</param>
+/// <param name="nbVertices">Number vertices.</param>
+void writeVertices(uint8_t* input, uint8_t* output, const VertexStreamDescription& description, VertexStreamDescription::DataSemantic semantic, uint32_t nbVertices);
+
+/// <summary>Get texture coordinate information.</summary>
+/// <param name="mesh">Mesh to retrieve the texture coordinate information.</param>
+/// <param name="texcoordLayer">Layer to retrieve the texture coordinate information.</param>
+/// <param name="uv">Vector with the texture coordinate information.</param>
+/// <returns>True if the information was found.</returns>
+bool RetrieveTexcoords(const pvr::assets::Model::Mesh& mesh, uint32_t texcoordLayer, std::vector<glm::vec2>& uv);
+
+/// <summary>Get color information.</summary>
+/// <param name="mesh">Mesh to retrieve the color information.</param>
+/// <param name="colours">Vector with the color information.</param>
+/// <returns>True if the information was found.</returns>
+bool RetrieveColours(const pvr::assets::Model::Mesh& mesh, std::vector<glm::u16vec4>& colours);
+
+/// <summary>Get tangent information.</summary>
+/// <param name="mesh">Mesh to retrieve the tangent information.</param>
+/// <param name="tangents">Vector with the tangent information.</param>
+/// <param name="forceNormalization">Whether to force normalization.</param>
+/// <returns>True if the information was found.</returns>
+bool RetrieveTangents(const pvr::assets::Model::Mesh& mesh, std::vector<glm::vec4>& tangents, bool forceNormalization);
+
+/// <summary>Get normal information.</summary>
+/// <param name="mesh">Mesh to retrieve the normal information.</param>
+/// <param name="normal">Vector with the normal information.</param>
+/// <param name="forceNormalization">Whether to force normalization.</param>
+/// <returns>True if the information was found.</returns>
+bool RetrieveNormals(const pvr::assets::Model::Mesh& mesh, std::vector<glm::vec3>& normals, bool forceNormalization);
+
+/// <summary>Get position information.</summary>
+/// <param name="mesh">Mesh to retrieve the position information.</param>
+/// <param name="position">Vector with the position information.</param>
+/// <returns>True if the information was found.</returns>
+bool RetrievePositions(const pvr::assets::Model::Mesh& mesh, std::vector<glm::vec3>& positions);
+
+/// <summary>Get bone index and weight information.</summary>
+/// <param name="mesh">Mesh to retrieve the bone index and weight information.</param>
+/// <param name="bonesPerVertex">Number of bones per vertex.</param>
+/// <param name="indexType">Data type for the bone indices.</param>
+/// <param name="boneIndices">Bone indices information.</param>
+/// <param name="boneWeights">Bone weights information.</param>
+/// <returns>True if the information was found.</returns>
+bool RetrieveBoneIndicesAndWeights(
+	const pvr::assets::Model::Mesh& mesh, uint32_t bonesPerVertex, pvr::DataType indexType, std::vector<uint8_t>& boneIndices, std::vector<float>& boneWeights);
+
+/// <summary>Convert mesh data to the vertex stream description.</summary>
+/// <param name="meshIter">Iterator for the first mesh to process.</param>
+/// <param name="meshIterEnd">Iterator for the last mesh to process.</param>
+void convertMeshesData(const VertexStreamDescription& description, std::vector<pvr::assets::Model::Mesh>::iterator meshIter, std::vector<pvr::assets::Model::Mesh>::iterator meshIterEnd);
+
 } // namespace utils
 } // namespace pvr

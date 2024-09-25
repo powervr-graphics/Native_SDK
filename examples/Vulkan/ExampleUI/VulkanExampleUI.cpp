@@ -493,6 +493,7 @@ private:
 			pvrvk::BufferCreateInfo(sizeof(vVerts), pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT),
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, _deviceResources->vmaAllocator,
 			pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		_deviceResources->quadVbo->setObjectName("QuadVBO");
 
 		bool isBufferHostVisible = (_deviceResources->quadVbo->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT) != 0;
 
@@ -1017,6 +1018,7 @@ pvr::Result VulkanExampleUI::initView()
 
 	// get the queue
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
+	_deviceResources->queue->setObjectName("GraphicsQueue");
 
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
@@ -1060,6 +1062,7 @@ pvr::Result VulkanExampleUI::initView()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, static_cast<uint16_t>(8 * _swapchainLength))
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, static_cast<uint16_t>(8 * _swapchainLength))
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, static_cast<uint16_t>(8 * _swapchainLength)));
+	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
 
 	for (uint32_t swapchainIndex = 0, len = _swapchainLength; swapchainIndex < len; ++swapchainIndex)
 	{
@@ -1123,7 +1126,11 @@ pvr::Result VulkanExampleUI::initView()
 		recordSecondaryCommandBuffers(swapchainIndex);
 		_deviceResources->presentationSemaphores[swapchainIndex] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[swapchainIndex] = _deviceResources->device->createSemaphore();
+		_deviceResources->presentationSemaphores[swapchainIndex]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(len));
+		_deviceResources->imageAcquiredSemaphores[swapchainIndex]->setObjectName("ImageAcquiredSemaphoreSwapchain" + std::to_string(len));
+
 		_deviceResources->perFrameResourcesFences[swapchainIndex] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->perFrameResourcesFences[swapchainIndex]->setObjectName("FenceSwapchain" + std::to_string(len));
 	}
 	updateTitleAndDesc((DisplayOption::Enum)_displayOption);
 	return pvr::Result::Success;
@@ -1210,6 +1217,7 @@ void VulkanExampleUI::createSamplersAndDescriptorSet()
 		pvrvk::BufferCreateInfo(ubo.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_deviceResources->pageWindow.renderQuadUboBuffer->setObjectName("RenderQuadUBO");
 
 	ubo.pointToMappedMemory(_deviceResources->pageWindow.renderQuadUboBuffer->getDeviceMemory()->getMappedData());
 
@@ -1217,6 +1225,7 @@ void VulkanExampleUI::createSamplersAndDescriptorSet()
 	{
 		pvrvk::DescriptorSet& uboDesc = _deviceResources->pageWindow.renderQuadUboDesc[i];
 		uboDesc = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->renderQuadPipe->getPipelineLayout()->getDescriptorSetLayout(0));
+		uboDesc->setObjectName("UBOSwapchain" + std::to_string(i) + "DescriptorSet");
 
 		writeDescSets[i]
 			.set(pvrvk::DescriptorType::e_UNIFORM_BUFFER, uboDesc, 0)
@@ -1277,6 +1286,7 @@ void VulkanExampleUI::createPipelines()
 		pvr::utils::populateViewportStateCreateInfo(_deviceResources->onScreenFramebuffer[0], pipeInfo.viewport);
 
 		_deviceResources->renderQuadPipe = _deviceResources->device->createGraphicsPipeline(pipeInfo, _deviceResources->pipelineCache);
+		_deviceResources->renderQuadPipe->setObjectName("RenderQuadGraphicsPipeline");
 	}
 
 	// --- render window text ui pipeline
@@ -1303,6 +1313,7 @@ void VulkanExampleUI::createPipelines()
 		pipeInfo.basePipeline = _deviceResources->uiRenderer.getPipeline();
 		pipeInfo.flags = pvrvk::PipelineCreateFlags::e_DERIVATIVE_BIT;
 		_deviceResources->renderWindowTextPipe = _deviceResources->device->createGraphicsPipeline(pipeInfo, _deviceResources->pipelineCache);
+		_deviceResources->renderWindowTextPipe->setObjectName("RenderWindowTextGraphicsPipeline");
 	}
 }
 
@@ -1522,25 +1533,34 @@ void VulkanExampleUI::recordSecondaryCommandBuffers(uint32_t swapchain)
 	// record the base ui
 	{
 		_deviceResources->cmdBufferBaseUI[swapchain] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
+		_deviceResources->cmdBufferBaseUI[swapchain]->setObjectName("BaseUICommandBufferSwapchain" + std::to_string(swapchain));
 		_deviceResources->uiRenderer.beginRendering(_deviceResources->cmdBufferBaseUI[swapchain], _deviceResources->onScreenFramebuffer[swapchain]);
+		pvr::utils::beginCommandBufferDebugLabel(_deviceResources->cmdBufferBaseUI[swapchain], pvrvk::DebugUtilsLabel("BaseUIRenderPass"));
 		_deviceResources->groupBaseUI->render(); // render the base GUI
+		pvr::utils::endCommandBufferDebugLabel(_deviceResources->cmdBufferBaseUI[swapchain]);
 		_deviceResources->uiRenderer.endRendering();
 	}
 
 	// record DrawClock commands
 	{
 		_deviceResources->commandBufferClockPage[swapchain] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
+		_deviceResources->commandBufferClockPage[swapchain]->setObjectName("ClockPageCommandBufferSwapchain" + std::to_string(swapchain));
 		_deviceResources->uiRenderer.beginRendering(_deviceResources->commandBufferClockPage[swapchain], _deviceResources->onScreenFramebuffer[swapchain]);
+		pvr::utils::beginCommandBufferDebugLabel(_deviceResources->commandBufferClockPage[swapchain], pvrvk::DebugUtilsLabel("ClockPageRenderPass"));
 		_deviceResources->pageClock.group[swapchain]->render();
+		pvr::utils::endCommandBufferDebugLabel(_deviceResources->commandBufferClockPage[swapchain]);
 		_deviceResources->uiRenderer.endRendering();
 	}
 
 	// record draw weather commands
 	{
 		_deviceResources->cmdBufferWeatherpage[swapchain] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
+		_deviceResources->cmdBufferWeatherpage[swapchain]->setObjectName("WeatherPageCommandBufferSwapchain" + std::to_string(swapchain));
 		_deviceResources->cmdBufferWeatherpage[swapchain]->begin(_deviceResources->onScreenFramebuffer[swapchain]);
 		_deviceResources->uiRenderer.beginRendering(_deviceResources->cmdBufferWeatherpage[swapchain], _deviceResources->onScreenFramebuffer[swapchain]);
+		pvr::utils::beginCommandBufferDebugLabel(_deviceResources->cmdBufferWeatherpage[swapchain], pvrvk::DebugUtilsLabel("ClockPageRenderPass"));
 		_deviceResources->pageWeather.group[swapchain]->render();
+		pvr::utils::endCommandBufferDebugLabel(_deviceResources->cmdBufferWeatherpage[swapchain]);
 		_deviceResources->uiRenderer.endRendering();
 		_deviceResources->cmdBufferWeatherpage[swapchain]->end();
 	}
@@ -1548,7 +1568,9 @@ void VulkanExampleUI::recordSecondaryCommandBuffers(uint32_t swapchain)
 	// record draw Window commands
 	{
 		_deviceResources->cmdBufferWindow[swapchain] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
+		_deviceResources->cmdBufferWindow[swapchain]->setObjectName("WindowCommandBufferSwapchain" + std::to_string(swapchain));
 		_deviceResources->cmdBufferWindow[swapchain]->begin(_deviceResources->onScreenFramebuffer[swapchain], 0);
+		pvr::utils::beginCommandBufferDebugLabel(_deviceResources->cmdBufferWindow[swapchain], pvrvk::DebugUtilsLabel("MainRenderPass"));
 
 		// bind the render quad pipeline
 		_deviceResources->cmdBufferWindow[swapchain]->bindPipeline(_deviceResources->renderQuadPipe);
@@ -1560,6 +1582,9 @@ void VulkanExampleUI::recordSecondaryCommandBuffers(uint32_t swapchain)
 		_deviceResources->uiRenderer.beginRendering(
 			_deviceResources->cmdBufferWindow[swapchain], _deviceResources->renderWindowTextPipe, _deviceResources->onScreenFramebuffer[swapchain]);
 		_deviceResources->pageWindow.group[swapchain]->render();
+
+		pvr::utils::endCommandBufferDebugLabel(_deviceResources->cmdBufferWindow[swapchain]);
+
 		_deviceResources->uiRenderer.endRendering();
 
 		_deviceResources->cmdBufferWindow[swapchain]->end();

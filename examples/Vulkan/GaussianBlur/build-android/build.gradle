@@ -17,7 +17,7 @@ buildscript {
 
 	// Adds the Android plugin for Gradle as a classpath dependency
 	dependencies {
-		classpath 'com.android.tools.build:gradle:3.5.3'
+		classpath 'com.android.tools.build:gradle:4.0.1'
 	}
 }
 
@@ -31,6 +31,7 @@ allprojects {
 
 android {
 	compileSdkVersion 29
+	ndkVersion "26.2.11394342"
 	defaultConfig {
 		applicationId "com.powervr.VulkanGaussianBlur"
 		minSdkVersion 21
@@ -105,7 +106,7 @@ android {
 	"${project.projectDir}/../FragShader.fsh.spv",
 	"${project.projectDir}/../VertShader.vsh.spv",
 	"${project.projectDir}/../CompShader.csh.spv",
-	"${project.projectDir}/../../../assets/Postprocessing/Lenna.pvr",
+	"${project.projectDir}/../../../assets/Postprocessing/Mandrill.pvr",
 	)
 	
 	// Add a task for copying our assets from their original location (${project.projectDir}...) to the assets/ folder for packaging

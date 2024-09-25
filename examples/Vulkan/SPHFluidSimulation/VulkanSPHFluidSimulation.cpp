@@ -309,6 +309,7 @@ void VulkanSPHFluidSimulation::buildDescriptorPool()
 	descPoolCreateInfo.addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_BUFFER, static_cast<uint16_t>(_swapchainLength * 2));
 	descPoolCreateInfo.setMaxDescriptorSets(static_cast<uint16_t>(_swapchainLength * 2));
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(descPoolCreateInfo);
+	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
 }
 
 /// <summary>Build the descriptor set layout used in the compute pipeline and pipeline for the particle simulation.</summary>
@@ -347,6 +348,7 @@ void VulkanSPHFluidSimulation::buildComputePipelines()
 		createInfo.computeShader.setShader(computeShaderDensityPressureUpdate);
 		createInfo.pipelineLayout = _deviceResources->computePipelinelayout;
 		_deviceResources->computePipelineDensityPressureUpdate = _deviceResources->device->createComputePipeline(createInfo, _deviceResources->pipelineCache);		
+		_deviceResources->computePipelineDensityPressureUpdate->setObjectName("DensityPressureUpdateComputePipeline");
 	}
 
 	{
@@ -357,6 +359,7 @@ void VulkanSPHFluidSimulation::buildComputePipelines()
 		createInfo.computeShader.setShader(computeAccelerationUpdate);
 		createInfo.pipelineLayout = _deviceResources->computePipelinelayout;
 		_deviceResources->computePipelineAccelerationUpdate = _deviceResources->device->createComputePipeline(createInfo, _deviceResources->pipelineCache);
+		_deviceResources->computePipelineAccelerationUpdate->setObjectName("AccelerationUpdateComputePipeline");
 	}
 
 	{
@@ -366,6 +369,7 @@ void VulkanSPHFluidSimulation::buildComputePipelines()
 		createInfo.computeShader.setShader(computePositionUpdate);
 		createInfo.pipelineLayout = _deviceResources->computePipelinelayout;
 		_deviceResources->computePipelinePositionUpdate = _deviceResources->device->createComputePipeline(createInfo, _deviceResources->pipelineCache);
+		_deviceResources->computePipelinePositionUpdate->setObjectName("PositionUpdateComputePipeline");
 	}
 }
 
@@ -378,6 +382,7 @@ void VulkanSPHFluidSimulation::buildParticleBuffer(pvrvk::CommandBuffer commandB
 			pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT | pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT |
 				pvrvk::BufferUsageFlags::e_VERTEX_BUFFER_BIT),
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE);
+	_deviceResources->particleBuffer->setObjectName("ParticleSBO");
 
 	std::vector<Particle> vectorParticleInitial(numberParticles);
 	int halfNumberParticlesPerDimensionX = numberParticlesPerDimensionX / 2;
@@ -457,6 +462,7 @@ void VulkanSPHFluidSimulation::buildParticleSimulationSettingsBuffer()
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		_deviceResources->vmaAllocator,
 		pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_deviceResources->computeSimulationSettingsBuffer->setObjectName("ComputeSimulationSettingsUBO");
 
 	_deviceResources->computeSimulationSettingsBufferView.pointToMappedMemory(_deviceResources->computeSimulationSettingsBuffer->getDeviceMemory()->getMappedData());
 
@@ -503,6 +509,7 @@ void VulkanSPHFluidSimulation::buildParticleDrawingBuffer()
 		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_deviceResources->sceneSettingsBuffer->setObjectName("SceneSettingsUBO");
 
 	_deviceResources->sceneSettingsBufferView.pointToMappedMemory(_deviceResources->sceneSettingsBuffer->getDeviceMemory()->getMappedData());
 
@@ -532,6 +539,7 @@ void VulkanSPHFluidSimulation::updateComputeDescriptorSet()
 	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		_deviceResources->vectorComputeDescriptorSet[i] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->computeDescriptorSetLayout);
+		_deviceResources->vectorComputeDescriptorSet[i]->setObjectName("ComputeSpwachain" + std::to_string(i) + "DescriptorSet");
 
 		// Binding 0: computeSimulationSettingsBuffer
 		pvrvk::DescriptorBufferInfo descriptorBufferInfoUniform = pvrvk::DescriptorBufferInfo(_deviceResources->computeSimulationSettingsBuffer, 0, _deviceResources->computeSimulationSettingsBufferView.getDynamicSliceSize());
@@ -560,6 +568,7 @@ void VulkanSPHFluidSimulation::updateGraphicsDescriptorSet()
 	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		_deviceResources->vectorGraphicsDescriptorSet[i] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->graphicsDescriptorSetLayout);
+		_deviceResources->vectorGraphicsDescriptorSet[i]->setObjectName("GraphicsSpwachain" + std::to_string(i) + "DescriptorSet");
 
 		// Binding 0: sceneSettingsBuffer
 		pvrvk::DescriptorBufferInfo descriptorBufferInfoUniform = pvrvk::DescriptorBufferInfo(_deviceResources->sceneSettingsBuffer, 0, _deviceResources->sceneSettingsBufferView.getDynamicSliceSize());
@@ -656,7 +665,7 @@ void VulkanSPHFluidSimulation::buildSphereDrawingPipeline()
 	pipeInfo.inputAssembler = pvrvk::PipelineInputAssemblerStateCreateInfo(); // Default parameters from the constructor
 
 	_deviceResources->sphereDrawingPipeline = _deviceResources->device->createGraphicsPipeline(pipeInfo, _deviceResources->pipelineCache);
-	_deviceResources->sphereDrawingPipeline->setObjectName("Sphere mesh graphics pipeline");
+	_deviceResources->sphereDrawingPipeline->setObjectName("SphereMeshGraphicsPipeline");
 }
 
 /// <summary>Record for each element in DeviceResources::computeCommandBuffers (equal to the number of swapchain images) the command buffers corresponding
@@ -901,13 +910,14 @@ pvr::Result VulkanSPHFluidSimulation::initView()
 		pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(vectorPhysicalDevicesIndex[0]), queueCreateInfos, 2, queueAccessInfos, deviceExtensions);
 
 	_deviceResources->graphicsQueue = _deviceResources->device->getQueue(queueAccessInfos[0].familyId, queueAccessInfos[0].queueId);
-
+	_deviceResources->graphicsQueue->setObjectName("GraphicsQueue");
 
 	if (queueAccessInfos[1].familyId != -1 && queueAccessInfos[1].queueId != -1)
 	{
 		Log(LogLevel::Information, "Multiple queues support e_GRAPHICS_BIT + e_COMPUTE_BIT + WSI. These queues will be used to ping-pong work each frame");
 
 		_deviceResources->computeQueue = _deviceResources->device->getQueue(queueAccessInfos[1].familyId, queueAccessInfos[1].queueId);
+		_deviceResources->computeQueue->setObjectName("ComputeQueue");
 	}
 	else
 	{
@@ -961,17 +971,19 @@ pvr::Result VulkanSPHFluidSimulation::initView()
 		// Per swapchain command buffers
 		_deviceResources->graphicsCommandBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
 		_deviceResources->computeCommandBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
+		_deviceResources->graphicsCommandBuffers[i]->setObjectName("MainCommandBufferSwapchain" + std::to_string(i));
+		_deviceResources->computeCommandBuffers[i]->setObjectName("ComputeCommandBufferSwapchain" + std::to_string(i));
+
 		_deviceResources->computeCommandBuffers[i]->setVKSynchronization2IsSupported(true);
-		_deviceResources->graphicsCommandBuffers[i]->setObjectName(std::string("Main CommandBuffer [") + std::to_string(i) + "]");
-		_deviceResources->computeCommandBuffers[i]->setObjectName(std::string("Compute CommandBuffer [") + std::to_string(i) + "]");
 
 		// Per swapchain semaphores
 		_deviceResources->computeSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
-		_deviceResources->computeSemaphores[i]->setObjectName(std::string("Compute Semaphore [") + std::to_string(i) + "]");
-		_deviceResources->presentationSemaphores[i]->setObjectName(std::string("Presentation Semaphore [") + std::to_string(i) + "]");
-		_deviceResources->imageAcquiredSemaphores[i]->setObjectName(std::string("Image Acquisition Semaphore [") + std::to_string(i) + "]");
+
+		_deviceResources->computeSemaphores[i]->setObjectName("ComputeSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->presentationSemaphores[i]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->imageAcquiredSemaphores[i]->setObjectName("ImageAcquiredSemaphoreSwapchain" + std::to_string(i));
 
 		// Per swapchain fences
 		_deviceResources->graphicsFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);

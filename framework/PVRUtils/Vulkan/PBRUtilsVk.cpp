@@ -28,6 +28,7 @@ pvr::Texture generateIrradianceMap(
 
 	pvrvk::CommandPool cmdPool = device->createCommandPool(pvrvk::CommandPoolCreateInfo(queue->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 	pvrvk::DescriptorPool descPool = device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo(1));
+	descPool->setObjectName("pvr::utils::DescriptorPool");
 	pvr::utils::vma::Allocator allocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(device));
 
 	uint32_t numMipLevels = static_cast<uint32_t>(log2(static_cast<float>(mapSize)) + 1.0);
@@ -314,6 +315,7 @@ Texture generatePreFilteredMapMipmapStyle(pvrvk::Queue queue, pvrvk::ImageView e
 
 	pvrvk::CommandPool cmdPool = device->createCommandPool(pvrvk::CommandPoolCreateInfo(queue->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
 	pvrvk::DescriptorPool descPool = device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo(1));
+	descPool->setObjectName("pvr::utils::DescriptorPool");
 	pvr::utils::vma::Allocator allocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(device));
 
 	pvrvk::CommandBuffer cmdBuffer = cmdPool->allocateCommandBuffer();

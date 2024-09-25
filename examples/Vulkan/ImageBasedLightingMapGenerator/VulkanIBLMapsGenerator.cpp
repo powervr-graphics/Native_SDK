@@ -149,6 +149,7 @@ int main(int argc, char** argv)
 		pvr::utils::QueueAccessInfo queueAccessInfo;
 		pvrvk::Device device = pvr::utils::createDeviceAndQueues(physicalDevice, &queuePopulateInfo, 1, &queueAccessInfo);
 		pvrvk::Queue queue = device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
+		queue->setObjectName("GraphicsQueue");
 
 		// Create a Command Pool used by the utility functions
 		pvrvk::CommandPool pool = device->createCommandPool(pvrvk::CommandPoolCreateInfo(queue->getFamilyIndex(), pvrvk::CommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));

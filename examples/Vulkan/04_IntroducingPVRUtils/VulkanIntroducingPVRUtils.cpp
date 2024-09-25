@@ -196,6 +196,7 @@ pvr::Result VulkanIntroducingPVRUtils::initView()
 
 	// Get the queue
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
+	_deviceResources->queue->setObjectName("GraphicsQueue");
 
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
@@ -234,6 +235,7 @@ pvr::Result VulkanIntroducingPVRUtils::initView()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, static_cast<uint16_t>(8 * swapchainLength))
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, static_cast<uint16_t>(8 * swapchainLength))
 																						  .setMaxDescriptorSets(static_cast<uint16_t>(8 * swapchainLength)));
+	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
 
 	// create demo buffers
 	createBuffers();
@@ -243,7 +245,12 @@ pvr::Result VulkanIntroducingPVRUtils::initView()
 	{
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+
+		_deviceResources->presentationSemaphores[i]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->imageAcquiredSemaphores[i]->setObjectName("ImageAcquiredSemaphoreSwapchain" + std::to_string(i));
+
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->perFrameResourcesFences[i]->setObjectName("FenceSwapchain" + std::to_string(i));
 
 		_deviceResources->cmdBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
 	}
@@ -420,8 +427,12 @@ void VulkanIntroducingPVRUtils::recordCommandBuffers()
 	pvrvk::ClearValue clearValues[2] = { pvrvk::ClearValue(clearColorLinearSpace.x, clearColorLinearSpace.y, clearColorLinearSpace.z, 1.0f), pvrvk::ClearValue(1.f, 0u) };
 	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
 	{
+		_deviceResources->cmdBuffers[i]->setObjectName("CommandBufferSwapchain" + std::to_string(i));
+
 		// begin recording commands
 		_deviceResources->cmdBuffers[i]->begin();
+
+		pvr::utils::beginCommandBufferDebugLabel(_deviceResources->cmdBuffers[i], pvrvk::DebugUtilsLabel("MainRenderPass"));
 
 		// begin the renderpass
 		_deviceResources->cmdBuffers[i]->beginRenderPass(
@@ -483,6 +494,7 @@ void VulkanIntroducingPVRUtils::recordCommandBuffers()
 		_deviceResources->uiRenderer.getSdkLogo()->render();
 		_deviceResources->uiRenderer.endRendering();
 		_deviceResources->cmdBuffers[i]->endRenderPass();
+		pvr::utils::endCommandBufferDebugLabel(_deviceResources->cmdBuffers[i]);
 		_deviceResources->cmdBuffers[i]->end();
 	}
 }
@@ -548,6 +560,7 @@ void VulkanIntroducingPVRUtils::createPipeline()
 	pipeDesc.pipelineLayout = _deviceResources->pipelineLayout;
 
 	_deviceResources->pipeline = _deviceResources->device->createGraphicsPipeline(pipeDesc, _deviceResources->pipelineCache);
+	_deviceResources->pipeline->setObjectName("GraphicsPipeline");
 }
 
 /// <summary>Creates the buffers used throughout the demo.</summary>
@@ -564,6 +577,7 @@ void VulkanIntroducingPVRUtils::createBuffers()
 			pvrvk::BufferCreateInfo(_deviceResources->matrixMemoryView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		_deviceResources->matrixBuffer->setObjectName("MatrixBufferUBO");
 		_deviceResources->matrixMemoryView.pointToMappedMemory(_deviceResources->matrixBuffer->getDeviceMemory()->getMappedData());
 	}
 
@@ -577,6 +591,7 @@ void VulkanIntroducingPVRUtils::createBuffers()
 			pvrvk::BufferCreateInfo(_deviceResources->lightMemoryView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 			_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		_deviceResources->lightBuffer->setObjectName("LightBufferUBO");
 		_deviceResources->lightMemoryView.pointToMappedMemory(_deviceResources->lightBuffer->getDeviceMemory()->getMappedData());
 	}
 }
@@ -599,6 +614,7 @@ void VulkanIntroducingPVRUtils::createDescriptorSets(pvrvk::CommandBuffer& cmdBu
 
 		MaterialDescSet matDescSet = std::make_pair(i, _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->texDescSetLayout));
 		_deviceResources->texDescSets.push_back(matDescSet);
+		matDescSet.second->setObjectName("Material" + std::to_string(i) + "DescriptorSet");
 
 		writeDescSets.push_back(pvrvk::WriteDescriptorSet());
 		pvrvk::WriteDescriptorSet& writeDescSet = writeDescSets.back();
@@ -620,8 +636,10 @@ void VulkanIntroducingPVRUtils::createDescriptorSets(pvrvk::CommandBuffer& cmdBu
 		_deviceResources->lightUboDescSets[i] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->uboDescSetLayoutStatic);
 		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _deviceResources->lightUboDescSets[i], 0)
 									.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_deviceResources->lightBuffer, 0, _deviceResources->lightMemoryView.getDynamicSliceSize())));
+		_deviceResources->lightUboDescSets[i]->setObjectName("LightUBOSwapchain" + std::to_string(i) + "DescriptorSet");
 
 		_deviceResources->matrixUboDescSets[i] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->uboDescSetLayoutDynamic);
+		_deviceResources->matrixUboDescSets[i]->setObjectName("MatrixUBOSwapchain" + std::to_string(i) + "DescriptorSet");
 
 		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _deviceResources->matrixUboDescSets[i], 0));
 		pvrvk::WriteDescriptorSet& writeDescSet = writeDescSets.back();

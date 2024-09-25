@@ -252,6 +252,7 @@ struct PassSkyBox
 			pvrvk::Rect2D(0, 0, viewportDim.getWidth(), viewportDim.getHeight()));
 
 		_pipeline = device->createGraphicsPipeline(pipeInfo, pipelineCache);
+		_pipeline->setObjectName("SkyBoxPassGraphicsPipeline");
 	}
 
 	void createBuffers(pvrvk::Device& device, uint32_t numSwapchain, pvr::utils::vma::Allocator& vmaAllocator)
@@ -271,6 +272,7 @@ struct PassSkyBox
 				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, vmaAllocator,
 				pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			_vbo->setObjectName("SkyBoxVBO");
 
 			pvr::utils::updateHostVisibleBuffer(_vbo, quadVertices, 0, sizeof(quadVertices), true);
 		}
@@ -288,6 +290,7 @@ struct PassSkyBox
 				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, vmaAllocator,
 				pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			_buffer->setObjectName("SkyBoxUBO");
 
 			_bufferMemoryView.pointToMappedMemory(_buffer->getDeviceMemory()->getMappedData());
 		}
@@ -300,6 +303,7 @@ struct PassSkyBox
 		for (uint32_t i = 0; i < numSwapchain; ++i)
 		{
 			_descriptorSets[i] = descriptorPool->allocateDescriptorSet(_descriptorSetLayout);
+			_descriptorSets[i]->setObjectName("SkyPassSwapchain" + std::to_string(i) + "DescriptorSet");
 			writeDescSets[i * 2]
 				.set(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _descriptorSets[i], 0)
 				.setImageInfo(0, pvrvk::DescriptorImageInfo(_skyboxTex, sampler, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
@@ -436,6 +440,7 @@ struct PassBalloon : public IModelPass
 			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, vmaAllocator,
 			pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		_buffer->setObjectName("BaloonPassUBO");
 
 		_bufferMemoryView.pointToMappedMemory(_buffer->getDeviceMemory()->getMappedData());
 	}
@@ -448,6 +453,7 @@ struct PassBalloon : public IModelPass
 		for (uint32_t i = 0; i < numSwapchain; ++i, ++writeIndex)
 		{
 			_matrixDescriptorSets[i] = descpool->allocateDescriptorSet(_matrixBufferDescriptorSetLayout);
+			_matrixDescriptorSets[i]->setObjectName("BalloonPassMatrixSwapchain" + std::to_string(i) + "DescriptorSet");
 
 			writeDescSet[writeIndex]
 				.set(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _matrixDescriptorSets[i])
@@ -457,6 +463,7 @@ struct PassBalloon : public IModelPass
 		for (uint32_t i = 0; i < NumBalloon; ++i, ++writeIndex)
 		{
 			_textureDescriptorSets[i] = descpool->allocateDescriptorSet(_textureBufferDescriptorSetLayout);
+			_textureDescriptorSets[i]->setObjectName("BalloonPassTextureSwapchain" + std::to_string(i) + "DescriptorSet");
 
 			writeDescSet[writeIndex]
 				.set(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _textureDescriptorSets[i])
@@ -509,6 +516,7 @@ struct PassBalloon : public IModelPass
 			pvrvk::Rect2D(0, 0, viewportDim.getWidth(), viewportDim.getHeight()));
 
 		_pipeline = device->createGraphicsPipeline(pipeInfo, pipelineCache);
+		_pipeline->setObjectName("BalloonPassGraphicsPipeline");
 	}
 
 	void init(pvr::Shell& shell, pvrvk::Device& device, std::vector<pvrvk::Framebuffer>& framebuffers, const pvrvk::RenderPass& renderpass, pvrvk::CommandBuffer& uploadCmdBuffer,
@@ -674,6 +682,7 @@ private:
 
 		// create the left paraboloid graphics pipeline
 		_pipelines[0] = device->createGraphicsPipeline(pipeInfo, pipelineCache);
+		_pipelines[0]->setObjectName("LeftParaboloidGraphicsPipeline");
 
 		// clear viewport/scissors before resetting them
 		pipeInfo.viewport.clear();
@@ -687,6 +696,7 @@ private:
 
 		// create the right paraboloid graphics pipeline
 		_pipelines[1] = device->createGraphicsPipeline(pipeInfo, pipelineCache);
+		_pipelines[1]->setObjectName("RightParaboloidGraphicsPipeline");
 	}
 
 	void initFramebuffer(pvrvk::Device& device, uint32_t numSwapchain, pvr::utils::vma::Allocator& vmaAllocator)
@@ -719,6 +729,7 @@ private:
 
 		// create the renderpass to use when rendering into the paraboloid
 		_renderPass = device->createRenderPass(renderPassInfo);
+		_renderPass->setObjectName("RenderPass");
 
 		// the paraboloid will be split up into left and right sections when rendering
 		const pvrvk::Extent2D framebufferDim(ParaboloidTexSize * 2, ParaboloidTexSize);
@@ -775,6 +786,7 @@ private:
 			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, vmaAllocator,
 			pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+		_buffer->setObjectName("ParaboloidPassUBO");
 
 		_bufferMemoryView.pointToMappedMemory(_buffer->getDeviceMemory()->getMappedData());
 	}
@@ -798,6 +810,7 @@ private:
 		for (uint32_t i = 0; i < numSwapchain; ++i)
 		{
 			_matrixDescriptorSets[i] = descriptorPool->allocateDescriptorSet(_descriptorSetLayout);
+			_matrixDescriptorSets[i]->setObjectName("ParaboloidPassMatrixSwapchain" + std::to_string(i) + "DescriptorSet");
 			descSetWrites[i]
 				.set(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _matrixDescriptorSets[i], 0)
 				.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_buffer, 0, _bufferMemoryView.getDynamicSliceSize()));
@@ -986,6 +999,7 @@ struct PassStatue : public IModelPass
 				pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 				pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT, vmaAllocator,
 				pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+			_buffer->setObjectName("StatuePassUBO");
 
 			_bufferMemoryView.pointToMappedMemory(_buffer->getDeviceMemory()->getMappedData());
 		}
@@ -999,6 +1013,7 @@ struct PassStatue : public IModelPass
 		for (uint32_t i = 0; i < numSwapchain; ++i)
 		{
 			_descriptorSets[i] = descriptorPool->allocateDescriptorSet(_descriptorSetLayout);
+			_descriptorSets[i]->setObjectName("StatuePassSwapchain" + std::to_string(i) + "DescriptorSet");
 			writeDescSets[i * 3]
 				.set(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _descriptorSets[i], 0)
 				.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_buffer, 0, _bufferMemoryView.getDynamicSliceSize()));
@@ -1074,6 +1089,7 @@ struct PassStatue : public IModelPass
 			pipeInfo.vertexShader.setShader(shaders[effectShaders[i].first]);
 			pipeInfo.fragmentShader.setShader(shaders[effectShaders[i].second]);
 			_effectPipelines[i] = device->createGraphicsPipeline(pipeInfo, pipelineCache);
+			_effectPipelines[i]->setObjectName("EffectGraphicsPipeline");
 		}
 	}
 
@@ -1327,6 +1343,7 @@ pvr::Result VulkanGlass::initView()
 	_deviceResources->device = pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(0), &populateInfo, 1, &queueAccessInfo);
 	// Get the queue
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
+	_deviceResources->queue->setObjectName("GraphicsQueue");
 
 	// Create memory allocator
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
@@ -1369,6 +1386,7 @@ pvr::Result VulkanGlass::initView()
 		.setMaxDescriptorSets(static_cast<uint16_t>(12 * _swapchainLength));
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(descPoolInfo);
+	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
 
 	// Prepare the per swapchain resources
 	// set Swapchain and depth-stencil attachment image initial layout
@@ -1379,7 +1397,11 @@ pvr::Result VulkanGlass::initView()
 
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->presentationSemaphores[i]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->imageAcquiredSemaphores[i]->setObjectName("ImageAcquiredSemaphoreSwapchain" + std::to_string(i));
+
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->perFrameResourcesFences[i]->setObjectName("FenceSwapchain" + std::to_string(i));
 	}
 
 	// Create the pipeline cache
@@ -1535,6 +1557,7 @@ void VulkanGlass::recordCommands()
 	{
 		//---------------
 		// Render the UIRenderer
+		_deviceResources->uiSecondaryCommandBuffers[i]->setObjectName("UISecondaryCommandBufferSwapchain" + std::to_string(i));
 		_deviceResources->uiRenderer.beginRendering(_deviceResources->uiSecondaryCommandBuffers[i], _deviceResources->onScreenFramebuffer[i]);
 		_deviceResources->uiRenderer.getSdkLogo()->render();
 		_deviceResources->uiRenderer.getDefaultTitle()->render();
@@ -1545,7 +1568,10 @@ void VulkanGlass::recordCommands()
 		// record the statue pass with the current effect
 		_deviceResources->passStatue.recordCommands(_deviceResources->commandPool, _currentEffect, _deviceResources->onScreenFramebuffer[i], i);
 
+		_deviceResources->sceneCommandBuffers[i]->setObjectName("SceneCommandBufferSwapchain" + std::to_string(i));
 		_deviceResources->sceneCommandBuffers[i]->begin();
+
+		pvr::utils::beginCommandBufferDebugLabel(_deviceResources->sceneCommandBuffers[i], pvrvk::DebugUtilsLabel("MainRenderPass"));
 
 		// Render into the paraboloid
 		_deviceResources->sceneCommandBuffers[i]->beginRenderPass(_deviceResources->passParaboloid.getFramebuffer(i), pvrvk::Rect2D(0, 0, 2 * ParaboloidTexSize, ParaboloidTexSize),
@@ -1569,6 +1595,7 @@ void VulkanGlass::recordCommands()
 		_deviceResources->sceneCommandBuffers[i]->executeCommands(_deviceResources->uiSecondaryCommandBuffers[i]);
 
 		_deviceResources->sceneCommandBuffers[i]->endRenderPass();
+		pvr::utils::endCommandBufferDebugLabel(_deviceResources->sceneCommandBuffers[i]);
 		_deviceResources->sceneCommandBuffers[i]->end();
 	}
 }

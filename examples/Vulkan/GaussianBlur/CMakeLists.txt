@@ -33,7 +33,7 @@ add_assets_to_target(VulkanGaussianBlur
 	ASSET_FOLDER ${ASSET_FOLDER} 
 	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../assets/Postprocessing
 	FILE_LIST 
-		Lenna.pvr)
+		Mandrill.pvr)
 
 ### Shaders that need to be compiled to SpirV (Vulkan) ###
 # During build time, glslangvalidator will be called to create a "<shadername.extension>.spv" file

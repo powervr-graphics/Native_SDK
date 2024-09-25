@@ -137,6 +137,7 @@ public:
 		ubo = pvr::utils::createBuffer(device, pvrvk::BufferCreateInfo(uboView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
 			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, allocator);
 		uboView.pointToMappedMemory(ubo->getDeviceMemory()->getMappedData());
+		ubo->setObjectName("SkyBoxUBO");
 
 		// /// CREATE THE PIPELINE OBJECT FOR THE SKYBOX /// //
 		// create skybox descriptor set layout
@@ -154,6 +155,7 @@ public:
 
 		// /// CREATE THE SKYBOX DESCRIPTOR SET /// //
 		descSet = descPool->allocateDescriptorSet(descSetLayout);
+		descSet->setObjectName("SkyBoxDescriptorSet");
 
 		setSkyboxImage(assetProvider, queue, commandPool, descPool, allocator, sampler);
 	}
@@ -275,6 +277,7 @@ private:
 			pvrvk::Rect2D(0, 0, viewportDim.getWidth(), viewportDim.getHeight()));
 
 		pipeline = device->createGraphicsPipeline(pipeInfo, pipelineCache);
+		pipeline->setObjectName("SkyBoxGraphicsPipeline");
 	}
 
 	pvrvk::GraphicsPipeline pipeline;
@@ -343,6 +346,7 @@ private:
 		pipeDesc.vertexShader.setShaderConstant(0, pvrvk::ShaderConstantInfo(0, &shaderConstantHasTextures, sizeof(VkBool32)));
 
 		pipeline = device->createGraphicsPipeline(pipeDesc, pipelineCache);
+		pipeline->setObjectName("SpherePassGraphicsPipeline");
 	}
 
 	pvr::assets::ModelHandle model;
@@ -440,6 +444,7 @@ private:
 		pipeDesc.flags = pvrvk::PipelineCreateFlags::e_ALLOW_DERIVATIVES_BIT;
 
 		pipeline = device->createGraphicsPipeline(pipeDesc, pipelineCache);
+		pipeline->setObjectName("HelmetPassGraphicsPipeline");
 	}
 
 	void loadTextures(pvr::IAssetProvider& assetProvider, pvrvk::Device& device, pvrvk::CommandBuffer& uploadCmdBuffer, pvr::utils::vma::Allocator& allocator)
@@ -654,6 +659,7 @@ pvr::Result VulkanImageBasedLighting::initView()
 
 	// Get the queue
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
+	_deviceResources->queue->setObjectName("GraphicsQueue");
 
 	// validate the supported swapchain image usage for source transfer option for capturing screenshots.
 	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = physicalDevice->getSurfaceCapabilities(surface);
@@ -693,14 +699,21 @@ pvr::Result VulkanImageBasedLighting::initView()
 																						  .setMaxDescriptorSets(static_cast<uint16_t>(5 * _swapchainLength)));
 
 	if (!_deviceResources->descriptorPool) { return pvr::Result::UnknownError; }
+	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
 
 	// Create synchronization objects and command buffers
 	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->presentationSemaphores[i]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->imageAcquiredSemaphores[i]->setObjectName("ImageAcquiredSemaphoreSwapchain" + std::to_string(i));
+
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->perFrameResourcesFences[i]->setObjectName("FenceSwapchain" + std::to_string(i));
+
 		_deviceResources->cmdBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
+		_deviceResources->cmdBuffers[i]->setObjectName("CommandBufferSwapchain" + std::to_string(i));
 		_updateCommands[i] = true;
 	}
 
@@ -742,6 +755,10 @@ pvr::Result VulkanImageBasedLighting::initView()
 	_deviceResources->descSets[0] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->descSetLayouts[0]);
 	_deviceResources->descSets[1] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->descSetLayouts[1]);
 	_deviceResources->descSets[2] = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->descSetLayouts[2]);
+
+	_deviceResources->descSets[0]->setObjectName("DynamicUBODescriptorSet");
+	_deviceResources->descSets[1]->setObjectName("StaticUBODescriptorSet");
+	_deviceResources->descSets[2]->setObjectName("PerObjectUBODescriptorSet");
 
 	bool requireSubmission = false;
 
@@ -953,6 +970,8 @@ void VulkanImageBasedLighting::recordCommandBuffers(uint32_t swapIndex)
 	// begin recording commands
 	_deviceResources->cmdBuffers[swapIndex]->begin();
 
+	pvr::utils::beginCommandBufferDebugLabel(_deviceResources->cmdBuffers[swapIndex], pvrvk::DebugUtilsLabel("MainRenderPass"));
+
 	// begin the renderpass
 	_deviceResources->cmdBuffers[swapIndex]->beginRenderPass(
 		_deviceResources->onScreenFramebuffer[swapIndex], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), true, clearValues, ARRAY_SIZE(clearValues));
@@ -982,6 +1001,7 @@ void VulkanImageBasedLighting::recordCommandBuffers(uint32_t swapIndex)
 	_deviceResources->uiRenderer.endRendering();
 
 	_deviceResources->cmdBuffers[swapIndex]->endRenderPass();
+	pvr::utils::endCommandBufferDebugLabel(_deviceResources->cmdBuffers[swapIndex]);
 	_deviceResources->cmdBuffers[swapIndex]->end();
 }
 
@@ -1053,6 +1073,7 @@ void VulkanImageBasedLighting::createUbos()
 		_deviceResources->uboPerFrame.buffer = pvr::utils::createBuffer(_deviceResources->device, pvrvk::BufferCreateInfo(size, pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
 			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
 			_deviceResources->vmaAllocator);
+		_deviceResources->uboPerFrame.buffer->setObjectName("SceneCameraParamsUBO");
 
 		_deviceResources->uboPerFrame.view.pointToMappedMemory(_deviceResources->uboPerFrame.buffer->getDeviceMemory()->getMappedData());
 	}
@@ -1068,6 +1089,7 @@ void VulkanImageBasedLighting::createUbos()
 		_deviceResources->uboWorld.buffer = pvr::utils::createBuffer(_deviceResources->device, pvrvk::BufferCreateInfo(size, pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
 			pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
 			_deviceResources->vmaAllocator);
+		_deviceResources->uboWorld.buffer->setObjectName("ModelUBO");
 		_deviceResources->uboWorld.view.pointToMappedMemory(_deviceResources->uboWorld.buffer->getDeviceMemory()->getMappedData());
 	}
 
@@ -1082,6 +1104,7 @@ void VulkanImageBasedLighting::createUbos()
 		_deviceResources->uboLights.buffer = pvr::utils::createBuffer(_deviceResources->device,
 			pvrvk::BufferCreateInfo(_deviceResources->uboLights.view.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, _deviceResources->vmaAllocator);
+		_deviceResources->uboLights.buffer->setObjectName("LightsUBO");
 
 		_deviceResources->uboLights.view.pointToMappedMemory(_deviceResources->uboLights.buffer->getDeviceMemory()->getMappedData());
 
@@ -1109,6 +1132,7 @@ void VulkanImageBasedLighting::createUbos()
 		_deviceResources->uboMaterial.buffer = pvr::utils::createBuffer(_deviceResources->device,
 			pvrvk::BufferCreateInfo(_deviceResources->uboMaterial.view.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 			pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, _deviceResources->vmaAllocator);
+		_deviceResources->uboMaterial.buffer->setObjectName("MaterialUBO");
 
 		_deviceResources->uboMaterial.view.pointToMappedMemory(_deviceResources->uboMaterial.buffer->getDeviceMemory()->getMappedData());
 

@@ -15,7 +15,7 @@ const char VertShaderSrcFile[] = "VertShader_ES3.vsh";
 const char CompShaderSrcFile[] = "CompShader_ES3.csh";
 
 // PVR texture files
-const char StatueTexFile[] = "Lenna.pvr";
+const char StatueTexFile[] = "Mandrill.pvr";
 
 const char* attribNames[] = {
 	"inPosition",
@@ -155,7 +155,7 @@ void OpenGLESGaussianBlur::createResources()
 	pvr::utils::throwOnGlError("Failed to create fragment based vertical Gaussian Blur program");
 
 	// Load the texture from disk
-	_deviceResources->inputTexture = pvr::utils::textureUpload(*this, "Lenna.pvr", _deviceResources->texture);
+	_deviceResources->inputTexture = pvr::utils::textureUpload(*this, "Mandrill.pvr", _deviceResources->texture);
 
 	// Create and Allocate Output texture.
 	gl::GenTextures(1, &_deviceResources->horizontallyBlurredTexture);

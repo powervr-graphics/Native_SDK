@@ -238,7 +238,10 @@ void VulkanIntroducingUIRenderer::recordCommandBuffers()
 	{
 		// commandbuffer intro
 		{
+			_deviceResources->cmdBufferWithIntro[i]->setObjectName("IntroCommandBufferSwapchain" + std::to_string(i));
+
 			_deviceResources->cmdBufferWithIntro[i]->begin(_deviceResources->onScreenFramebuffer[i], 0);
+			pvr::utils::beginCommandBufferDebugLabel(_deviceResources->cmdBufferWithIntro[i], pvrvk::DebugUtilsLabel("IntroCommandBuffer"));
 			_deviceResources->uiRenderer.beginRendering(_deviceResources->cmdBufferWithIntro[i]);
 			_deviceResources->background->render();
 			// This is the difference
@@ -247,18 +250,23 @@ void VulkanIntroducingUIRenderer::recordCommandBuffers()
 			_deviceResources->uiRenderer.getSdkLogo()->render();
 			// Tells uiRenderer to do all the pending text rendering now
 			_deviceResources->uiRenderer.endRendering();
+			pvr::utils::endCommandBufferDebugLabel(_deviceResources->cmdBufferWithIntro[i]);
 			_deviceResources->cmdBufferWithIntro[i]->end();
 		}
 
 		// commandbuffer scrolling text
 		{
+			_deviceResources->cmdBufferWithText[i]->setObjectName("TextCommandBufferSwapchain" + std::to_string(i));
+
 			_deviceResources->cmdBufferWithText[i]->begin(_deviceResources->onScreenFramebuffer[i], 0);
+			pvr::utils::beginCommandBufferDebugLabel(_deviceResources->cmdBufferWithText[i], pvrvk::DebugUtilsLabel("TextRenderPass"));
 			_deviceResources->uiRenderer.beginRendering(_deviceResources->cmdBufferWithText[i]);
 			_deviceResources->background->render();
 			_deviceResources->centralTextGroup[i]->render();
 			_deviceResources->uiRenderer.getSdkLogo()->render();
 			// Tells uiRenderer to do all the pending text rendering now
 			_deviceResources->uiRenderer.endRendering();
+			pvr::utils::endCommandBufferDebugLabel(_deviceResources->cmdBufferWithText[i]);
 			_deviceResources->cmdBufferWithText[i]->end();
 		}
 	}
@@ -371,6 +379,7 @@ pvr::Result VulkanIntroducingUIRenderer::initView()
 
 	// get the queue
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
+	_deviceResources->queue->setObjectName("GraphicsQueue");
 
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 
@@ -421,9 +430,14 @@ pvr::Result VulkanIntroducingUIRenderer::initView()
 		_deviceResources->cmdBufferWithIntro[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
 		_deviceResources->cmdBufferWithText[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
 		_deviceResources->primaryCommandBuffer[i] = _deviceResources->commandPool->allocateCommandBuffer();
+
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->presentationSemaphores[i]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->imageAcquiredSemaphores[i]->setObjectName("ImageAcquiredSemaphoreSwapchain" + std::to_string(i));
+
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->perFrameResourcesFences[i]->setObjectName("FenceSwapchain" + std::to_string(i));
 	}
 
 	_deviceResources->primaryCommandBuffer[0]->begin();

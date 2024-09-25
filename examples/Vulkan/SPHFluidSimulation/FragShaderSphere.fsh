@@ -6,5 +6,5 @@ layout(location = 0) out mediump vec4 oColor;
 
 void main()
 {
-	oColor = vec4(vNormal.xyz, 0.0);
+	oColor = vec4(vNormal.xyz, 1.0);
 }

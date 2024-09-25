@@ -534,6 +534,8 @@ pvr::Result VulkanRayTracedHardShadows::initView()
 																						  .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, static_cast<uint16_t>(16 * _numSwapImages))
 																						  .setMaxDescriptorSets(static_cast<uint16_t>(16 * _numSwapImages)));
 
+	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
+
 	// Allocate the command buffers out of the command pool
 	for (uint32_t i = 0; i < _numSwapImages; ++i)
 	{
@@ -541,9 +543,17 @@ pvr::Result VulkanRayTracedHardShadows::initView()
 		_deviceResources->onScreenCmdBuffers[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
 		_deviceResources->raytracedCmdBuffers[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
 
+		_deviceResources->primaryCmdBuffers[i]->setObjectName("MainCommandBufferSwapchain" + std::to_string(i));
+		_deviceResources->onScreenCmdBuffers[i]->setObjectName("OnScreenSecondaryCommandBufferSwapchain" + std::to_string(i));
+		_deviceResources->raytracedCmdBuffers[i]->setObjectName("RaytracedSecondaryCommandBufferSwapchain" + std::to_string(i));
+
 		_deviceResources->presentationSemaphores[i] = _deviceResources->device->createSemaphore();
 		_deviceResources->imageAcquiredSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->presentationSemaphores[i]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(i));
+		_deviceResources->imageAcquiredSemaphores[i]->setObjectName("ImageAcquiredSemaphoreSwapchain" + std::to_string(i));
+
 		_deviceResources->perFrameResourcesFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->perFrameResourcesFences[i]->setObjectName("FenceSwapchain" + std::to_string(i));
 	}
 
 	// Handle device rotation
@@ -753,6 +763,7 @@ std::pair<pvrvk::PhysicalDevice, pvrvk::Surface> VulkanRayTracedHardShadows::cre
 
 	// Get queue
 	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
+	_deviceResources->queue->setObjectName("GraphicsQueue");
 
 	// Create the command pool
 	_deviceResources->commandPool =
@@ -854,6 +865,11 @@ void VulkanRayTracedHardShadows::createDescriptorSets()
 	_deviceResources->raytracedImageStoreDescriptorSet = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->raytracedImageStoreDescriptorSetLayout);
 	_deviceResources->raytracedImageSamplerDescriptorSet = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->raytracedImageSamplerDescriptorSetLayout);
 	_deviceResources->bindlessResourcesDescriptorSet = _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->bindlessResourcesDescriptorSetLayout);
+
+	_deviceResources->perFrameDescriptorSet->setObjectName("PerFrameDescriptorSet");
+	_deviceResources->raytracedImageStoreDescriptorSet->setObjectName("RaytracedImageStoreDescriptorSet");
+	_deviceResources->raytracedImageSamplerDescriptorSet->setObjectName("RaytracedImageSamplerDescriptorSet");
+	_deviceResources->bindlessResourcesDescriptorSet->setObjectName("BindlessResourcesDescriptorSet");
 
 	// A vector to update all the descriptor sets in one go
 	std::vector<pvrvk::WriteDescriptorSet> writeDescSets;
@@ -1023,6 +1039,7 @@ void VulkanRayTracedHardShadows::createOnScreenPipeline()
 
 	// Create the pipeline
 	_deviceResources->onScreenPipeline = _deviceResources->device->createGraphicsPipeline(pipelineCreateInfo, _deviceResources->pipelineCache);
+	_deviceResources->onScreenPipeline->setObjectName("OnScreenGraphicsPipeline");
 }
 
 uint32_t VulkanRayTracedHardShadows::makeMultipleOf(uint32_t a, uint32_t b) {
@@ -1071,6 +1088,7 @@ void VulkanRayTracedHardShadows::createShaderBindingTable()
 			pvrvk::BufferUsageFlags::e_TRANSFER_SRC_BIT | pvrvk::BufferUsageFlags::e_SHADER_BINDING_TABLE_BIT_KHR | pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT),
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT);
+	_deviceResources->raytraceShaderBindingTable->setObjectName("RaytraceShaderBindingTableBuffer");
 
 	// Map the memory from this new buffer so it can be written to.
 	void* mapped = _deviceResources->raytraceShaderBindingTable->getDeviceMemory()->map(0, VK_WHOLE_SIZE);
@@ -1218,6 +1236,7 @@ void VulkanRayTracedHardShadows::createModelBuffers(pvrvk::CommandBuffer& upload
 			pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR);
 		_deviceResources->vertexBuffers.push_back(pvr::utils::createBuffer(_deviceResources->device, vertexBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
 			pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT));
+		_deviceResources->vertexBuffers.back()->setObjectName("VBO");
 		pvr::utils::updateBufferUsingStagingBuffer(
 			_deviceResources->device, _deviceResources->vertexBuffers[meshID], uploadCmd, vertices.data(), 0, sizeof(pvr::utils::ASVertexFormat) * vertices.size());
 
@@ -1228,6 +1247,7 @@ void VulkanRayTracedHardShadows::createModelBuffers(pvrvk::CommandBuffer& upload
 			pvrvk::BufferUsageFlags::e_SHADER_DEVICE_ADDRESS_BIT | pvrvk::BufferUsageFlags::e_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR);
 		_deviceResources->indexBuffers.push_back(pvr::utils::createBuffer(_deviceResources->device, indexBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT,
 			pvrvk::MemoryPropertyFlags::e_NONE, nullptr, pvr::utils::vma::AllocationCreateFlags::e_NONE, pvrvk::MemoryAllocateFlags::e_DEVICE_ADDRESS_BIT));
+		_deviceResources->indexBuffers.back()->setObjectName("IBO");
 		pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, _deviceResources->indexBuffers[meshID], uploadCmd, indices.data(), 0, sizeof(uint32_t) * indices.size());
 
 		// Need to track the number of elements in each buffer for when the acceleration structure is built
@@ -1242,12 +1262,14 @@ void VulkanRayTracedHardShadows::createModelBuffers(pvrvk::CommandBuffer& upload
 	_deviceResources->instanceTransformBuffer = pvr::utils::createBuffer(_deviceResources->device, transformBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT);
 	pvr::utils::updateBufferUsingStagingBuffer(
 		_deviceResources->device, _deviceResources->instanceTransformBuffer, uploadCmd, _instanceTransforms.data(), 0, sizeof(glm::mat4x4) * _instanceTransforms.size());
+	_deviceResources->instanceTransformBuffer->setObjectName("instanceTransformSBO");
 
 	// Create and upload the material data buffer
 	pvrvk::BufferCreateInfo materialColorBufferInfo;
 	materialColorBufferInfo.setSize(sizeof(glm::vec4) * diffuseColors.size());
 	materialColorBufferInfo.setUsageFlags(pvrvk::BufferUsageFlags::e_STORAGE_BUFFER_BIT | pvrvk::BufferUsageFlags::e_TRANSFER_DST_BIT);
 	_deviceResources->materialBuffer = pvr::utils::createBuffer(_deviceResources->device, materialColorBufferInfo, pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT);
+	_deviceResources->materialBuffer->setObjectName("MaterialSBO");
 	pvr::utils::updateBufferUsingStagingBuffer(_deviceResources->device, _deviceResources->materialBuffer, uploadCmd, diffuseColors.data(), 0, sizeof(glm::vec4) * diffuseColors.size());
 }
 
@@ -1267,6 +1289,7 @@ void VulkanRayTracedHardShadows::createCameraBuffer()
 		pvrvk::BufferCreateInfo(_deviceResources->CameraBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_deviceResources->CameraBuffer->setObjectName("CameraUBO");
 
 	_deviceResources->CameraBufferView.pointToMappedMemory(_deviceResources->CameraBuffer->getDeviceMemory()->getMappedData());
 }
@@ -1292,6 +1315,7 @@ void VulkanRayTracedHardShadows::createLightBuffer()
 		pvrvk::BufferCreateInfo(_deviceResources->lightDataBufferView.getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT), pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT,
 		pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT | pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT,
 		_deviceResources->vmaAllocator, pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
+	_deviceResources->lightDataBuffer->setObjectName("LightDataUBO");
 
 	_deviceResources->lightDataBufferView.pointToMappedMemory(_deviceResources->lightDataBuffer->getDeviceMemory()->getMappedData());
 
@@ -1385,6 +1409,8 @@ void VulkanRayTracedHardShadows::recordMainCommandBuffer()
 		{
 			_deviceResources->primaryCmdBuffers[i]->begin();
 
+			pvr::utils::beginCommandBufferDebugLabel(_deviceResources->primaryCmdBuffers[i], pvrvk::DebugUtilsLabel("MainRenderPassSwapchain" + std::to_string(i)));
+
 			pvrvk::Rect2D renderArea(0, 0, _windowWidth, _windowHeight);
 
 			// Raytrace scene and write to offscreen render target
@@ -1398,6 +1424,8 @@ void VulkanRayTracedHardShadows::recordMainCommandBuffer()
 			_deviceResources->primaryCmdBuffers[i]->executeCommands(_deviceResources->onScreenCmdBuffers[i]);
 
 			_deviceResources->primaryCmdBuffers[i]->endRenderPass();
+
+			pvr::utils::endCommandBufferDebugLabel(_deviceResources->primaryCmdBuffers[i]);
 
 			_deviceResources->primaryCmdBuffers[i]->end();
 		}
