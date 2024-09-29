@@ -308,7 +308,7 @@ public:
 		if (isFileCompressed) { flags |= CompressedFlag; }
 		else
 		{
-			flags &= !static_cast<bool>(static_cast<uint32_t>(CompressedFlag));
+			flags &= ~static_cast<uint32_t>(CompressedFlag);
 		}
 	}
 
@@ -319,7 +319,7 @@ public:
 		if (isPreMultiplied) { flags |= PremultipliedFlag; }
 		else
 		{
-			flags &= !static_cast<bool>(static_cast<uint32_t>(PremultipliedFlag));
+			flags &= ~static_cast<uint32_t>(PremultipliedFlag);
 		}
 	}
 
