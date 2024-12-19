@@ -8951,7 +8951,7 @@ struct PerformanceValueINTEL: private VkPerformanceValueINTEL
 	}
     inline const PerformanceValueTypeINTEL& getType() const { return (PerformanceValueTypeINTEL&)type; }
 	inline void setType(const PerformanceValueTypeINTEL& inType) { memcpy(&this->type, &inType, sizeof(this->type)); }
-    inline const PerformanceValueDataINTEL& getData() const { return (PerformanceValueDataINTEL&)data; }
+	inline const PerformanceValueDataINTEL& getData() const { return *reinterpret_cast<const PerformanceValueDataINTEL *>(&data); }
 	inline void setData(const PerformanceValueDataINTEL& inData) { memcpy(&this->data, &inData, sizeof(this->data)); }
 	inline VkPerformanceValueINTEL& get() { return *this; }
 	inline const VkPerformanceValueINTEL& get() const { return *this; }

@@ -5,7 +5,7 @@
 find_package(PkgConfig)
 
 if(NOT XCB_FIND_COMPONENTS)
-    set(XCB_FIND_COMPONENTS xcb)
+    set(XCB_FIND_COMPONENTS XCB)
 endif()
 
 include(FindPackageHandleStandardArgs)

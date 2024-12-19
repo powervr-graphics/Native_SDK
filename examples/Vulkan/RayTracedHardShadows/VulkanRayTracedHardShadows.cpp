@@ -1375,7 +1375,7 @@ void VulkanRayTracedHardShadows::updateSceneAnimation()
 		// For each mesh node update the transform
 		for (uint32_t i = 0; i < _scene->getNumMeshNodes(); i++) { _instanceTransforms.at(i) = _scene->getWorldMatrix(_scene->getNodeIdForMeshNodeId(i)); }
 
-		glm::mat4x4 move = glm::translate(glm::vec3(0, 1, 0));
+		//glm::mat4x4 move = glm::translate(glm::vec3(0, 1, 0));
 		// for (uint32_t i = 0; i < _instanceTransforms.size(); i++) { _instanceTransforms.at(i) *= move; }
 
 		// Update the acceleration structure

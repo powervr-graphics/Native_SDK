@@ -623,22 +623,17 @@ public:
 
 	/// <summary>Default constructor for VulkanIntroducingPVRShell used to initialise the variables used throughout the demo.</summary>
 	VulkanIntroducingPVRShell()
-		: // Vulkan resource handles
-		  _instance(VK_NULL_HANDLE), _physicalDevice(VK_NULL_HANDLE), _surface(VK_NULL_HANDLE), _swapchain(VK_NULL_HANDLE), _device(VK_NULL_HANDLE), _vbo(VK_NULL_HANDLE),
-		  _vboMemory(VK_NULL_HANDLE), _modelViewProjectionMemory(VK_NULL_HANDLE), _modelViewProjectionBuffer(VK_NULL_HANDLE), _descriptorPool(VK_NULL_HANDLE),
-		  _renderPass(VK_NULL_HANDLE), _queue(VK_NULL_HANDLE), _pipelineLayout(VK_NULL_HANDLE), _graphicsPipeline(VK_NULL_HANDLE), _commandPool(VK_NULL_HANDLE),
-		  _pipelineCache(VK_NULL_HANDLE), _staticDescriptorSetLayout(VK_NULL_HANDLE), _dynamicDescriptorSetLayout(VK_NULL_HANDLE), _staticDescriptorSet(VK_NULL_HANDLE),
-		  _dynamicDescriptorSet(VK_NULL_HANDLE), _triangleImage(VK_NULL_HANDLE), _triangleImageView(VK_NULL_HANDLE), _triangleImageMemory(VK_NULL_HANDLE),
-		  _bilinearSampler(VK_NULL_HANDLE), _vertexShaderModule(VK_NULL_HANDLE), _fragmentShaderModule(VK_NULL_HANDLE),
-
-		  // initialise variables used for animation
-		  _modelMatrix(glm::mat4(1)), _viewProjectionMatrix(glm::mat4(1)), _rotationAngle(45.0f),
-
-		  // initialise the other variables used throughout the demo
-		  _enabledInstanceExtensionNames(0), _enabledLayerNames(0), _enabledDeviceExtensionNames(0), _physicalDeviceMemoryProperties(), _physicalDeviceProperties(),
-		  _currentFrameIndex(0), _swapchainLength(0), _swapchainColorFormat(VK_FORMAT_UNDEFINED), _depthStencilFormat(VK_FORMAT_UNDEFINED),
-		  _triangleImageFormat(VK_FORMAT_UNDEFINED), _swapchainIndex(-1), _viewport(), _scissor(), _vboStride(-1), _graphicsQueueFamilyIndex(-1), _modelViewProjectionBufferSize(-1),
-		  _dynamicBufferAlignedSize(-1), _textureDimensions(), _textureData(0), _numDebugCallbacks(2), _modelViewProjectionMappedMemory(0)
+		: _instance(VK_NULL_HANDLE), _enabledInstanceExtensionNames(0), _enabledLayerNames(0), _physicalDevice(VK_NULL_HANDLE), _physicalDeviceMemoryProperties(),
+		  _physicalDeviceProperties(), _surface(VK_NULL_HANDLE), _swapchain(VK_NULL_HANDLE), _swapchainLength(0), _swapchainColorFormat(VK_FORMAT_UNDEFINED),
+		  _device(VK_NULL_HANDLE), _enabledDeviceExtensionNames(0), _vbo(VK_NULL_HANDLE), _vboMemory(VK_NULL_HANDLE), _modelViewProjectionBuffer(VK_NULL_HANDLE),
+		  _modelViewProjectionMemory(VK_NULL_HANDLE), _modelViewProjectionMappedMemory(0), _modelViewProjectionBufferSize(-1), _descriptorPool(VK_NULL_HANDLE),
+		  _staticDescriptorSetLayout(VK_NULL_HANDLE), _dynamicDescriptorSetLayout(VK_NULL_HANDLE), _staticDescriptorSet(VK_NULL_HANDLE), _dynamicDescriptorSet(VK_NULL_HANDLE),
+		  _renderPass(VK_NULL_HANDLE), _depthStencilFormat(VK_FORMAT_UNDEFINED), _queue(VK_NULL_HANDLE), _triangleImage(VK_NULL_HANDLE), _triangleImageView(VK_NULL_HANDLE),
+		  _triangleImageFormat(VK_FORMAT_UNDEFINED), _triangleImageMemory(VK_NULL_HANDLE), _bilinearSampler(VK_NULL_HANDLE), _commandPool(VK_NULL_HANDLE),
+		  _pipelineLayout(VK_NULL_HANDLE), _graphicsPipeline(VK_NULL_HANDLE), _pipelineCache(VK_NULL_HANDLE), _vertexShaderModule(VK_NULL_HANDLE),
+		  _fragmentShaderModule(VK_NULL_HANDLE), _currentFrameIndex(0), _swapchainIndex(-1), _graphicsQueueFamilyIndex(-1), _dynamicBufferAlignedSize(-1),
+		  _modelMatrix(glm::mat4(1)), _viewProjectionMatrix(glm::mat4(1)), _rotationAngle(45.0f), _viewport(), _scissor(), _vboStride(-1), _textureDimensions(),
+		  _textureData(0), _numDebugCallbacks(2)
 	{
 		for (uint32_t i = 0; i < _swapchainLength; ++i)
 		{

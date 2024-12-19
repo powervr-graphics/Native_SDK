@@ -312,7 +312,7 @@ pvr::Result VulkanSubgroups::initView()
 	// Other multi queue approaches may be possible i.e. making use of additional queues which do not support graphics/WSI
 	_useMultiQueue = false;
 
-	if (queueAccessInfos[1].familyId != -1 && queueAccessInfos[1].queueId != -1)
+	if (queueAccessInfos[1].familyId != static_cast<uint32_t>(-1) && queueAccessInfos[1].queueId != static_cast<uint32_t>(-1))
 	{
 		_deviceResources->queues[1] = _deviceResources->device->getQueue(queueAccessInfos[1].familyId, queueAccessInfos[1].queueId);
 		_deviceResources->queues[1]->setObjectName("Queue1");
@@ -695,18 +695,12 @@ bool VulkanSubgroups::calculateDemoSetting()
 			workgroupSizeSet = true;
 
 			// Retrieve the values set by the user
-			int32_t width = 0, height = 0;
-			_cmdLine.getIntOption("-wgWidth", width);
-			_cmdLine.getIntOption("-wgHeight", height);
+			uint32_t width = 0, height = 0;
+			_cmdLine.getUintOption("-wgWidth", width);
+			_cmdLine.getUintOption("-wgHeight", height);
 
-			// Are the values too small?
-			if (width <= 0 || height <= 0)
-			{
-				Log(LogLevel::Warning, "Workgroup sizes cannot be 0 or less, you have passed (%i, %i)", width, height);
-				workgroupSizeSet = false;
-			}
 			// Are the values too large?
-			else if (width > limits.getMaxComputeWorkGroupSize()[0] || height > limits.getMaxComputeWorkGroupSize()[1])
+			if (width > limits.getMaxComputeWorkGroupSize()[0] || height > limits.getMaxComputeWorkGroupSize()[1])
 			{
 				Log(LogLevel::Warning, "Workgroup dimensions are too large, (%i, %i) must be smaller than the max (%i, %i)", width, height, limits.getMaxComputeWorkGroupSize()[0],
 					limits.getMaxComputeWorkGroupSize()[1]);

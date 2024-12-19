@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.10)
 
 # Adds the correct executable file (Windows MSVS/MinGW, Linux, MacOS, iOS or libary(Android)
 # Optional parameters:

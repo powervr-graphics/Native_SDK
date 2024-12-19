@@ -741,7 +741,7 @@ pvr::Result VulkanGameOfLife::initView()
 	// Graphics + Compute + WSI support.
 	// Other multi queue approaches may be possible i.e. making use of additional queues which do not support graphics/WSI
 	useMultiQueue = false;
-	if (queueAccessInfos[1].familyId != -1 && queueAccessInfos[1].queueId != -1)
+	if (queueAccessInfos[1].familyId != static_cast<uint32_t>(-1) && queueAccessInfos[1].queueId != static_cast<uint32_t>(-1))
 	{
 		useMultiQueue = true;
 		Log(LogLevel::Information, "Multiple queues support e_GRAPHICS_BIT + e_COMPUTE_BIT + WSI. These queues will be used to ping-pong work each frame");

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.10)
 project(VulkanRayTracingDenoising)
 if(ANDROID)
 	message("Skipping VulkanRayTracingDenoising : Not supported on Android")

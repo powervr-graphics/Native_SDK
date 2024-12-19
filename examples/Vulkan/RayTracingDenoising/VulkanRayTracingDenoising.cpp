@@ -711,7 +711,7 @@ void VulkanRayTracingDenoising::updateScene()
 	// Sets the _scene animation to this _frame
 	animInst.updateAnimation(_frame);
 
-	for (int i = 0; i < _scene->getNumMeshes(); i++)
+	for (uint32_t i = 0; i < _scene->getNumMeshes(); i++)
 	{
 		const pvr::assets::Model::Node& node = _scene->getNode(i);
 
@@ -965,7 +965,7 @@ void VulkanRayTracingDenoising::createDescriptorSets()
 
 	pvrvk::WriteDescriptorSet materialIndicesSetWrite = pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_STORAGE_BUFFER, _deviceResources->commonDescriptorSet, 3);
 
-	for (int i = 0; i < _deviceResources->materialIndexBuffers.size(); i++)
+	for (size_t i = 0; i < _deviceResources->materialIndexBuffers.size(); i++)
 		materialIndicesSetWrite.setBufferInfo(i, pvrvk::DescriptorBufferInfo(_deviceResources->materialIndexBuffers[i], 0, _deviceResources->materialIndexBuffers[i]->getSize()));
 
 	writeDescSets.push_back(materialIndicesSetWrite);
@@ -979,7 +979,7 @@ void VulkanRayTracingDenoising::createDescriptorSets()
 
 	pvrvk::WriteDescriptorSet verticesSetWrite = pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_STORAGE_BUFFER, _deviceResources->commonDescriptorSet, 5);
 
-	for (int i = 0; i < _deviceResources->vertexBuffers.size(); i++)
+	for (size_t i = 0; i < _deviceResources->vertexBuffers.size(); i++)
 		verticesSetWrite.setBufferInfo(i, pvrvk::DescriptorBufferInfo(_deviceResources->vertexBuffers[i], 0, _deviceResources->vertexBuffers[i]->getSize()));
 
 	writeDescSets.push_back(verticesSetWrite);
@@ -988,7 +988,7 @@ void VulkanRayTracingDenoising::createDescriptorSets()
 
 	pvrvk::WriteDescriptorSet indicesSetWrite = pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_STORAGE_BUFFER, _deviceResources->commonDescriptorSet, 6);
 
-	for (int i = 0; i < _deviceResources->indexBuffers.size(); i++)
+	for (size_t i = 0; i < _deviceResources->indexBuffers.size(); i++)
 		indicesSetWrite.setBufferInfo(i, pvrvk::DescriptorBufferInfo(_deviceResources->indexBuffers[i], 0, _deviceResources->indexBuffers[i]->getSize()));
 
 	writeDescSets.push_back(indicesSetWrite);
@@ -1546,7 +1546,7 @@ void VulkanRayTracingDenoising::createModelBuffers(pvrvk::CommandBuffer& uploadC
 	_prevMeshTransforms.reserve(numMeshes);
 
 	// populate material data
-	for (int i = 0; i < _scene->getNumMaterials(); i++)
+	for (uint32_t i = 0; i < _scene->getNumMaterials(); i++)
 	{
 		auto& material = _scene->getMaterial(i);
 
@@ -1570,7 +1570,7 @@ void VulkanRayTracingDenoising::createModelBuffers(pvrvk::CommandBuffer& uploadC
 	if (materials.empty()) materials.emplace_back(Material());
 
 	// populate vertices, indices and material indices
-	for (int meshIdx = 0; meshIdx < numMeshes; meshIdx++)
+	for (uint32_t meshIdx = 0; meshIdx < numMeshes; meshIdx++)
 	{
 		std::vector<pvr::utils::ASVertexFormat> vertices;
 		std::vector<uint32_t> indices;

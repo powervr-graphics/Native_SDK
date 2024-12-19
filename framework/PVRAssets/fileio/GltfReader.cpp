@@ -552,7 +552,6 @@ void parseAllSkins(const tinygltf::Model& tinyModel, pvr::assets::Model& outMode
 		memcpy(skeleton.bones.data(), tinySkin.joints.data(), tinySkin.joints.size() * sizeof(uint32_t));
 
 		// remap the bones ids
-		uint32_t offset = outModel.getNumMeshNodes() + outModel.getNumCameraNodes() + outModel.getNumLightNodes();
 		for (uint32_t bones = 0; bones < skeleton.bones.size(); ++bones)
 		{
 			const uint32_t originalId = skeleton.bones[bones];

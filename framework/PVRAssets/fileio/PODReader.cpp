@@ -661,9 +661,12 @@ void readNodeBlock(const Stream& stream, pvr::assets::Model& model, assets::Mode
 				nodeKeyframe[0].nodes.emplace_back(&node);
 				nodeKeyframe[0].keyFrame = static_cast<uint32_t>(animationData.getInternalData().keyFrames.size()) - 1;
 				keyFrameData->mat4.resize(transformArraySize);
-				for (uint32_t m = 0; m < transformArraySize; m++) { memcpy(&keyFrameData->mat4[m], &transformationData[m * 16], sizeof(float) * 16); }
-
-				memcpy(keyFrameData->mat4.data(), transformationData.data(), sizeof(float) * transformationData.size());
+				for (uint32_t m = 0; m < transformArraySize; m++) {
+				    for (uint32_t n = 0; n < 4; n++) {
+					keyFrameData->mat4[m][n] = glm::vec4(transformationData[m * 16 + n * 4], transformationData[m * 16 + n * 4 + 1],
+									     transformationData[m * 16 + n * 4 + 2], transformationData[m * 16 + n * 4 + 3]);
+				    }
+				}
 
 				keyFrameData->interpolation = pvr::assets::KeyFrameData::InterpolationType::Linear;
 				animationTotalDurration = std::max(addKeyFrameTimeInMS(model, transformArraySize, *keyFrameData), animationTotalDurration);

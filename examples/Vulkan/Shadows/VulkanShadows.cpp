@@ -221,7 +221,7 @@ struct ShadowMapPass
 		cmdBuffer->bindDescriptorSet(pvrvk::PipelineBindPoint::e_GRAPHICS, _pipelineLayout, 0, deviceResources->dsGlobal, offsets, 1);
 
 		// Render all mesh nodes.
-		for (int i = 0; i < scene->getNumMeshNodes(); i++)
+		for (uint32_t i = 0; i < scene->getNumMeshNodes(); i++)
 		{
 			const pvr::assets::Model::Node* pNode = &scene->getMeshNode(i);
 			const uint32_t meshId = pNode->getObjectId();
@@ -318,7 +318,7 @@ struct ShadowMapPass
 	{
 		_pipelines.resize(scene->getNumMeshes());
 
-		for (int i = 0; i < scene->getNumMeshes(); i++)
+		for (uint32_t i = 0; i < scene->getNumMeshes(); i++)
 		{
 			pvrvk::GraphicsPipelineCreateInfo renderShadowPipelineCreateInfo;
 
@@ -431,7 +431,7 @@ struct NoShadowsSample
 		offsets[0] = deviceResources->globalUBO.view.getDynamicSliceOffset(frameIndex);
 
 		// Render all mesh nodes.
-		for (int i = 0; i < scene->getNumMeshNodes(); i++)
+		for (uint32_t i = 0; i < scene->getNumMeshNodes(); i++)
 		{
 			const pvr::assets::Model::Node* pNode = &scene->getMeshNode(i);
 			const uint32_t meshId = pNode->getObjectId();
@@ -472,7 +472,7 @@ struct NoShadowsSample
 	{
 		_pipelines.resize(scene->getNumMeshes());
 
-		for (int i = 0; i < scene->getNumMeshes(); i++)
+		for (uint32_t i = 0; i < scene->getNumMeshes(); i++)
 		{
 			pvrvk::GraphicsPipelineCreateInfo renderShadowPipelineCreateInfo;
 
@@ -589,7 +589,7 @@ struct PCFShadowsSample
 		cmdBuffer->pushConstants(_pipelineLayoutFinalScene, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, sizeof(glm::mat4), sizeof(glm::vec4), &shadowParams);
 
 		// Render all mesh nodes.
-		for (int i = 0; i < scene->getNumMeshNodes(); i++)
+		for (uint32_t i = 0; i < scene->getNumMeshNodes(); i++)
 		{
 			const pvr::assets::Model::Node* pNode = &scene->getMeshNode(i);
 			const uint32_t meshId = pNode->getObjectId();
@@ -633,7 +633,7 @@ struct PCFShadowsSample
 	{
 		_pipelines.resize(scene->getNumMeshes());
 
-		for (int i = 0; i < scene->getNumMeshes(); i++)
+		for (uint32_t i = 0; i < scene->getNumMeshes(); i++)
 		{
 			pvrvk::GraphicsPipelineCreateInfo renderShadowPipelineCreateInfo;
 
@@ -750,7 +750,7 @@ struct GaussianBlurPass
 		const float factorExp = 1.0f / (2.0f * standardDeviation * standardDeviation);
 
 		float factorSum = 0.0f;
-		int gaussianIndex = 0;
+		size_t gaussianIndex = 0;
 		for (int x = -n; x <= n; x++)
 		{
 			float factor = factor1D * exp(-(x * x) * factorExp);
@@ -760,7 +760,7 @@ struct GaussianBlurPass
 		}
 
 		// double check scaling - factors should add up to 1!
-		for (int g = 0; g < gaussianIndex; g++) _gaussianFactors[g] /= factorSum;
+		for (size_t g = 0; g < gaussianIndex; g++) _gaussianFactors[g] /= factorSum;
 
 		// fill remaining spaces
 		while (gaussianIndex < _gaussianFactors.size())
@@ -1209,7 +1209,7 @@ struct VSMShadowsSample
 		cmdBuffer->pushConstants(_pipelineLayoutFinalScene, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT, sizeof(glm::mat4), sizeof(glm::vec4), &shadowParams);
 
 		// Render all mesh nodes.
-		for (int i = 0; i < scene->getNumMeshNodes(); i++)
+		for (uint32_t i = 0; i < scene->getNumMeshNodes(); i++)
 		{
 			const pvr::assets::Model::Node* pNode = &scene->getMeshNode(i);
 			const uint32_t meshId = pNode->getObjectId();
@@ -1254,7 +1254,7 @@ struct VSMShadowsSample
 	{
 		_pipelines.resize(scene->getNumMeshes());
 
-		for (int i = 0; i < scene->getNumMeshes(); i++)
+		for (uint32_t i = 0; i < scene->getNumMeshes(); i++)
 		{
 			pvrvk::GraphicsPipelineCreateInfo renderShadowPipelineCreateInfo;
 
@@ -1698,6 +1698,9 @@ pvr::Result VulkanShadows::renderFrame()
 	case ShadowType::ShadowMapEVSM4Compute: {
 		_deviceResources->evsm4ComputeShadowsSample->render(
 			_scene, _deviceResources.get(), *this, swapchainIndex, _queueIndex, glm::vec4(g_EVSM4Bias, g_EVSM4LightBleedReduction, 0.0f, 0.0f));
+		break;
+	}
+	default: {
 		break;
 	}
 	}

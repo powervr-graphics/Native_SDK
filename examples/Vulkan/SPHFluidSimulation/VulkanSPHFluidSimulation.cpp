@@ -912,7 +912,7 @@ pvr::Result VulkanSPHFluidSimulation::initView()
 	_deviceResources->graphicsQueue = _deviceResources->device->getQueue(queueAccessInfos[0].familyId, queueAccessInfos[0].queueId);
 	_deviceResources->graphicsQueue->setObjectName("GraphicsQueue");
 
-	if (queueAccessInfos[1].familyId != -1 && queueAccessInfos[1].queueId != -1)
+	if (queueAccessInfos[1].familyId != static_cast<uint32_t>(-1) && queueAccessInfos[1].queueId != static_cast<uint32_t>(-1))
 	{
 		Log(LogLevel::Information, "Multiple queues support e_GRAPHICS_BIT + e_COMPUTE_BIT + WSI. These queues will be used to ping-pong work each frame");
 

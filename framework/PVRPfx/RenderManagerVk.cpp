@@ -1597,15 +1597,6 @@ BONEFUNC(90)BONEFUNC(91)BONEFUNC(92)BONEFUNC(93)BONEFUNC(94)BONEFUNC(95)BONEFUNC
     bool getLightColor##idx(TypedMem& mem, const RendermanModel& model) { return getLightColor(mem, model, idx); }\
 
 LIGHTFUNC(0)LIGHTFUNC(1)LIGHTFUNC(2)LIGHTFUNC(3)LIGHTFUNC(4)LIGHTFUNC(5)LIGHTFUNC(6)LIGHTFUNC(7)LIGHTFUNC(8)LIGHTFUNC(9)
-LIGHTFUNC(10)LIGHTFUNC(11)LIGHTFUNC(12)LIGHTFUNC(13)LIGHTFUNC(14)LIGHTFUNC(15)LIGHTFUNC(16)LIGHTFUNC(17)LIGHTFUNC(18)LIGHTFUNC(19)
-LIGHTFUNC(20)LIGHTFUNC(21)LIGHTFUNC(22)LIGHTFUNC(23)LIGHTFUNC(24)LIGHTFUNC(25)LIGHTFUNC(26)LIGHTFUNC(27)LIGHTFUNC(28)LIGHTFUNC(29)
-LIGHTFUNC(30)LIGHTFUNC(31)LIGHTFUNC(32)LIGHTFUNC(33)LIGHTFUNC(34)LIGHTFUNC(35)LIGHTFUNC(36)LIGHTFUNC(37)LIGHTFUNC(38)LIGHTFUNC(39)
-LIGHTFUNC(40)LIGHTFUNC(41)LIGHTFUNC(42)LIGHTFUNC(43)LIGHTFUNC(44)LIGHTFUNC(45)LIGHTFUNC(46)LIGHTFUNC(47)LIGHTFUNC(48)LIGHTFUNC(49)
-LIGHTFUNC(50)LIGHTFUNC(51)LIGHTFUNC(52)LIGHTFUNC(53)LIGHTFUNC(54)LIGHTFUNC(55)LIGHTFUNC(56)LIGHTFUNC(57)LIGHTFUNC(58)LIGHTFUNC(59)
-LIGHTFUNC(60)LIGHTFUNC(61)LIGHTFUNC(62)LIGHTFUNC(63)LIGHTFUNC(64)LIGHTFUNC(65)LIGHTFUNC(66)LIGHTFUNC(67)LIGHTFUNC(68)LIGHTFUNC(69)
-LIGHTFUNC(70)LIGHTFUNC(71)LIGHTFUNC(72)LIGHTFUNC(73)LIGHTFUNC(74)LIGHTFUNC(75)LIGHTFUNC(76)LIGHTFUNC(77)LIGHTFUNC(78)LIGHTFUNC(79)
-LIGHTFUNC(80)LIGHTFUNC(81)LIGHTFUNC(82)LIGHTFUNC(83)LIGHTFUNC(84)LIGHTFUNC(85)LIGHTFUNC(86)LIGHTFUNC(87)LIGHTFUNC(88)LIGHTFUNC(89)
-LIGHTFUNC(90)LIGHTFUNC(91)LIGHTFUNC(92)LIGHTFUNC(93)LIGHTFUNC(94)LIGHTFUNC(95)LIGHTFUNC(96)LIGHTFUNC(97)LIGHTFUNC(98)LIGHTFUNC(99)
 
 #define CAMFUNC(idx) \
     bool getPerspectiveMatrix##idx(TypedMem& mem, const RendermanModel& model) \
@@ -1816,7 +1807,7 @@ void RendermanPass::recordRenderingCommands(CommandBuffer& cmdBuffer, uint16_t s
 	if (beginEndRendermanPass)
 	{
 		// use the clear color from the model if found, else use the default
-		ClearValue clearColor(.0f, .0f, .0f, 1.0f);
+		ClearValue clearColor;
 		for (uint32_t i = 0; i < subpasses.size(); ++i)
 		{
 			for (uint32_t j = 0; j < subpasses[i].groups.size(); ++j)
@@ -1825,7 +1816,8 @@ void RendermanPass::recordRenderingCommands(CommandBuffer& cmdBuffer, uint16_t s
 				{
 					if (model)
 					{
-						memcpy(&clearColor, model->assetModel->getInternalData().clearColor, sizeof(model->assetModel->getInternalData().clearColor));
+						float *color = model->assetModel->getInternalData().clearColor;
+						clearColor.setColorValue(color[0], color[1], color[2], 1.0f);
 						i = j = static_cast<uint32_t>(-1); // break the outer loop as well.
 						break;
 					}

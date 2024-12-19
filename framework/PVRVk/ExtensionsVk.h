@@ -163,7 +163,10 @@ public:
 
 	/// <summary>Get the location of the vulkan physical device features struct</summary>
 	/// <returns>Pointer to the beginning of the vulkan struct data (the sType member)</returns>
-	inline void* getVkPtr() { return static_cast<void*>((char*)this + offsetof(FragmentShadingRateFeatures, sType)); }
+	inline void* getVkPtr() {
+	    VkPhysicalDeviceFragmentShadingRateFeaturesKHR* vkFragmentShadingRateFeatures = this;
+	    return vkFragmentShadingRateFeatures;
+	}
 
 	/// <summary>Get sType</summary>
 	/// <returns>Vulkan struct type</returns>
@@ -228,7 +231,10 @@ public:
 
 	/// <summary>Get the location of the vulkan physical device features struct</summary>
 	/// <returns>Pointer to the beginning of the vulkan struct data (the sType member)</returns>
-	inline void* getVkPtr() { return static_cast<void*>((char*)this + offsetof(RayTracingPipelineFeatures, sType)); }
+	inline void* getVkPtr() {
+	    VkPhysicalDeviceRayTracingPipelineFeaturesKHR* vkRTPipelineFeatures = this;
+	    return vkRTPipelineFeatures;
+	}
 
 	/// <summary>Get sType</summary>
 	/// <returns>Vulkan struct type</returns>

@@ -272,8 +272,8 @@ class VulkanDeferredShadingPFX : public pvr::Shell
 
 	uint32_t _windowWidth;
 	uint32_t _windowHeight;
-	int32_t _framebufferWidth;
-	int32_t _framebufferHeight;
+	uint32_t _framebufferWidth;
+	uint32_t _framebufferHeight;
 
 	int32_t _viewportOffsets[2];
 
@@ -449,18 +449,18 @@ pvr::Result VulkanDeferredShadingPFX::initView()
 
 	const pvr::CommandLine& commandOptions = getCommandLine();
 
-	commandOptions.getIntOption("-fbowidth", _framebufferWidth);
-	_framebufferWidth = glm::min<int32_t>(_framebufferWidth, _windowWidth);
-	commandOptions.getIntOption("-fboheight", _framebufferHeight);
-	_framebufferHeight = glm::min<int32_t>(_framebufferHeight, _windowHeight);
+	commandOptions.getUintOption("-fbowidth", _framebufferWidth);
+	_framebufferWidth = glm::min<uint32_t>(_framebufferWidth, _windowWidth);
+	commandOptions.getUintOption("-fboheight", _framebufferHeight);
+	_framebufferHeight = glm::min<uint32_t>(_framebufferHeight, _windowHeight);
 	commandOptions.getIntOption("-numlights", PointLightConfiguration::NumProceduralPointLights);
 	commandOptions.getFloatOption("-lightintensity", PointLightConfiguration::PointlightIntensity);
 
 	_viewportOffsets[0] = (_windowWidth - _framebufferWidth) / 2;
 	_viewportOffsets[1] = (_windowHeight - _framebufferHeight) / 2;
 
-	Log("Framebuffer dimensions: %d x %d\n", _framebufferWidth, _framebufferHeight);
-	Log("On-screen Framebuffer dimensions: %d x %d\n", _windowWidth, _windowHeight);
+	Log("Framebuffer dimensions: %u x %u\n", _framebufferWidth, _framebufferHeight);
+	Log("On-screen Framebuffer dimensions: %u x %u\n", _windowWidth, _windowHeight);
 
 	_deviceResources->vmaAllocator = pvr::utils::vma::createAllocator(pvr::utils::vma::AllocatorCreateInfo(_deviceResources->device));
 

@@ -100,15 +100,15 @@ public:
 	/// <summary>Move Constructor. Does not produce a ready-to-use object, use the init function before use.</summary>
 	/// <param name="rhs">Another UIRenderer to initiialise from.</param>
 	UIRenderer(UIRenderer&& rhs)
-		: _renderpass(std::move(rhs._renderpass)), _subpass(std::move(rhs._subpass)), _programData(std::move(rhs._programData)), _defaultFont(std::move(rhs._defaultFont)),
+		: _sprites(std::move(rhs._sprites)), _textElements(std::move(rhs._textElements)), _fonts(std::move(rhs._fonts)),
+		  _renderpass(std::move(rhs._renderpass)), _subpass(std::move(rhs._subpass)), _programData(std::move(rhs._programData)), _defaultFont(std::move(rhs._defaultFont)),
 		  _sdkLogo(std::move(rhs._sdkLogo)), _defaultTitle(std::move(rhs._defaultTitle)), _defaultDescription(std::move(rhs._defaultDescription)),
 		  _defaultControls(std::move(rhs._defaultControls)), _device(std::move(rhs._device)), _pipelineLayout(std::move(rhs._pipelineLayout)), _pipeline(std::move(rhs._pipeline)),
 		  _texDescLayout(std::move(rhs._texDescLayout)), _uboMvpDescLayout(std::move(rhs._uboMvpDescLayout)), _uboMaterialLayout(std::move(rhs._uboMaterialLayout)),
 		  _samplerBilinear(std::move(rhs._samplerBilinear)), _samplerTrilinear(std::move(rhs._samplerTrilinear)), _descPool(std::move(rhs._descPool)),
 		  _activeCommandBuffer(std::move(rhs._activeCommandBuffer)), _mustEndCommandBuffer(std::move(rhs._mustEndCommandBuffer)), _fontIbo(std::move(rhs._fontIbo)),
 		  _imageVbo(std::move(rhs._imageVbo)), _screenDimensions(std::move(rhs._screenDimensions)), _screenRotation(std::move(rhs._screenRotation)),
-		  _groupId(std::move(rhs._groupId)), _uboMvp(std::move(rhs._uboMvp)), _uboMaterial(std::move(rhs._uboMaterial)), _numSprites(std::move(rhs._numSprites)),
-		  _sprites(std::move(rhs._sprites)), _textElements(std::move(rhs._textElements)), _fonts(std::move(rhs._fonts))
+		  _groupId(std::move(rhs._groupId)), _uboMvp(std::move(rhs._uboMvp)), _uboMaterial(std::move(rhs._uboMaterial)), _numSprites(std::move(rhs._numSprites))
 	{
 		updateResourceOwnsership();
 	}

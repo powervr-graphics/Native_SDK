@@ -514,7 +514,7 @@ pvr::Result VulkanGaussianBlur::initView()
 	// Other multi queue approaches may be possible i.e. making use of additional queues which do not support graphics/WSI
 	_useMultiQueue = false;
 
-	if (queueAccessInfos[1].familyId != -1 && queueAccessInfos[1].queueId != -1)
+	if (queueAccessInfos[1].familyId != static_cast<uint32_t>(-1) && queueAccessInfos[1].queueId != static_cast<uint32_t>(-1))
 	{
 		_deviceResources->queues[1] = _deviceResources->device->getQueue(queueAccessInfos[1].familyId, queueAccessInfos[1].queueId);
 

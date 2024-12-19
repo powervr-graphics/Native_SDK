@@ -398,7 +398,7 @@ void VulkanTimelineSemaphores::createDevicesAndQueues(pvrvk::Surface& surface)
 	deviceFeatures.pNext = &timelineSemaphoreFeatures;
 
 	// Add these device features to the physical device, since they're all connected by a pNext chain, we only need to explicitly attach the top feature
-	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceTimelineSemaphoreFeaturesKHR>(&timelineSemaphoreFeatures);
+	deviceExtensions.addExtensionFeatureVk<VkPhysicalDeviceFeatures2>(&deviceFeatures);
 	deviceExtensions.addExtension("VK_KHR_timeline_semaphore");
 
 	const pvr::utils::QueuePopulateInfo queuePopulateInfos[2] = { { pvrvk::QueueFlags::e_GRAPHICS_BIT, surface }, { pvrvk::QueueFlags::e_COMPUTE_BIT } };
@@ -410,7 +410,8 @@ void VulkanTimelineSemaphores::createDevicesAndQueues(pvrvk::Surface& surface)
 
 	_deviceResources->graphicsQueue = _deviceResources->device->getQueue(queueAccessInfos[0].familyId, queueAccessInfos[0].queueId);
 
-	if (!(queueAccessInfos[1].familyId != -1 && queueAccessInfos[1].queueId != -1))
+	if (!(queueAccessInfos[1].familyId != static_cast<uint32_t>(-1) &&
+		    queueAccessInfos[1].queueId != static_cast<uint32_t>(-1)))
 	{
 		Log(LogLevel::Error, "Multiple queues are not supported (e_GRAPHICS_BIT + e_COMPUTE_BIT + WSI)");
 	}
@@ -907,7 +908,7 @@ void VulkanTimelineSemaphores::recordGraphicsCommandBuffer()
 
 		std::array<glm::vec3, _numberOfNoiseLayers> planePositions{};
 
-		for (int j = 0; j < planePositions.size(); j++)
+		for (std::size_t j = 0; j < planePositions.size(); j++)
 		{
 			const float distanceBetweenTiles = 3.f;
 			const float xDisplacement = (_numberOfNoiseLayers * -0.5f) * distanceBetweenTiles + float(j) * distanceBetweenTiles + 1.5f;
@@ -1017,8 +1018,6 @@ void VulkanTimelineSemaphores::createComputePipeline()
 /// <param name="noiseTextureId">Noise texture index</param>
 void VulkanTimelineSemaphores::recordComputeCommandBuffer(const uint32_t& currentFrameId, const uint32_t& noiseTextureId)
 {
-	const uint32_t numSwapchains = _deviceResources->swapchain->getSwapchainLength();
-
 	const uint32_t computeOperationIndex = currentFrameId * _numberOfNoiseLayers + noiseTextureId;
 	pvrvk::CommandBuffer& mainCmdBuffer = _deviceResources->computeCommandBuffers[computeOperationIndex];
 

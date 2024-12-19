@@ -150,12 +150,12 @@ private:
 protected:
 	void drawMesh(pvrvk::SecondaryCommandBuffer& command, const pvr::assets::ModelHandle& modelHandle, const ModelBuffers& modelBuffers, uint32_t nodeIndex)
 	{
-		drawMesh((pvrvk::CommandBufferBase&)command, modelHandle, modelBuffers, nodeIndex);
+		drawMesh(*reinterpret_cast<pvrvk::CommandBufferBase *>(&command), modelHandle, modelBuffers, nodeIndex);
 	}
 
 	void drawMesh(pvrvk::CommandBuffer& command, const pvr::assets::ModelHandle& modelHandle, const ModelBuffers& modelBuffers, uint32_t nodeIndex)
 	{
-		drawMesh((pvrvk::CommandBufferBase&)command, modelHandle, modelBuffers, nodeIndex);
+		drawMesh(*reinterpret_cast<pvrvk::CommandBufferBase *>(&command), modelHandle, modelBuffers, nodeIndex);
 	}
 };
 

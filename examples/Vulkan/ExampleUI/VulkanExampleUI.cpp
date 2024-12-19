@@ -562,7 +562,7 @@ public:
 
 VulkanExampleUI::VulkanExampleUI()
 	: _wndRotate(0.0f), _displayOption(DisplayOption::Default), _state(DisplayState::Default), _transitionPerc(0.0f), _currentPage(DisplayPage::Default),
-	  _lastPage(DisplayPage::Default), _cycleDir(1), _wndRotPerc(0.0f), _prevTransTime(0), _prevTime(0), _currTime(static_cast<uint64_t>(-1))
+	  _lastPage(DisplayPage::Default), _cycleDir(1), _currTime(static_cast<uint64_t>(-1)), _wndRotPerc(0.0f), _prevTransTime(0), _prevTime(0)
 {}
 
 /// <summary>Create Window page.</summary>

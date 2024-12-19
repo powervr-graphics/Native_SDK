@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.10)
 project(VulkanTimelineSemaphores)
 if(IOS)
 	message ("Skipping VulkanTimelineSemaphores : Vulkan is not supported on iOS.")

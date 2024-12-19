@@ -69,10 +69,10 @@ struct ShellData
 
 	/// <summary>Default constructor.</summary>
 	ShellData()
-		: os(0), commandLine(0), captureFrameStart(-1), captureFrameStop(-1), captureFrameScale(1), trapPointerOnDrag(true), forceFrameTime(false), fakeFrameTime(16),
+		: timeAtInitApplication(static_cast<uint64_t>(-1)), lastFrameTime(static_cast<uint64_t>(-1)), currentFrameTime(static_cast<uint64_t>(-1)),
+		  os(0), commandLine(0), captureFrameStart(-1), captureFrameStop(-1), captureFrameScale(1), trapPointerOnDrag(true), forceFrameTime(false), fakeFrameTime(16),
 		  exiting(false), frameNo(0), forceReleaseInitWindow(false), forceReleaseInitView(false), dieAfterFrame(-1), dieAfterTime(-1), startTime(0), outputInfo(false),
-		  weAreDone(false), FPS(0.0f), showFPS(false), contextType(Api::Unspecified), minContextType(Api::Unspecified), currentFrameTime(static_cast<uint64_t>(-1)),
-		  lastFrameTime(static_cast<uint64_t>(-1)), timeAtInitApplication(static_cast<uint64_t>(-1)){};
+		  weAreDone(false), FPS(0.0f), showFPS(false), contextType(Api::Unspecified), minContextType(Api::Unspecified){};
 };
 } // namespace platform
 } // namespace pvr

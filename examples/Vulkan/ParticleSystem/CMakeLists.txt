@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.10)
 project(VulkanParticleSystem)
 if(IOS)
 	message("Skipping VulkanParticleSystem : Not supported on iOS")

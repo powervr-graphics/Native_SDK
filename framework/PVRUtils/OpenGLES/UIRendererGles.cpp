@@ -692,14 +692,14 @@ void UIRenderer::init_CreateDefaultFont()
 	std::unique_ptr<Stream> arialFontTex;
 	float maxRenderDim = glm::max<float>(getRenderingDimX(), getRenderingDimY());
 	// pick the right font size of this resolution.
-	if (maxRenderDim <= 800) { arialFontTex = std::make_unique<BufferStream>("", _arialbd_36_a8_pvr, _arialbd_36_a8_pvr_size); }
+	if (maxRenderDim <= 800) { arialFontTex = std::make_unique<BufferStream>("", _arialbd_36_a8_pvr, sizeof(_arialbd_36_a8_pvr)); }
 	else if (maxRenderDim <= 1000)
 	{
-		arialFontTex = std::make_unique<BufferStream>("", _arialbd_46_a8_pvr, _arialbd_46_a8_pvr_size);
+		arialFontTex = std::make_unique<BufferStream>("", _arialbd_46_a8_pvr, sizeof(_arialbd_46_a8_pvr));
 	}
 	else
 	{
-		arialFontTex = std::make_unique<BufferStream>("", _arialbd_56_a8_pvr, _arialbd_56_a8_pvr_size);
+		arialFontTex = std::make_unique<BufferStream>("", _arialbd_56_a8_pvr, sizeof(_arialbd_56_a8_pvr));
 	}
 
 	fontTex = textureLoad(*arialFontTex, TextureFileFormat::PVR);

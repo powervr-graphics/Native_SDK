@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.10)
 project(VulkanGlass)
 if(IOS)
 	message ("Skipping VulkanGlass : Vulkan is not supported on iOS.")

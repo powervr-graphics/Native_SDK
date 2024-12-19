@@ -418,7 +418,7 @@ struct DefragmentationInfo : private impl::VmaDefragmentationInfo
 };
 
 /// <summary>Calculated statistics of memory usage in entire allocator.</summary>
-struct StatInfo : private impl::VmaStatInfo
+struct StatInfo : public impl::VmaStatInfo
 {
 public:
 	/// <summary>Getter for the number of `VkDeviceMemory` Vulkan memory blocks allocated.</summary>

@@ -736,7 +736,7 @@ void VulkanHybridReflections::updateScene()
 	// Sets the _scene animation to this _frame
 	animInst.updateAnimation(_frame);
 
-	for (int i = 0; i < _scene->getNumMeshes(); i++)
+	for (uint32_t i = 0; i < _scene->getNumMeshes(); i++)
 	{
 		const pvr::assets::Model::Node& node = _scene->getNode(i);
 
@@ -883,7 +883,7 @@ void VulkanHybridReflections::createDescriptorSets()
 
 	pvrvk::WriteDescriptorSet materialIndicesSetWrite = pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_STORAGE_BUFFER, _deviceResources->commonDescriptorSet, 3);
 
-	for (int i = 0; i < _deviceResources->materialIndexBuffers.size(); i++)
+	for (size_t i = 0; i < _deviceResources->materialIndexBuffers.size(); i++)
 		materialIndicesSetWrite.setBufferInfo(i, pvrvk::DescriptorBufferInfo(_deviceResources->materialIndexBuffers[i], 0, _deviceResources->materialIndexBuffers[i]->getSize()));
 
 	writeDescSets.push_back(materialIndicesSetWrite);
@@ -892,7 +892,7 @@ void VulkanHybridReflections::createDescriptorSets()
 
 	pvrvk::WriteDescriptorSet verticesSetWrite = pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_STORAGE_BUFFER, _deviceResources->commonDescriptorSet, 6);
 
-	for (int i = 0; i < _deviceResources->vertexBuffers.size(); i++)
+	for (size_t i = 0; i < _deviceResources->vertexBuffers.size(); i++)
 		verticesSetWrite.setBufferInfo(i, pvrvk::DescriptorBufferInfo(_deviceResources->vertexBuffers[i], 0, _deviceResources->vertexBuffers[i]->getSize()));
 
 	writeDescSets.push_back(verticesSetWrite);
@@ -901,7 +901,7 @@ void VulkanHybridReflections::createDescriptorSets()
 
 	pvrvk::WriteDescriptorSet indicesSetWrite = pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_STORAGE_BUFFER, _deviceResources->commonDescriptorSet, 7);
 
-	for (int i = 0; i < _deviceResources->indexBuffers.size(); i++)
+	for (size_t i = 0; i < _deviceResources->indexBuffers.size(); i++)
 		indicesSetWrite.setBufferInfo(i, pvrvk::DescriptorBufferInfo(_deviceResources->indexBuffers[i], 0, _deviceResources->indexBuffers[i]->getSize()));
 
 	writeDescSets.push_back(indicesSetWrite);
@@ -915,7 +915,7 @@ void VulkanHybridReflections::createDescriptorSets()
 
 	pvrvk::WriteDescriptorSet textureSetWrite = pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->commonDescriptorSet, 4);
 
-	for (int i = 0; i < _deviceResources->textures.size(); i++)
+	for (size_t i = 0; i < _deviceResources->textures.size(); i++)
 		textureSetWrite.setImageInfo(i, pvrvk::DescriptorImageInfo(_deviceResources->textures[i].imageView, samplerTrilinear, pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
 
 	writeDescSets.push_back(textureSetWrite);
@@ -1552,7 +1552,7 @@ void VulkanHybridReflections::createFramebufferAndRenderPass()
 uint32_t VulkanHybridReflections::getTextureIndex(const std::string textureName)
 {
 	// search in existing textures
-	for (int i = 0; i < _deviceResources->textures.size(); i++)
+	for (size_t i = 0; i < _deviceResources->textures.size(); i++)
 	{
 		if (_deviceResources->textures[i].name == textureName) return i;
 	}
@@ -1618,7 +1618,7 @@ void VulkanHybridReflections::createModelBuffers(pvrvk::CommandBuffer& uploadCmd
 	_meshTransforms.reserve(numMeshes);
 
 	// populate material data
-	for (int i = 0; i < _scene->getNumMaterials(); i++)
+	for (size_t i = 0; i < _scene->getNumMaterials(); i++)
 	{
 		auto& material = _scene->getMaterial(i);
 
@@ -1650,7 +1650,7 @@ void VulkanHybridReflections::createModelBuffers(pvrvk::CommandBuffer& uploadCmd
 	if (materials.empty()) materials.emplace_back(Material());
 
 	// populate vertices, indices and material indices
-	for (int meshIdx = 0; meshIdx < numMeshes; meshIdx++)
+	for (uint32_t meshIdx = 0; meshIdx < numMeshes; meshIdx++)
 	{
 		std::vector<pvr::utils::ASVertexFormat> vertices;
 		std::vector<uint32_t> indices;
