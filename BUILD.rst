@@ -49,7 +49,7 @@ The SDK is hosted on github, which means you can choose to either pull a local c
 
    # Open the location you want to store the SDK in a terminal
    # Then clone the repo:
-   git clone https://github.com/powervr-graphics/Native_SDK.git
+   git clone --recurse-submodules https://github.com/powervr-graphics/Native_SDK.git
 
 Repository Dependencies
 -----------------------
