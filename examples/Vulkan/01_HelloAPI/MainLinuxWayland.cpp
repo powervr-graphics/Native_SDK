@@ -153,6 +153,7 @@ void createWaylandWindowSurface(VulkanHelloAPI& vulkanExample)
 	xdg_toplevel_add_listener(vulkanExample.surfaceData.xdgToplevel, &xdgToplevelListener, &vulkanExample.surfaceData);
 	xdg_toplevel_set_title(vulkanExample.surfaceData.xdgToplevel, "HelloApiVk");
 	xdg_toplevel_set_app_id(vulkanExample.surfaceData.xdgToplevel, "OpenGLESHelloAPI");
+	wl_surface_commit(vulkanExample.surfaceData.surface);
 }
 
 void releaseWaylandConnection(VulkanHelloAPI& vulkanExample)
