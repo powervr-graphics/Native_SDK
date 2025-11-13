@@ -11,26 +11,27 @@ def projectDependencies = ["PVRShell", "PVRUtilsGles"]
 // the additional instructions Gradle needs to build Android app modules
 buildscript {
 	repositories {
+		mavenCentral()
 		google()
-		jcenter()
 	}
 
 	// Adds the Android plugin for Gradle as a classpath dependency
 	dependencies {
-		classpath 'com.android.tools.build:gradle:4.0.1'
+		classpath 'com.android.tools.build:gradle:8.13.1'
 	}
 }
 
 // This block configures the repositories and dependencies used by all modules in the project
 allprojects {
 	repositories {
+		mavenCentral()
 		google()
-		jcenter()
 	}
 }
 
 android {
 	compileSdkVersion 29
+	namespace "com.powervr.OpenGLESGameOfLife"
 	ndkVersion "26.2.11394342"
 	defaultConfig {
 		applicationId "com.powervr.OpenGLESGameOfLife"
@@ -73,7 +74,7 @@ android {
 	externalNativeBuild {
 		cmake {
 			path "../CMakeLists.txt"
-			version "3.10.2"
+			version "3.22.1"
 		}
 	}
 

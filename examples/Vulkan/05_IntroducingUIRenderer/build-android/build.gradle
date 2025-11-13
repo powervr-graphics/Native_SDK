@@ -12,12 +12,12 @@ def projectDependencies = ["PVRShell", "PVRUtilsVk"]
 buildscript {
 	repositories {
 		google()
-		jcenter()
+		mavenCentral()
 	}
 
 	// Adds the Android plugin for Gradle as a classpath dependency
 	dependencies {
-		classpath 'com.android.tools.build:gradle:4.0.1'
+		classpath 'com.android.tools.build:gradle:8.13.0'
 	}
 }
 
@@ -25,12 +25,13 @@ buildscript {
 allprojects {
 	repositories {
 		google()
-		jcenter()
+		mavenCentral()
 	}
 }
 
 android {
 	compileSdkVersion 29
+	namespace "com.powervr.VulkanIntroducingUIRenderer"
 	ndkVersion "26.2.11394342"
 	defaultConfig {
 		applicationId "com.powervr.VulkanIntroducingUIRenderer"
@@ -89,7 +90,7 @@ android {
 	externalNativeBuild {
 		cmake {
 			path "../CMakeLists.txt"
-			version "3.10.2"
+			version "3.22.1"
 		}
 	}
 

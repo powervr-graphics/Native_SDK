@@ -4,6 +4,7 @@ def projectDependencies = ["PVRCore", "tinygltf"]
 
 android {
 	compileSdkVersion 29
+	namespace "com.powervr.PVRAssets"
 	ndkVersion "26.2.11394342"
 	defaultConfig {
 		minSdkVersion 21
@@ -25,7 +26,7 @@ android {
 	externalNativeBuild {
 		cmake {
 			path "../CMakeLists.txt"
-			version "3.10.2"
+			version "3.22.1"
 		}
 	}
 }
@@ -58,16 +59,16 @@ tasks.whenTaskAdded { task ->
 buildscript {
 	repositories {
 		google()
-		jcenter()
+		mavenCentral()
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:4.0.1'
+		classpath 'com.android.tools.build:gradle:8.13.0'
 	}
 }
 
 allprojects {
 	repositories {
 		google()
-		jcenter()
+		mavenCentral()
 	}
 }
