@@ -15,7 +15,7 @@ buildscript {
 
 	// Adds the Android plugin for Gradle as a classpath dependency
 	dependencies {
-		classpath 'com.android.tools.build:gradle:8.13.0'
+		classpath 'com.android.tools.build:gradle:8.13.1'
 	}
 }
 
