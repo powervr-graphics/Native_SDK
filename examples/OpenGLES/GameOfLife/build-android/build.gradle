@@ -32,11 +32,12 @@ allprojects {
 android {
 	compileSdkVersion 29
 	namespace "com.powervr.OpenGLESGameOfLife"
-	ndkVersion "26.2.11394342"
+	ndkVersion "29.0.14206865"
 	defaultConfig {
 		applicationId "com.powervr.OpenGLESGameOfLife"
-		minSdkVersion 21
+		minSdkVersion 24
 		targetSdkVersion 29
+		compileSdkVersion 35
 		externalNativeBuild {
 			cmake {
 				cppFlags "-fexceptions"

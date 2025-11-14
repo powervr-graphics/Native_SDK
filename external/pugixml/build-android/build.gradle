@@ -3,9 +3,9 @@ apply plugin: 'com.android.library'
 android {
 	compileSdkVersion 29
 	namespace "com.powervr.external.pugixml"
-	ndkVersion "26.2.11394342"
+	ndkVersion "29.0.14206865"
 	defaultConfig {
-		minSdkVersion 21
+		minSdkVersion 24
 		targetSdkVersion 26
 		versionCode 1
 		versionName "1.0"

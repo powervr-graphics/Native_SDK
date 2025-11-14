@@ -628,7 +628,7 @@ void android_main(struct android_app* application)
 	while (true)
 	{
 		// Block while there are events to process or if we're not animating
-		while ((eventIdentifier = ALooper_pollAll(applicationData.isInitialized && applicationData.isAnimating ? 0 : -1, NULL, &events, (void**)&pollSource)) >= 0)
+		while ((eventIdentifier = ALooper_pollOnce(applicationData.isInitialized && applicationData.isAnimating ? 0 : -1, NULL, &events, (void**)&pollSource)) >= 0)
 		{
 			if (pollSource != NULL) { pollSource->process(application, pollSource); }
 
