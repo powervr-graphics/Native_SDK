@@ -30,13 +30,13 @@ allprojects {
 }
 
 android {
-	compileSdkVersion 29
+
 	namespace "com.powervr.VulkanPostProcessing"
 	ndkVersion "29.0.14206865"
 	defaultConfig {
 		applicationId "com.powervr.VulkanPostProcessing"
 		minSdkVersion 24
-		targetSdkVersion 29
+		targetSdkVersion 33
 		compileSdkVersion 35
 		externalNativeBuild {
 			cmake {

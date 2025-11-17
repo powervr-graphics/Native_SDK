@@ -34,7 +34,7 @@ android {
     defaultConfig {
         applicationId "com.powervr.VulkanHelloAPI"
 		minSdkVersion 24
-		targetSdkVersion 29
+		targetSdkVersion 33
 		compileSdkVersion 35
         externalNativeBuild {
             cmake {

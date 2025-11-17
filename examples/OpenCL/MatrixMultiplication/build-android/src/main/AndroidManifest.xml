@@ -8,6 +8,9 @@
         The INTERNET permission is included to allow PVRTrace and PVRScope to use 
         their renderstate override/remote capabilities with this application 
     -->
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false" />
     <uses-permission android:name="android.permission.INTERNET"/>
     <!-- 
         The WRITE_EXTERNAL_STORAGE permission is included so PVRTrace 
@@ -20,6 +23,7 @@
             android:icon="@drawable/ic_launcher_icon"
             android:label="@string/app_name" >
         <activity android:name="OpenCLMatrixMultiplication"
+            android:exported="true"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:launchMode="singleTask"
             android:configChanges="orientation|keyboardHidden"

@@ -3,12 +3,12 @@ apply plugin: 'com.android.library'
 def projectDependencies = ["PVRCore", "PVRAssets", "PVRVk", "glslang", "VulkanMemoryAllocator"]
 
 android {
-	compileSdkVersion 29
+
 	namespace "com.powervr.PVRUtilsVk"
 	ndkVersion "29.0.14206865"
 	defaultConfig {
 		minSdkVersion 24
-		targetSdkVersion 29
+		targetSdkVersion 33
 		compileSdkVersion 35
 		versionCode 1
 		versionName "1.0"
