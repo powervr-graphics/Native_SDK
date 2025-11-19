@@ -50,7 +50,11 @@ endif()
 if(PVR_PREBUILT_DEPENDENCIES)
 	if(ANDROID)
 		string(TOLOWER ${CMAKE_BUILD_TYPE} PVR_ANDROID_BUILD_TYPE)
-		set(PVRUtilsVk_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRUtils/Vulkan/build-android/.cxx/cmake/${PVR_ANDROID_BUILD_TYPE}/${ANDROID_ABI}/PVRUtilsVk")
+		#set(PVRUtilsVk_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRUtils/Vulkan/build-android/.cxx/cmake/${PVR_ANDROID_BUILD_TYPE}/${ANDROID_ABI}/PVRUtilsVk")
+
+		file(GLOB PVRUtilsVk_DIR_GLOB "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRUtils/Vulkan/build-android/.cxx/${PVR_ANDROID_BUILD_TYPE}/*/${ANDROID_ABI}/PVRUtilsVk")
+		# The glob will return a list, but there should only be one match.
+		list(GET PVRUtilsVk_DIR_GLOB 0 PVRUtilsVk_DIR)
 	endif()
 endif()
 

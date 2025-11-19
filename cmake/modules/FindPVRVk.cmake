@@ -8,7 +8,11 @@
 if(PVR_PREBUILT_DEPENDENCIES)
 	if(ANDROID)
 		string(TOLOWER ${CMAKE_BUILD_TYPE} PVR_ANDROID_BUILD_TYPE)
-		set(PVRVk_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRVk/build-android/.cxx/cmake/${PVR_ANDROID_BUILD_TYPE}/${ANDROID_ABI}/PVRVk")
+		# set(PVRVk_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRVk/build-android/.cxx/cmake/${PVR_ANDROID_BUILD_TYPE}/${ANDROID_ABI}/PVRVk")
+
+		file(GLOB PVRVk_DIR_GLOB "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRVk/build-android/.cxx/${PVR_ANDROID_BUILD_TYPE}/*/${ANDROID_ABI}/PVRVk")
+		# The glob will return a list, but there should only be one match.
+		list(GET PVRVk_DIR_GLOB 0 PVRVk_DIR)
 	endif()
 endif()
 
