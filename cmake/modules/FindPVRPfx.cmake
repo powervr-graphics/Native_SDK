@@ -16,7 +16,12 @@ endif()
 if(PVR_PREBUILT_DEPENDENCIES)
 	if(ANDROID)
 		string(TOLOWER ${CMAKE_BUILD_TYPE} PVR_ANDROID_BUILD_TYPE)
-		set(PVRPfx_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRPfx/build-android/.cxx/cmake/${PVR_ANDROID_BUILD_TYPE}/${ANDROID_ABI}/PVRPfx")
+		#set(PVRPfx_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRPfx/build-android/.cxx/cmake/${PVR_ANDROID_BUILD_TYPE}/${ANDROID_ABI}/PVRPfx")
+
+
+		file(GLOB PVRPfx_DIR_GLOB "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRPfx/build-android/.cxx/${CMAKE_BUILD_TYPE}/*/${ANDROID_ABI}/PVRPfx")
+		# The glob will return a list, but there should only be one match.
+		list(GET PVRPfx_DIR_GLOB 0 PVRPfx_DIR)
 	endif()
 endif()
 

@@ -201,7 +201,7 @@ void android_main(struct android_app* state)
 	//	Initialize our window/run/shutdown
 	while (true)
 	{
-		while (ALooper_pollAll((state->destroyRequested || (stateMachine.getState() == pvr::platform::StateMachine::StateReady && !stateMachine.isPaused())) ? 0 : 10000, NULL,
+		while (ALooper_pollOnce((state->destroyRequested || (stateMachine.getState() == pvr::platform::StateMachine::StateReady && !stateMachine.isPaused())) ? 0 : 10000, NULL,
 				   &events, (void**)&source) >= 0)
 		{
 			// Process this event.
