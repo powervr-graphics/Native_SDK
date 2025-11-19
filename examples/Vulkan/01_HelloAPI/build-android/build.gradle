@@ -136,7 +136,7 @@ task copyToBinRelease(type: Copy) {
 	rename('(.*)-release.apk', '$1.apk')
 }
 
-tasks.whenTaskAdded { task -> 	
+tasks.configureEach { task -> 	
 	// Copy the binary to the final bin folder.
 	if (task.name == 'packageRelease') {
 		task.dependsOn(checkReleaseSigning)

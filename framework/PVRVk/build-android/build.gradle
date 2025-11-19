@@ -30,7 +30,7 @@ android {
 	}
 }
 
-tasks.whenTaskAdded { task ->
+tasks.configureEach { task ->
 	// We want to be able to build with the "assembleDebug" and "assembleRelease" commands on the entire SDK:
 	// We replace these tasks with basically dependencies on the native builds to generate the native library
 	if (task.name.startsWith('assemble')) {

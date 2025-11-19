@@ -17,7 +17,6 @@ android {
 				cppFlags "-fexceptions"
 				arguments "-DANDROID_STL=c++_static", "-DPVR_PREBUILT_DEPENDENCIES=ON", "-DPVR_ENABLE_INSTALL=ON"
 				targets "PVRUtilsGles"
-				targets "PVRUtilsGles"
 			}
 		}
 		ndk
