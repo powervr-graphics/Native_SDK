@@ -1,9 +1,7 @@
 apply plugin: 'com.android.library'
 
-def projectDependencies = ["PVRCore"]
 
 android {
-
 	namespace "com.powervr.PVRShell"
 	ndkVersion "29.0.14206865"
 	defaultConfig {
@@ -30,6 +28,10 @@ android {
 			version "3.22.1"
 		}
 	}
+}
+
+dependencies {
+    implementation project(':PVRCore')
 }
 
 buildscript {

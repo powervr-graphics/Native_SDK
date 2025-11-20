@@ -90,11 +90,9 @@ android {
 dependencies {
 	// Dependency on local binaries
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
-	implementation project(':PVRCore')
-	implementation project(':PVRAssets')
-	implementation project(':PVRVk')
-	implementation project(':glslang')
-	implementation project(':VulkanMemoryAllocator')
+	implementation project(':PVRShell')
+	implementation project(':pugixml')
+    implementation project(':glm')
 }
 
 // For release builds ensure that signing has taken place appropriately
@@ -126,13 +124,3 @@ task copyToBinRelease(type: Copy) {
 	rename('(.*)-release.apk', '$1.apk')
 }
 
-tasks.configureEach { task -> 	
-	// Copy the binary to the final bin folder.
-	if (task.name == 'packageRelease') {
-		task.dependsOn(checkReleaseSigning)
-		task.finalizedBy copyToBinRelease
-	}
-	if (task.name == 'packageDebug') {
-		task.finalizedBy copyToBinDebug
-	}
-}
