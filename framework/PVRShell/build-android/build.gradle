@@ -27,17 +27,11 @@ android {
 			version "3.22.1"
 		}
 	}
-    prefab {
-        PVRShell {
-            headers "../"
-        }
-    }
 }
 
 dependencies {
     implementation project(':PVRCore')
 }
-
 
 buildscript {
 	repositories {

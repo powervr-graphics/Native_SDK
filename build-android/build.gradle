@@ -1,0 +1,84 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.13.1'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+// Definitive, centralized fix for the native build race condition.
+gradle.projectsEvaluated {
+    rootProject.allprojects { project ->
+        def isApp = project.plugins.hasPlugin('com.android.application')
+        def isLib = project.plugins.hasPlugin('com.android.library')
+
+        // Check if it's a native Android project (app or library) that uses CMake.
+        if ((isApp || isLib) && project.android.externalNativeBuild.cmake.path != null) {
+
+            // Use the correct API for apps vs. libraries
+            def variants = isApp ? project.android.applicationVariants : project.android.libraryVariants
+
+            // Get all project dependencies from 'implementation' and 'api' configurations.
+            def dependencies = []
+            def implDeps = project.configurations.findByName("implementation")?.getDependencies()?.withType(org.gradle.api.artifacts.ProjectDependency)
+            if (implDeps) dependencies.addAll(implDeps)
+
+            def apiDeps = project.configurations.findByName("api")?.getDependencies()?.withType(org.gradle.api.artifacts.ProjectDependency)
+            if (apiDeps) dependencies.addAll(apiDeps)
+
+            if (!dependencies.isEmpty()) {
+                variants.all { variant ->
+                    def variantName = variant.name.capitalize()
+
+                    // Hook into the externalNativeBuild task (which handles CMake configure and build).
+                    // We ensure that before this project builds its native code, its dependencies have
+                    // completely assembled their variants (generating the .cxx config files).
+                    // Note: Accessing variant.externalNativeBuildProvider directly can fail on some AGP versions,
+                    // so we look up the task by name.
+                    def externalNativeBuildTaskName = "externalNativeBuild${variantName}"
+                    def externalNativeBuildTask = project.tasks.findByName(externalNativeBuildTaskName)
+
+                    if (externalNativeBuildTask) {
+                        dependencies.each { dep ->
+                            def depProject = dep.dependencyProject
+
+                            // Check if the dependency is also a native Android project.
+                            // Since we are in projectsEvaluated, depProject should be fully configured.
+                            def isNativeDependency = (depProject.plugins.hasPlugin('com.android.application') || depProject.plugins.hasPlugin('com.android.library')) &&
+                                    depProject.android.externalNativeBuild.cmake.path != null
+
+                            if (isNativeDependency) {
+                                def dependencyTaskName = "assemble${variantName}"
+                                // Check if the dependency task exists to avoid errors
+                                if (depProject.tasks.findByName(dependencyTaskName)) {
+                                    println "Configuring native dependency: ${project.name}:${externalNativeBuildTaskName} depends on ${depProject.name}:${dependencyTaskName}"
+                                    externalNativeBuildTask.dependsOn depProject.tasks.named(dependencyTaskName)
+
+                                    // Also hook the 'preBuild' task to be safe, as some IDE sync steps might trigger off this.
+                                    // This ensures that even early build steps wait for the dependency.
+                                    def preBuildTask = project.tasks.findByName("preBuild")
+                                    if (preBuildTask) {
+                                        preBuildTask.dependsOn depProject.tasks.named(dependencyTaskName)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

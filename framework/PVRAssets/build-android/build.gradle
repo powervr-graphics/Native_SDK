@@ -50,8 +50,3 @@ allprojects {
 		mavenCentral()
 	}
 }
-// Explicitly build dependencies before this project's build starts.
-preBuild.dependsOn(
-		':PVRCore:assembleDebug',
-		':tinygltf:assembleDebug'
-)

@@ -4,8 +4,6 @@ apply plugin: 'com.android.application'
 def hasSigningDefined = project.hasProperty('KEYSTORE_FILE') &&  project.hasProperty('KEYSTORE_PASSWORD') &&  project.hasProperty('KEY_ALIAS') && project.hasProperty('KEY_PASSWORD')
 // Get the output directory based on if the gradle command was kicked for the entire SDK or the example only
 def binOutput = gradle.ext.PVR_BINARY_OUTPUT_DIR
-// The set of framework projects on which this application is dependent
-def projectDependencies = [":PVRShell", ":PVRUtilsGles", ":PVRCore"]
 
 // This block configures the repositories and dependencies for Gradle itself. Here we add a dependency for the Android plugin for Gradle as it provides
 // the additional instructions Gradle needs to build Android app modules
@@ -185,16 +183,4 @@ tasks.configureEach { task ->
 	if (task.name == 'packageDebug') {
 		task.finalizedBy copyToBinDebug
 	}
-}
-
-// Definitive fix for the native build race condition.
-// This ensures that the native libraries are fully assembled before this
-// project's native build begins.
-android.applicationVariants.all { variant ->
-    def variantName = variant.name.capitalize()
-    tasks.named("externalNativeBuild${variantName}").configure {
-        projectDependencies.each { dep ->
-            dependsOn "${dep}:assemble${variantName}"
-        }
-    }
 }

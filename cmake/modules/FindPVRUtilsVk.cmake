@@ -49,12 +49,18 @@ endif()
 
 if(PVR_PREBUILT_DEPENDENCIES)
 	if(ANDROID)
-		string(TOLOWER ${CMAKE_BUILD_TYPE} PVR_ANDROID_BUILD_TYPE)
-		#set(PVRUtilsVk_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRUtils/Vulkan/build-android/.cxx/cmake/${PVR_ANDROID_BUILD_TYPE}/${ANDROID_ABI}/PVRUtilsVk")
+		# Allow finding packages in the host file system
+		set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 
-		file(GLOB PVRUtilsVk_DIR_GLOB "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRUtils/Vulkan/build-android/.cxx/${PVR_ANDROID_BUILD_TYPE}/*/${ANDROID_ABI}/PVRUtilsVk")
+		# Use wildcard for build type to handle Debug/debug casing differences
+		file(GLOB PVRUtilsVk_DIR_GLOB "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRUtils/Vulkan/build-android/.cxx/*/*/${ANDROID_ABI}/PVRUtilsVk")
+		
 		# The glob will return a list, but there should only be one match.
-		list(GET PVRUtilsVk_DIR_GLOB 0 PVRUtilsVk_DIR)
+		if(PVRUtilsVk_DIR_GLOB)
+			list(GET PVRUtilsVk_DIR_GLOB 0 PVRUtilsVk_DIR)
+		else()
+			message(STATUS "PVRUtilsVk: No build directory found matching ${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRUtils/Vulkan/build-android/.cxx/*/*/${ANDROID_ABI}/PVRUtilsVk")
+		endif()
 	endif()
 endif()
 
