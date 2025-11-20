@@ -1,7 +1,5 @@
 apply plugin: 'com.android.library'
 
-def projectDependencies = ["pugixml", "glm"]
-
 android {
 	namespace "com.powervr.PVRCore"
 	ndkVersion "29.0.14206865"

@@ -1,10 +1,7 @@
 apply plugin: 'com.android.library'
 
-def projectDependencies = ["PVRCore", "PVRAssets"]
-
 android {
-
-	namespace "com.powervr.PVRUtilsVk"
+	namespace "com.powervr.PVRUtilsGles"
 	ndkVersion "29.0.14206865"
 	defaultConfig {
 		minSdkVersion 24
@@ -30,6 +27,11 @@ android {
 			version "3.22.1"
 		}
 	}
+}
+
+dependencies {
+    implementation project(':PVRShell')
+    implementation project(':PVRAssets')
 }
 
 buildscript {

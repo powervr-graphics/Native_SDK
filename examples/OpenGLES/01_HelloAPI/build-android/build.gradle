@@ -28,7 +28,6 @@ allprojects {
 }
 
 android {
-
 	namespace "com.powervr.OpenGLESHelloAPI"
 	ndkVersion "29.0.14206865"
 	defaultConfig {
@@ -91,9 +90,11 @@ dependencies {
 	// Dependency on local binaries
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
 	implementation project(':PVRShell')
-	implementation project(':pugixml')
-    implementation project(':glm')
+	implementation project(':PVRUtilsGles')
 }
+
+
+
 
 // For release builds ensure that signing has taken place appropriately
 task checkReleaseSigning() {
@@ -123,4 +124,3 @@ task copyToBinRelease(type: Copy) {
 	include('*.apk')
 	rename('(.*)-release.apk', '$1.apk')
 }
-

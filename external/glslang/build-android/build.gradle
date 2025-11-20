@@ -1,19 +1,19 @@
 apply plugin: 'com.android.library'
 
 android {
-	compileSdkVersion 28
-	namespace "com.powervr.external.glslang"
+	namespace "com.powervr.glslang"
 	ndkVersion "29.0.14206865"
 	defaultConfig {
 		minSdkVersion 24
-		targetSdkVersion 26
+		targetSdkVersion 33
+		compileSdkVersion 35
 		versionCode 1
 		versionName "1.0"
 		externalNativeBuild {
 			cmake {
 				cppFlags "-fexceptions"
 				arguments "-DANDROID_STL=c++_static", "-DPVR_ENABLE_INSTALL=ON"
-				targets "glslang", "SPIRV", "OGLCompiler", "OSDependent"
+				targets "glslang", "glslangValidator"
 			}
 		}
 		ndk

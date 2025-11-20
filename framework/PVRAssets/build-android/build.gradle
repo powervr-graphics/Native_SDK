@@ -1,9 +1,6 @@
 apply plugin: 'com.android.library'
 
-def projectDependencies = ["PVRCore", "tinygltf"]
-
 android {
-
 	namespace "com.powervr.PVRAssets"
 	ndkVersion "29.0.14206865"
 	defaultConfig {
@@ -32,6 +29,10 @@ android {
 	}
 }
 
+dependencies {
+    implementation project(':PVRCore')
+    implementation project(':tinygltf')
+}
 
 buildscript {
 	repositories {
@@ -49,3 +50,8 @@ allprojects {
 		mavenCentral()
 	}
 }
+// Explicitly build dependencies before this project's build starts.
+preBuild.dependsOn(
+		':PVRCore:assembleDebug',
+		':tinygltf:assembleDebug'
+)
