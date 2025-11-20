@@ -32,32 +32,16 @@ android {
 	}
 }
 
+dependencies {
+    implementation project(':PVRCore')
+    implementation project(':PVRAssets')
+    implementation project(':PVRVk')
+    implementation project(':glslang')
+    implementation project(':VulkanMemoryAllocator')
+}
+
 Set taskDeleted = []
 
-tasks.configureEach { task ->
-	// We add a dependency on all projects dependencies corresponding externalNativeBuild tasks
-	if (task.name.startsWith('generateJsonModel')) {
-		def flavor = task.name.substring('generateJsonModel'.length()) // generateJsonModelDebug -> Debug
-		projectDependencies.each {s -> task.dependsOn ":${s}:externalNativeBuild${flavor}" }
-	}
-
-	// We want to be able to build with the "assembleDebug" and "assembleRelease" commands on the entire SDK:
-	// We replace these tasks with basically dependencies on the native builds to generate the native library
-	if (task.name.startsWith('assemble') || task.name.startsWith('verify')) {
-		if (task.name.startsWith('assemble')){
-			tasks['assemble'].actions.clear()
-			tasks['assemble'].dependsOn.clear()
-			task.actions.clear() // For verify, this is dummy
-			task.dependsOn.clear()
-
-			def flavor = task.name.substring('assemble'.length())
-			tasks["assemble${flavor}"].dependsOn = ["externalNativeBuild${flavor}"]
-		}
-		else{
-			task.enabled = false
-		}
-	}
-}
 
 buildscript {
 	repositories {
