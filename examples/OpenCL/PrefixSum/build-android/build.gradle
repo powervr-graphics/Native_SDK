@@ -59,6 +59,10 @@ android {
 dependencies {
 	// Dependency on local binaries
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':PVRCore')
+    implementation project(':PVRUtilsCL')
+    implementation project(':glm')
+    implementation project(':pugixml')
 }
 
 tasks.whenTaskAdded { task ->
