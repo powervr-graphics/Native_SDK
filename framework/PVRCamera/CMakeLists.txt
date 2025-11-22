@@ -48,11 +48,12 @@ target_link_libraries(PVRCamera
 # This ensures that #include "PVRCamera/CameraInterface.h" works correctly
 include_directories("${CMAKE_CURRENT_LIST_DIR}/..")
 
-# Use simple paths to ensure compilation works
+# Use generator expressions to ensure export compatibility
 target_include_directories(PVRCamera 
 	PUBLIC
-		"${CMAKE_CURRENT_LIST_DIR}/.."
-		"${CMAKE_CURRENT_LIST_DIR}/../../include"
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/..>
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../include>
+		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
 if(PVR_ENABLE_INSTALL)
