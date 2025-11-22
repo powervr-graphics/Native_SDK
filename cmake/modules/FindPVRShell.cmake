@@ -45,6 +45,9 @@ if(NOT TARGET PVRShell)
 	
 	if(PVRShell_FOUND)
 		message(STATUS "PVRShell: Package configuration found.")
+		# Ensure the framework source directory is in the include path.
+		get_filename_component(PVR_FRAMEWORK_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework" ABSOLUTE)
+		set_property(TARGET PVRShell APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${PVR_FRAMEWORK_DIR}")
 	else()
 		message(STATUS "PVRShell: Prebuilt package not found. Attempting to build from source...")
 		set(PVRShell_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRShell")
