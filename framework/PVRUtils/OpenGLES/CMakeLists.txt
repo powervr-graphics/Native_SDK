@@ -107,6 +107,9 @@ if(PVR_WINDOW_SYSTEM)
 	target_compile_definitions(PVRUtilsGles PUBLIC ${PVR_WINDOW_SYSTEM_DEFINE})
 endif()
 
+# Explicitly add include paths for internal compilation
+include_directories(${PVRUtilsGles_INCLUDE_DIRECTORIES})
+
 target_include_directories(PVRUtilsGles 
 	PUBLIC 
 		"$<BUILD_INTERFACE:${PVRUtilsGles_INCLUDE_DIRECTORIES}>"
