@@ -42,6 +42,10 @@ set(PVRPfx_INCLUDE_DIRECTORIES
 	${CMAKE_CURRENT_LIST_DIR}/..
 	${CMAKE_CURRENT_LIST_DIR}/../../include)
 
+# Explicitly add the parent directory to the include path for this directory
+# This ensures that #include "PVRPfx/EffectVk.h" works correctly
+include_directories("${CMAKE_CURRENT_LIST_DIR}/..")
+
 target_include_directories(PVRPfx 
 	PUBLIC 
 		"$<BUILD_INTERFACE:${PVRPfx_INCLUDE_DIRECTORIES}>"
