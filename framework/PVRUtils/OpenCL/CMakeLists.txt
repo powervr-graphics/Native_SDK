@@ -20,9 +20,9 @@ endif()
 
 target_include_directories(PVRUtilsCL 
 	INTERFACE 
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../../include>
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../>
-		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+		"${CMAKE_CURRENT_LIST_DIR}/../../../include"
+		"${CMAKE_CURRENT_LIST_DIR}/../../"
+)
 
 list(APPEND PVRUtilsCL_LINK_LIBS PVRCore)
 

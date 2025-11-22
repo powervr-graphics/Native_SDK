@@ -44,15 +44,11 @@ target_link_libraries(PVRCamera
 	PRIVATE
 		${PVRCamera_PRIVATE_LINK_LIBS})
 
-# Explicitly split PRIVATE and INTERFACE includes to ensure correct compilation and export
+# Use simple paths to ensure compilation works
 target_include_directories(PVRCamera 
-	PRIVATE
-		${CMAKE_CURRENT_LIST_DIR}/..
-		${CMAKE_CURRENT_LIST_DIR}/../../include
-	INTERFACE
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/..>
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../include>
-		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+	PUBLIC
+		"${CMAKE_CURRENT_LIST_DIR}/.."
+		"${CMAKE_CURRENT_LIST_DIR}/../../include"
 )
 
 if(PVR_ENABLE_INSTALL)
