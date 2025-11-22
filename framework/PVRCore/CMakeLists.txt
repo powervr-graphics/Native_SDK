@@ -125,11 +125,12 @@ target_link_libraries(PVRCore PUBLIC glm)
 target_link_libraries(PVRCore PRIVATE pugixml)
 
 # Set the include directories for PVRCore
-# Explicitly adding include_directories for this target's compilation
-# Using PUBLIC ensures it propagates to dependents too
+# Using explicit include_directories for private use
+include_directories("${CMAKE_CURRENT_LIST_DIR}/..")
+
+# Using generator expressions for INTERFACE properties to avoid absolute path issues during export
 target_include_directories(PVRCore 
 	PUBLIC 
-		"${CMAKE_CURRENT_LIST_DIR}/.."
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/..>
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
