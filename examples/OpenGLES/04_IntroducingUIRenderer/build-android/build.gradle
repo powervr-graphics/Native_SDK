@@ -116,6 +116,12 @@ android {
 dependencies {
 	// Dependency on local binaries
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':PVRShell')
+    implementation project(':PVRUtilsGles')
+    implementation project(':tinygltf')
+    implementation project(':PVRAssets')
+    implementation project(':pugixml')
+    implementation project(':glm')
 }
 
 // For release builds ensure that signing has taken place appropriately
