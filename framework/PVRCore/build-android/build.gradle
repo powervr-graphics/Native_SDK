@@ -33,14 +33,10 @@ android {
 dependencies {
     // Dependency on local binaries
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(':PVRShell')
-    implementation project(':PVRUtilsGles')
-    implementation project(':PVRUtilsVk')
     implementation project(':pugixml')
-    implementation project(':PVRAssets')
-    implementation project(':PVRVk')
-    implementation project(':PVRPfx')
+    implementation project(':PVRShell')
 }
+
 
 buildscript {
 	repositories {
