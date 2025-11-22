@@ -23,7 +23,7 @@ if(PVR_PREBUILT_DEPENDENCIES)
 		string(TOLOWER ${CMAKE_BUILD_TYPE} PVR_ANDROID_BUILD_TYPE)
 		#set(PVRAssets_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRAssets/build-android/.cxx/cmake/${PVR_ANDROID_BUILD_TYPE}/${ANDROID_ABI}/PVRAssets")
 
-		file(GLOB PVRAssets_DIR_GLOB "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRAssets/build-android/.cxx/${PVR_ANDROID_BUILD_TYPE}/*/${ANDROID_ABI}/PVRAssets")
+		file(GLOB PVRAssets_DIR_GLOB "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRAssets/build-android/.cxx/${CMAKE_BUILD_TYPE}/*/${ANDROID_ABI}/PVRAssets")
 		# The glob will return a list, but there should only be one match.
 		list(GET PVRAssets_DIR_GLOB 0 PVRAssets_DIR)
 	endif()
