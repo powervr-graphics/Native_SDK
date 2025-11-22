@@ -5,7 +5,7 @@ def hasSigningDefined = project.hasProperty('KEYSTORE_FILE') &&  project.hasProp
 // Get the output directory based on if the gradle command was kicked for the entire SDK or the example only
 def binOutput = gradle.ext.PVR_BINARY_OUTPUT_DIR
 // The set of framework projects on which this application is dependent
-def projectDependencies = ["PVRShell", "PVRUtilsGles", "PVRCamera"]
+def projectDependencies = ["PVRShell", "PVRUtilsGles", "PVRCamera", "PVRAssets"]
 
 // This block configures the repositories and dependencies for Gradle itself. Here we add a dependency for the Android plugin for Gradle as it provides
 // the additional instructions Gradle needs to build Android app modules
@@ -112,6 +112,7 @@ dependencies {
 	// Dependency on local binaries
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
 	implementation project(":PVRCamera")
+    implementation project(":PVRAssets")
 }
 
 // For release builds ensure that signing has taken place appropriately
