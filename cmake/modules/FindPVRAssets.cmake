@@ -51,6 +51,11 @@ if(NOT TARGET PVRAssets)
 	
 	if(PVRAssets_FOUND)
 		message(STATUS "PVRAssets: Package configuration found.")
+        # Ensure the framework source directory is in the include path.
+        get_filename_component(PVR_FRAMEWORK_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework" ABSOLUTE)
+        get_filename_component(PVR_SDK_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../include" ABSOLUTE)
+        
+        set_property(TARGET PVRAssets APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${PVR_FRAMEWORK_DIR}" "${PVR_SDK_INCLUDE_DIR}")
 	else()
 		message(STATUS "PVRAssets: Prebuilt package not found. Attempting to build from source...")
 		set(PVRAssets_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRAssets")
