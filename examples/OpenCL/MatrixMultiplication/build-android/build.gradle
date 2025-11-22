@@ -70,7 +70,7 @@ tasks.whenTaskAdded { task ->
 		projectDependencies.each {s -> task.dependsOn ":${s}:externalNativeBuild${flavor}" }
 	}
 	// The following lines reconfigure the assemble, assembleDebug, assembleRelease tasks to just call the native build. All other parts of it are disabled.
-	if (task.name.startsWith('assemble') || task.name.startsWith('verify') || task.name.startsWith('check')) {
+	if (task.name.startsWith('assemble') || task.name.startsWith('bundle') || task.name.startsWith('verify') || task.name.startsWith('check')) {
 
 		tasks['assemble'].actions.clear()
 		tasks['assemble'].dependsOn.clear()
