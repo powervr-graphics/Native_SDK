@@ -157,7 +157,7 @@ task copyToBinRelease(type: Copy) {
 	rename('(.*)-release.apk', '$1.apk')
 }
 
-tasks.configureEach { task ->
+tasks.whenTaskAdded { task ->
 	// Ensure the assets folder is appropriately copied to the apk
 	if (task.name == 'externalNativeBuildRelease') {
 		copyAssetsRelease.dependsOn task
