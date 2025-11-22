@@ -201,6 +201,14 @@ tasks.whenTaskAdded { task ->
 		task.dependsOn copyAssetsDebug
 	}
 
+    // Fix implicit dependency errors
+    if (task.name == 'generateReleaseLintVitalReportModel') {
+        task.dependsOn copyAssetsRelease
+    }
+    if (task.name == 'lintVitalAnalyzeRelease') {
+        task.dependsOn copyAssetsRelease
+    }
+
 	// Copy the binary to the final bin folder.
 	if (task.name == 'packageRelease') {
 		task.dependsOn(checkReleaseSigning)
