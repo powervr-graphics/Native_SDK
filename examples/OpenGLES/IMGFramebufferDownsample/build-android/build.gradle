@@ -116,6 +116,7 @@ dependencies {
 	// Dependency on local binaries
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
 	implementation project(':PVRShell')
+    implementation project(':PVRUtilsGles')
 	implementation project(':pugixml')
 	implementation project(':glm')
 	implementation project(':PVRCore')
