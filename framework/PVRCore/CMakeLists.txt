@@ -126,10 +126,10 @@ target_link_libraries(PVRCore PRIVATE pugixml)
 
 # Set the include directories for PVRCore
 # Explicitly adding include_directories for this target's compilation
-include_directories("${CMAKE_CURRENT_LIST_DIR}/..")
-
+# Using PUBLIC ensures it propagates to dependents too
 target_include_directories(PVRCore 
 	PUBLIC 
+		"${CMAKE_CURRENT_LIST_DIR}/.."
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/..>
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
