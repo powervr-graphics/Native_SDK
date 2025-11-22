@@ -13,7 +13,7 @@ android {
 			cmake {
 				cppFlags "-fexceptions"
 				arguments "-DANDROID_STL=c++_static", "-DPVR_ENABLE_INSTALL=ON"
-				targets "glslang", "glslangValidator"
+				targets "glslang", "SPIRV", "OGLCompiler", "OSDependent"
 			}
 		}
 		ndk
