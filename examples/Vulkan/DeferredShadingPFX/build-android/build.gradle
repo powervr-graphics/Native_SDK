@@ -146,6 +146,9 @@ android {
 dependencies {
 	// Dependency on local binaries
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':PVRShell')
+    implementation project(':PVRUtilsVk')
+    implementation project(':PVRPfx')
 }
 
 // For release builds ensure that signing has taken place appropriately
