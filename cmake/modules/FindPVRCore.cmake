@@ -24,7 +24,7 @@ if(PVR_PREBUILT_DEPENDENCIES)
 		set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 
 		# Use wildcard for build type to handle Debug/debug casing differences and other variants
-		file(GLOB PVRCore_DIR_GLOB "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRCore/build-android/.cxx/*/*/${ANDROID_ABI}/PVRCore")
+		file(GLOB PVRCore_DIR_GLOB "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRCore/build-android/.cxx/${CMAKE_BUILD_TYPE}/*/${ANDROID_ABI}/PVRCore")
 		
 		# The glob will return a list, but there should only be one match.
 		if(PVRCore_DIR_GLOB)
