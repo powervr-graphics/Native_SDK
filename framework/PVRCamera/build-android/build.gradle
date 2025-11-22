@@ -35,7 +35,7 @@ android {
 
 Set taskDeleted = []
 
-tasks.configureEach { task ->
+tasks.whenTaskAdded { task ->
 	// We add a dependency on all projects dependencies corresponding externalNativeBuild tasks
 	if (task.name.startsWith('generateJsonModel')) {
 		def flavor = task.name.substring('generateJsonModel'.length()) // generateJsonModelDebug -> Debug
