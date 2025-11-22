@@ -40,7 +40,6 @@ dependencies {
     implementation project(':PVRAssets')
     implementation project(':PVRVk')
     implementation project(':PVRPfx')
-    implementation project(':PVRUtils')
 }
 
 buildscript {
