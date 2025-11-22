@@ -45,15 +45,21 @@ if(NOT TARGET PVRUtilsGles)
 	# Try to find the package configuration
 	find_package(PVRUtilsGles CONFIG QUIET)
 	
-    if(PVRUtilsGles_FOUND)
-        message(STATUS "PVRUtilsGles: Package configuration found.")
+    # If the package was found, we also need to check if the TARGET was actually defined.
+    # Sometimes find_package succeeds (config file found) but the target is not visible or named differently.
+    if(PVRUtilsGles_FOUND AND TARGET PVRUtilsGles)
+        message(STATUS "PVRUtilsGles: Package configuration found and target defined.")
         # Ensure the framework source directory is in the include path.
         get_filename_component(PVR_FRAMEWORK_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework" ABSOLUTE)
         get_filename_component(PVR_SDK_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../include" ABSOLUTE)
         
         set_property(TARGET PVRUtilsGles APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${PVR_FRAMEWORK_DIR}" "${PVR_SDK_INCLUDE_DIR}")
     else()
-        message(STATUS "PVRUtilsGles: Prebuilt package not found. Attempting to build from source...")
+        if(PVRUtilsGles_FOUND AND NOT TARGET PVRUtilsGles)
+             message(STATUS "PVRUtilsGles: Package configuration found BUT target 'PVRUtilsGles' not defined. Falling back to source build.")
+        endif()
+
+        message(STATUS "PVRUtilsGles: Prebuilt package not found (or target missing). Attempting to build from source...")
         set(PVRUtilsGles_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRUtils/OpenGLES")
         if(EXISTS "${PVRUtilsGles_SOURCE_DIR}/CMakeLists.txt")
             add_subdirectory("${PVRUtilsGles_SOURCE_DIR}" "${CMAKE_BINARY_DIR}/framework/PVRUtils/OpenGLES")
