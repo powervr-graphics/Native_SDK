@@ -203,17 +203,13 @@ target_link_libraries(PVRShell
 	PRIVATE
 		${PVRShell_PRIVATE_LINK_LIBS})
 
-# Explicitly split PRIVATE and INTERFACE includes to ensure correct compilation and export
 target_include_directories(PVRShell 
-	PRIVATE
-		${CMAKE_CURRENT_LIST_DIR}/..
-		${CMAKE_CURRENT_LIST_DIR}/../../include
-		${PVRShell_PRIVATE_INCLUDE_DIRECTORIES}
-	INTERFACE
+	PUBLIC 
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/..>
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../include>
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-)
+	PRIVATE
+		${PVRShell_PRIVATE_INCLUDE_DIRECTORIES})
 
 target_compile_definitions(PVRShell 
 	PUBLIC ${PVR_WINDOW_SYSTEM_DEFINE})
