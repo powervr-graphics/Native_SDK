@@ -42,12 +42,23 @@ if(PVR_PREBUILT_DEPENDENCIES)
 endif()
 
 if(NOT TARGET PVRUtilsGles)
-	find_package(PVRUtilsGles REQUIRED CONFIG)
+	# Try to find the package configuration
+	find_package(PVRUtilsGles CONFIG QUIET)
+	
     if(PVRUtilsGles_FOUND)
+        message(STATUS "PVRUtilsGles: Package configuration found.")
         # Ensure the framework source directory is in the include path.
         get_filename_component(PVR_FRAMEWORK_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework" ABSOLUTE)
         get_filename_component(PVR_SDK_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../include" ABSOLUTE)
         
         set_property(TARGET PVRUtilsGles APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${PVR_FRAMEWORK_DIR}" "${PVR_SDK_INCLUDE_DIR}")
+    else()
+        message(STATUS "PVRUtilsGles: Prebuilt package not found. Attempting to build from source...")
+        set(PVRUtilsGles_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRUtils/OpenGLES")
+        if(EXISTS "${PVRUtilsGles_SOURCE_DIR}/CMakeLists.txt")
+            add_subdirectory("${PVRUtilsGles_SOURCE_DIR}" "${CMAKE_BINARY_DIR}/framework/PVRUtils/OpenGLES")
+        else()
+            message(FATAL_ERROR "PVRUtilsGles: Could not find prebuilt package AND could not find source at ${PVRUtilsGles_SOURCE_DIR}")
+        endif()
     endif()
 endif()
