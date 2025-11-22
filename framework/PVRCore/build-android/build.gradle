@@ -29,9 +29,23 @@ android {
 	}
 }
 
+// This block specifies dependencies required to build only the module itself
 dependencies {
+    // Dependency on local binaries
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':PVRShell')
+    implementation project(':PVRUtilsGles')
+    implementation project(':PVRUtilsVk')
     implementation project(':pugixml')
-    implementation project(':glm')
+    implementation project(':PVRCore')
+    implementation project(':PVRAssets')
+    implementation project(':PVRVk')
+    implementation project(':PVRGles')
+    implementation project(':PVRPfx')
+    implementation project(':PVRUtils')
+    implementation project(':PVRShell')
+    implementation project(':PVRUtilsGles')
+    implementation project(':PVRUtilsVk')
 }
 
 buildscript {

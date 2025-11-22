@@ -44,6 +44,15 @@ buildscript {
 	}
 }
 
+// This block specifies dependencies required to build only the module itself
+dependencies {
+    // Dependency on local binaries
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':PVRShell')
+    implementation project(':PVRUtilsVk')
+    implementation project(':pugixml')
+}
+
 allprojects {
 	repositories {
 		google()
