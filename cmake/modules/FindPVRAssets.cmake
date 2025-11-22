@@ -18,17 +18,46 @@ if(NOT TARGET tinygltf)
 	find_dependency(tinygltf REQUIRED MODULE)
 endif()
 
+# Try to find prebuilt if configured
 if(PVR_PREBUILT_DEPENDENCIES)
 	if(ANDROID)
-		string(TOLOWER ${CMAKE_BUILD_TYPE} PVR_ANDROID_BUILD_TYPE)
-		#set(PVRAssets_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRAssets/build-android/.cxx/cmake/${PVR_ANDROID_BUILD_TYPE}/${ANDROID_ABI}/PVRAssets")
+		# Allow finding packages in the host file system
+		set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 
-		file(GLOB PVRAssets_DIR_GLOB "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRAssets/build-android/.cxx/${CMAKE_BUILD_TYPE}/*/${ANDROID_ABI}/PVRAssets")
-		# The glob will return a list, but there should only be one match.
-		list(GET PVRAssets_DIR_GLOB 0 PVRAssets_DIR)
+		string(TOLOWER "${CMAKE_BUILD_TYPE}" PVR_ANDROID_BUILD_TYPE)
+
+		# Search for the config file directly
+		# Try lowercase build type first
+		set(SEARCH_PATH "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRAssets/build-android/.cxx/${PVR_ANDROID_BUILD_TYPE}/*/${ANDROID_ABI}/PVRAssets/PVRAssetsConfig.cmake")
+		file(GLOB PVRAssets_CONFIG_GLOB "${SEARCH_PATH}")
+		
+		# If not found, try original build type
+		if(NOT PVRAssets_CONFIG_GLOB)
+			set(SEARCH_PATH "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRAssets/build-android/.cxx/${CMAKE_BUILD_TYPE}/*/${ANDROID_ABI}/PVRAssets/PVRAssetsConfig.cmake")
+			file(GLOB PVRAssets_CONFIG_GLOB "${SEARCH_PATH}")
+		endif()
+		
+		if(PVRAssets_CONFIG_GLOB)
+			list(GET PVRAssets_CONFIG_GLOB 0 PVRAssets_CONFIG_FILE)
+			get_filename_component(PVRAssets_DIR ${PVRAssets_CONFIG_FILE} DIRECTORY)
+			message(STATUS "PVRAssets: Found prebuilt directory ${PVRAssets_DIR}")
+		endif()
 	endif()
 endif()
 
 if(NOT TARGET PVRAssets)
-	find_package(PVRAssets REQUIRED CONFIG)
+	# Try to find the package configuration
+	find_package(PVRAssets CONFIG QUIET)
+	
+	if(PVRAssets_FOUND)
+		message(STATUS "PVRAssets: Package configuration found.")
+	else()
+		message(STATUS "PVRAssets: Prebuilt package not found. Attempting to build from source...")
+		set(PVRAssets_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRAssets")
+		if(EXISTS "${PVRAssets_SOURCE_DIR}/CMakeLists.txt")
+			add_subdirectory("${PVRAssets_SOURCE_DIR}" "${CMAKE_BINARY_DIR}/framework/PVRAssets")
+		else()
+			message(FATAL_ERROR "PVRAssets: Could not find prebuilt package AND could not find source at ${PVRAssets_SOURCE_DIR}")
+		endif()
+	endif()
 endif()
