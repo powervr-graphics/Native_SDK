@@ -34,7 +34,6 @@ dependencies {
     // Dependency on local binaries
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':pugixml')
-    implementation project(':PVRShell')
 }
 
 
