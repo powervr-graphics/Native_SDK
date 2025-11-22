@@ -37,15 +37,10 @@ dependencies {
     implementation project(':PVRUtilsGles')
     implementation project(':PVRUtilsVk')
     implementation project(':pugixml')
-    implementation project(':PVRCore')
     implementation project(':PVRAssets')
     implementation project(':PVRVk')
-    implementation project(':PVRGles')
     implementation project(':PVRPfx')
     implementation project(':PVRUtils')
-    implementation project(':PVRShell')
-    implementation project(':PVRUtilsGles')
-    implementation project(':PVRUtilsVk')
 }
 
 buildscript {
