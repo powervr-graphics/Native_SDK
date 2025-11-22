@@ -124,3 +124,14 @@ task copyToBinRelease(type: Copy) {
 	include('*.apk')
 	rename('(.*)-release.apk', '$1.apk')
 }
+
+tasks.whenTaskAdded { task ->
+	// Copy the binary to the final bin folder.
+	if (task.name == 'packageRelease') {
+		task.dependsOn(checkReleaseSigning)
+		task.finalizedBy copyToBinRelease
+	}
+	if (task.name == 'packageDebug') {
+		task.finalizedBy copyToBinDebug
+	}
+}
