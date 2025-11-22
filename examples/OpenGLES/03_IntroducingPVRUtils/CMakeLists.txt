@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(OpenGLESIntroducingPVRUtils)
 
-add_subdirectory(../../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk)
+# add_subdirectory(../../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk)
 
 if(PVR_PREBUILT_DEPENDENCIES)
 	find_package(PVRShell REQUIRED MODULE)

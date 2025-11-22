@@ -43,16 +43,17 @@ target_link_libraries(PVRCamera
 		PVRCore
 	PRIVATE
 		${PVRCamera_PRIVATE_LINK_LIBS})
-	
-set(PVRCamera_INCLUDE_DIRECTORIES 
-	"${CMAKE_CURRENT_LIST_DIR}/.."
-	"${CMAKE_CURRENT_LIST_DIR}/../../include")
-		
+
+# Explicitly split PRIVATE and INTERFACE includes to ensure correct compilation and export
 target_include_directories(PVRCamera 
-	PUBLIC 
+	PRIVATE
+		${CMAKE_CURRENT_LIST_DIR}/..
+		${CMAKE_CURRENT_LIST_DIR}/../../include
+	INTERFACE
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/..>
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../include>
-		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
 
 if(PVR_ENABLE_INSTALL)
 	install(TARGETS PVRCamera EXPORT PVRCameraTargets
