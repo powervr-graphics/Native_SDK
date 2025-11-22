@@ -44,6 +44,10 @@ target_link_libraries(PVRCamera
 	PRIVATE
 		${PVRCamera_PRIVATE_LINK_LIBS})
 
+# Explicitly add the parent directory to the include path for this directory
+# This ensures that #include "PVRCamera/CameraInterface.h" works correctly
+include_directories("${CMAKE_CURRENT_LIST_DIR}/..")
+
 # Use simple paths to ensure compilation works
 target_include_directories(PVRCamera 
 	PUBLIC
