@@ -18,10 +18,12 @@ if(PVR_PREBUILT_DEPENDENCIES)
 	find_dependency(PVRCore MODULE REQUIRED)
 endif()
 
+# Fix: Use generator expressions to avoid exporting absolute paths in INTERFACE_INCLUDE_DIRECTORIES
 target_include_directories(PVRUtilsCL 
 	INTERFACE 
-		"${CMAKE_CURRENT_LIST_DIR}/../../../include"
-		"${CMAKE_CURRENT_LIST_DIR}/../../"
+		"$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../../include>"
+		"$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../>"
+		"$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
 )
 
 list(APPEND PVRUtilsCL_LINK_LIBS PVRCore)
