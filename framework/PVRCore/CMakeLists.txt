@@ -87,6 +87,10 @@ elseif(ANDROID)
 		Android/AndroidAssetStream.cpp)
 endif()
 
+# Set the include directories for PVRCore
+# Using explicit include_directories for private use
+include_directories("${CMAKE_CURRENT_LIST_DIR}/..")
+
 # Create the library
 add_library(PVRCore STATIC ${PVRCore_SRC} ${PVRCore_HEADERS})
 
@@ -125,9 +129,6 @@ target_link_libraries(PVRCore PUBLIC glm)
 target_link_libraries(PVRCore PRIVATE pugixml)
 
 # Set the include directories for PVRCore
-# Using explicit include_directories for private use
-include_directories("${CMAKE_CURRENT_LIST_DIR}/..")
-
 # Using generator expressions for INTERFACE properties to avoid absolute path issues during export
 target_include_directories(PVRCore 
 	PUBLIC 
