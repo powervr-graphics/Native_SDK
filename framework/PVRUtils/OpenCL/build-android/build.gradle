@@ -31,6 +31,16 @@ android {
 	}
 }
 
+// This block specifies dependencies required to build only the module itself
+dependencies {
+    // Dependency on local binaries
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':PVRCore')
+    implementation project(':glm')
+    implementation project(':pugixml')
+}
+
+
 tasks.whenTaskAdded { task ->
 	// We add a dependency on all projects dependencies corresponding externalNativeBuild tasks
 	if (task.name.startsWith('generateJsonModel')) {
