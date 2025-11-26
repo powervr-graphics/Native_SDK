@@ -19,13 +19,13 @@ if(PVR_PREBUILT_DEPENDENCIES)
 		set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 		
 		# Use wildcard for build type to handle Debug/debug casing differences
-		file(GLOB PVRCamera_DIR_GLOB "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRCamera/build-android/.cxx/*/*/${ANDROID_ABI}/PVRCamera")
+		file(GLOB PVRCamera_DIR_GLOB "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRCamera/build-android/.cxx/${CMAKE_BUILD_TYPE}/*/${ANDROID_ABI}/PVRCamera")
 		
 		# The glob will return a list, but there should only be one match.
 		if(PVRCamera_DIR_GLOB)
 			list(GET PVRCamera_DIR_GLOB 0 PVRCamera_DIR)
 		else()
-			message(STATUS "PVRCamera: No build directory found matching ${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRCamera/build-android/.cxx/*/*/${ANDROID_ABI}/PVRCamera")
+			message(STATUS "PVRCamera: No build directory found matching ${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRCamera/build-android/.cxx/${CMAKE_BUILD_TYPE}/*/${ANDROID_ABI}/PVRCamera")
 		endif()
 	endif()
 endif()
