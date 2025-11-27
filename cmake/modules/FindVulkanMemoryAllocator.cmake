@@ -15,39 +15,44 @@ if(PVR_PREBUILT_DEPENDENCIES)
 
 		# Try to find the prebuilt dependency in the .cxx folder
 		# We check multiple patterns to account for AGP variations and case sensitivity
+        # We look for the config file directly to ensure we find a valid build directory
+        
+        set(VMA_CONFIG_FILE "VulkanMemoryAllocatorConfig.cmake")
 		
 		# 1. Lowercase build type, with /build suffix (common for some AGP versions/configs)
-		set(GLOB_PATTERN "${CMAKE_CURRENT_LIST_DIR}/../../external/VulkanMemoryAllocator/build-android/.cxx/${PVR_ANDROID_BUILD_TYPE}/*/${ANDROID_ABI}/build")
-		file(GLOB VulkanMemoryAllocator_DIR_GLOB "${GLOB_PATTERN}")
+		set(GLOB_PATTERN "${CMAKE_CURRENT_LIST_DIR}/../../external/VulkanMemoryAllocator/build-android/.cxx/${PVR_ANDROID_BUILD_TYPE}/*/${ANDROID_ABI}/build/${VMA_CONFIG_FILE}")
+		file(GLOB VulkanMemoryAllocator_CONFIG_GLOB "${GLOB_PATTERN}")
 		
 		# 2. Lowercase build type, without /build suffix
-		if(NOT VulkanMemoryAllocator_DIR_GLOB)
-		    set(GLOB_PATTERN "${CMAKE_CURRENT_LIST_DIR}/../../external/VulkanMemoryAllocator/build-android/.cxx/${PVR_ANDROID_BUILD_TYPE}/*/${ANDROID_ABI}")
-		    file(GLOB VulkanMemoryAllocator_DIR_GLOB "${GLOB_PATTERN}")
+		if(NOT VulkanMemoryAllocator_CONFIG_GLOB)
+		    set(GLOB_PATTERN "${CMAKE_CURRENT_LIST_DIR}/../../external/VulkanMemoryAllocator/build-android/.cxx/${PVR_ANDROID_BUILD_TYPE}/*/${ANDROID_ABI}/${VMA_CONFIG_FILE}")
+		    file(GLOB VulkanMemoryAllocator_CONFIG_GLOB "${GLOB_PATTERN}")
 		endif()
 
 		# 3. Original case build type (fallback)
-		if(NOT VulkanMemoryAllocator_DIR_GLOB)
-		    set(GLOB_PATTERN "${CMAKE_CURRENT_LIST_DIR}/../../external/VulkanMemoryAllocator/build-android/.cxx/${CMAKE_BUILD_TYPE}/*/${ANDROID_ABI}")
-		    file(GLOB VulkanMemoryAllocator_DIR_GLOB "${GLOB_PATTERN}")
+		if(NOT VulkanMemoryAllocator_CONFIG_GLOB)
+		    set(GLOB_PATTERN "${CMAKE_CURRENT_LIST_DIR}/../../external/VulkanMemoryAllocator/build-android/.cxx/${CMAKE_BUILD_TYPE}/*/${ANDROID_ABI}/${VMA_CONFIG_FILE}")
+		    file(GLOB VulkanMemoryAllocator_CONFIG_GLOB "${GLOB_PATTERN}")
 		endif()
 		
 		# 4. Original case build type with /build suffix
-		if(NOT VulkanMemoryAllocator_DIR_GLOB)
-		    set(GLOB_PATTERN "${CMAKE_CURRENT_LIST_DIR}/../../external/VulkanMemoryAllocator/build-android/.cxx/${CMAKE_BUILD_TYPE}/*/${ANDROID_ABI}/build")
-		    file(GLOB VulkanMemoryAllocator_DIR_GLOB "${GLOB_PATTERN}")
+		if(NOT VulkanMemoryAllocator_CONFIG_GLOB)
+		    set(GLOB_PATTERN "${CMAKE_CURRENT_LIST_DIR}/../../external/VulkanMemoryAllocator/build-android/.cxx/${CMAKE_BUILD_TYPE}/*/${ANDROID_ABI}/build/${VMA_CONFIG_FILE}")
+		    file(GLOB VulkanMemoryAllocator_CONFIG_GLOB "${GLOB_PATTERN}")
 		endif()
 
         # 5. Lowercase build type with /cmake suffix
-        if(NOT VulkanMemoryAllocator_DIR_GLOB)
-             set(GLOB_PATTERN "${CMAKE_CURRENT_LIST_DIR}/../../external/VulkanMemoryAllocator/build-android/.cxx/${PVR_ANDROID_BUILD_TYPE}/*/${ANDROID_ABI}/cmake")
-             file(GLOB VulkanMemoryAllocator_DIR_GLOB "${GLOB_PATTERN}")
+        if(NOT VulkanMemoryAllocator_CONFIG_GLOB)
+             set(GLOB_PATTERN "${CMAKE_CURRENT_LIST_DIR}/../../external/VulkanMemoryAllocator/build-android/.cxx/${PVR_ANDROID_BUILD_TYPE}/*/${ANDROID_ABI}/cmake/${VMA_CONFIG_FILE}")
+             file(GLOB VulkanMemoryAllocator_CONFIG_GLOB "${GLOB_PATTERN}")
         endif()
 
-		message(STATUS "Debug FindVulkanMemoryAllocator: Result ${VulkanMemoryAllocator_DIR_GLOB}")
+		message(STATUS "Debug FindVulkanMemoryAllocator: Result Config ${VulkanMemoryAllocator_CONFIG_GLOB}")
 
-		if(VulkanMemoryAllocator_DIR_GLOB)
-		    list(GET VulkanMemoryAllocator_DIR_GLOB 0 VulkanMemoryAllocator_DIR)
+		if(VulkanMemoryAllocator_CONFIG_GLOB)
+		    list(GET VulkanMemoryAllocator_CONFIG_GLOB 0 VMA_CONFIG_PATH)
+            get_filename_component(VulkanMemoryAllocator_DIR "${VMA_CONFIG_PATH}" DIRECTORY)
+            message(STATUS "Debug FindVulkanMemoryAllocator: Setting VulkanMemoryAllocator_DIR to ${VulkanMemoryAllocator_DIR}")
 		endif()
 	endif()
 endif()
