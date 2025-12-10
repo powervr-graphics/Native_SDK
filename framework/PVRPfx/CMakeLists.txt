@@ -23,7 +23,7 @@ set(PVRPfx_SRC
 add_library(PVRPfx STATIC ${PVRPfx_SRC} ${PVRPfx_HEADERS})
 
 if(PVR_PREBUILT_DEPENDENCIES)
-	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../cmake/modules")
+	list(APPEND CMAKE_MODULE_PATH "${PVR_SDK_ROOT}/cmake/modules")
 	find_dependency(PVRUtilsVk MODULE REQUIRED)
 	find_dependency(pugixml MODULE REQUIRED)
 	find_dependency(VulkanMemoryAllocator MODULE REQUIRED)
@@ -39,33 +39,17 @@ target_link_libraries(PVRPfx
 		pugixml)
 
 set(PVRPfx_INCLUDE_DIRECTORIES 
-	${CMAKE_CURRENT_LIST_DIR}/..
-	${CMAKE_CURRENT_LIST_DIR}/../../include)
+	${PVR_FRAMEWORK_ROOT}
+	${PVR_SDK_ROOT}/include)
 
 # Explicitly add the parent directory to the include path for this directory
 # This ensures that #include "PVRPfx/EffectVk.h" works correctly
-include_directories("${CMAKE_CURRENT_LIST_DIR}/..")
+target_include_directories(PVRPfx PRIVATE "${PVR_FRAMEWORK_ROOT}")
 
 target_include_directories(PVRPfx 
 	PUBLIC 
 		"$<BUILD_INTERFACE:${PVRPfx_INCLUDE_DIRECTORIES}>"
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
-if(PVR_ENABLE_INSTALL)
-	install(TARGETS PVRPfx EXPORT PVRPfxTargets
-		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-		INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-		OPTIONAL)
-	foreach(file ${PVRPfx_HEADERS})
-		get_filename_component(dir ${file} DIRECTORY)
-		install(FILES ${file} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRPfx/${dir})
-	endforeach()
-
-	export(EXPORT PVRPfxTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/PVRPfx/PVRPfxTargets.cmake")
-	# build tree package config
-	file(COPY cmake/PVRPfxConfig.cmake.in DESTINATION "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRPfx/" NO_SOURCE_PERMISSIONS)
-	configure_file("${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRPfx/PVRPfxConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/PVRPfx/PVRPfxConfig.cmake" COPYONLY)
-	install(FILES "${CMAKE_CURRENT_BINARY_DIR}/PVRPfx/PVRPfxTargets.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRPfx OPTIONAL)
-endif()
+# Use the consolidated install function
+pvr_install_target(TARGET PVRPfx HEADERS ${PVRPfx_HEADERS})

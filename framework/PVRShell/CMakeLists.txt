@@ -191,7 +191,7 @@ endif()
 add_library(PVRShell STATIC ${PVRShell_SRC} ${PVRShell_HEADERS})
 
 if(PVR_PREBUILT_DEPENDENCIES)
-	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../cmake/modules")
+	list(APPEND CMAKE_MODULE_PATH "${PVR_SDK_ROOT}/cmake/modules")
 	find_dependency(PVRCore MODULE REQUIRED)
 endif()
 
@@ -205,8 +205,8 @@ target_link_libraries(PVRShell
 
 target_include_directories(PVRShell 
 	PUBLIC 
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/..>
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../include>
+		$<BUILD_INTERFACE:${PVR_FRAMEWORK_ROOT}>
+		$<BUILD_INTERFACE:${PVR_SDK_ROOT}/include>
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 	PRIVATE
 		${PVRShell_PRIVATE_INCLUDE_DIRECTORIES})
@@ -214,22 +214,5 @@ target_include_directories(PVRShell
 target_compile_definitions(PVRShell 
 	PUBLIC ${PVR_WINDOW_SYSTEM_DEFINE})
 
-if(PVR_ENABLE_INSTALL)
-	install(TARGETS PVRShell EXPORT PVRShellTargets
-		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-		INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-		OPTIONAL)
-	foreach(file ${PVRShell_HEADERS})
-		get_filename_component(dir ${file} DIRECTORY)
-		install(FILES ${file} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRShell/${dir})
-	endforeach()
-	install(EXPORT PVRShellTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRShell OPTIONAL)
-
-	export(EXPORT PVRShellTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/PVRShell/PVRShellTargets.cmake")
-	# build tree package config
-	file(COPY cmake/PVRShellConfig.cmake.in DESTINATION "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRShell/" NO_SOURCE_PERMISSIONS)
-	configure_file("${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRShell/PVRShellConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/PVRShell/PVRShellConfig.cmake" COPYONLY)
-	install(FILES "${CMAKE_CURRENT_BINARY_DIR}/PVRShell/PVRShellTargets.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRShell OPTIONAL)
-endif()
+# Use the consolidated install function
+pvr_install_target(TARGET PVRShell HEADERS ${PVRShell_HEADERS})

@@ -7,7 +7,7 @@ include(CMakeFindDependencyMacro)
 include(../../FrameworkCommon.cmake)
 
 set(PVRUtilsVk_PRIVATE_LINK_LIBS glslang SPIRV)
-set(PVRUtilsVk_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_LIST_DIR}/../../)
+set(PVRUtilsVk_INCLUDE_DIRECTORIES ${PVR_FRAMEWORK_ROOT}/PVRUtils)
 
 # Prevent PVRUtilsVulkan being added multiple times
 if(TARGET PVRUtilsVk)
@@ -63,7 +63,7 @@ add_library(PVRUtilsVk STATIC
 	${PVRUtilsVk_HEADERS})
 
 if(PVR_PREBUILT_DEPENDENCIES)
-	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../../cmake/modules")
+	list(APPEND CMAKE_MODULE_PATH "${PVR_SDK_ROOT}/cmake/modules")
 	find_dependency(PVRCore MODULE REQUIRED)
 	find_dependency(PVRAssets MODULE REQUIRED)
 	find_dependency(PVRVk MODULE REQUIRED)
@@ -89,18 +89,9 @@ target_include_directories(PVRUtilsVk
 		"$<BUILD_INTERFACE:${PVRUtilsVk_INCLUDE_DIRECTORIES}>"
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
-if(PVR_ENABLE_INSTALL)	
-	install(TARGETS PVRUtilsVk EXPORT PVRUtilsVkTargets
-		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-		OPTIONAL)
+# Use the consolidated install function
+pvr_install_target(TARGET PVRUtilsVk HEADERS ${PVRUtilsVk_HEADERS})
+# Install extra headers
+if(PVR_ENABLE_INSTALL)
 	install(FILES ${PVRUtils_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRUtils OPTIONAL)
-	install(FILES ${PVRUtilsVk_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRUtils/Vulkan OPTIONAL)
-
-	export(EXPORT PVRUtilsVkTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/PVRUtilsVk/PVRUtilsVkTargets.cmake")
-	# build tree package config
-	file(COPY cmake/PVRUtilsVkConfig.cmake.in DESTINATION "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRUtilsVk/" NO_SOURCE_PERMISSIONS)
-	configure_file("${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRUtilsVk/PVRUtilsVkConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/PVRUtilsVk/PVRUtilsVkConfig.cmake" COPYONLY)
-	install(FILES "${CMAKE_CURRENT_BINARY_DIR}/PVRUtilsVk/PVRUtilsVkTargets.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRUtilsVk OPTIONAL)
 endif()

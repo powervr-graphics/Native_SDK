@@ -87,9 +87,9 @@ elseif(ANDROID)
 		Android/AndroidAssetStream.cpp)
 endif()
 
-# Set the include directories for PVRCore
-# Using explicit include_directories for private use
-include_directories("${CMAKE_CURRENT_LIST_DIR}/..")
+# Set the include directories for PVRCore - relying on FrameworkCommon.cmake to set PVR_FRAMEWORK_ROOT
+# We need to find "PVRCore/..." headers, so we add the parent directory of PVRCore
+include_directories("${PVR_FRAMEWORK_ROOT}")
 
 # Create the library
 add_library(PVRCore STATIC ${PVRCore_SRC} ${PVRCore_HEADERS})
@@ -118,7 +118,7 @@ else()
 endif()
 
 if(PVR_PREBUILT_DEPENDENCIES)
-	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../cmake/modules")
+	list(APPEND CMAKE_MODULE_PATH "${PVR_SDK_ROOT}/cmake/modules")
 	find_dependency(glm MODULE REQUIRED)
 	find_dependency(pugixml MODULE REQUIRED)
 endif()
@@ -128,30 +128,18 @@ apply_framework_compile_options_to_target(PVRCore)
 target_link_libraries(PVRCore PUBLIC glm)
 target_link_libraries(PVRCore PRIVATE pugixml)
 
+# Ensure dependencies are found using the global root variables
+target_include_directories(PVRCore PRIVATE 
+    "${PVR_EXTERNAL_ROOT}/glm/source"
+    "${PVR_EXTERNAL_ROOT}/pugixml/source/src"
+)
+
 # Set the include directories for PVRCore
 # Using generator expressions for INTERFACE properties to avoid absolute path issues during export
 target_include_directories(PVRCore 
 	PUBLIC 
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/..>
+		$<BUILD_INTERFACE:${PVR_FRAMEWORK_ROOT}>
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
-if(PVR_ENABLE_INSTALL)
-	install(TARGETS PVRCore EXPORT PVRCoreTargets
-		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-		INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-		OPTIONAL)
-
-	foreach(file ${PVRCore_HEADERS})
-		get_filename_component(dir ${file} DIRECTORY)
-		install(FILES ${file} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRCore/${dir})
-	endforeach()
-	install(EXPORT PVRCoreTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRCore OPTIONAL)
-
-	export(EXPORT PVRCoreTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/PVRCore/PVRCoreTargets.cmake")
-	# build tree package config
-	file(COPY cmake/PVRCoreConfig.cmake.in DESTINATION "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRCore/" NO_SOURCE_PERMISSIONS)
-	configure_file("${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRCore/PVRCoreConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/PVRCore/PVRCoreConfig.cmake" COPYONLY)
-	install(FILES "${CMAKE_CURRENT_BINARY_DIR}/PVRCore/PVRCoreTargets.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRCore OPTIONAL)
-endif()
+# Use the consolidated install function
+pvr_install_target(TARGET PVRCore HEADERS ${PVRCore_HEADERS})

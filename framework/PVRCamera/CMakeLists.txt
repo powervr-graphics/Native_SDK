@@ -31,7 +31,7 @@ endif()
 add_library(PVRCamera STATIC ${PVRCamera_SRC} ${PVRCamera_HEADERS})
 
 if(PVR_PREBUILT_DEPENDENCIES)
-	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../cmake/modules")
+	list(APPEND CMAKE_MODULE_PATH "${PVR_SDK_ROOT}/cmake/modules")
 	find_dependency(PVRCore MODULE REQUIRED)
 endif()
 
@@ -44,33 +44,13 @@ target_link_libraries(PVRCamera
 	PRIVATE
 		${PVRCamera_PRIVATE_LINK_LIBS})
 
-# Explicitly add the parent directory to the include path for this directory
-# This ensures that #include "PVRCamera/CameraInterface.h" works correctly
-include_directories("${CMAKE_CURRENT_LIST_DIR}/..")
-
 # Use generator expressions to ensure export compatibility
 target_include_directories(PVRCamera 
 	PUBLIC
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/..>
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../include>
+		$<BUILD_INTERFACE:${PVR_FRAMEWORK_ROOT}>
+		$<BUILD_INTERFACE:${PVR_SDK_ROOT}/include>
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
-if(PVR_ENABLE_INSTALL)
-	install(TARGETS PVRCamera EXPORT PVRCameraTargets
-		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-		OPTIONAL)
-	foreach(file ${PVRCamera_HEADERS})
-		get_filename_component(dir ${file} DIRECTORY)
-		install(FILES ${file} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRCamera/${dir})
-	endforeach()
-	install(EXPORT PVRCameraTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRCamera OPTIONAL)
-
-	export(EXPORT PVRCameraTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/PVRCamera/PVRCameraTargets.cmake")
-	# build tree package config
-	file(COPY cmake/PVRCameraConfig.cmake.in DESTINATION "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRCamera/" NO_SOURCE_PERMISSIONS)
-	configure_file("${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRCamera/PVRCameraConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/PVRCamera/PVRCameraConfig.cmake" COPYONLY)
-	install(FILES "${CMAKE_CURRENT_BINARY_DIR}/PVRCamera/PVRCameraTargets.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRCamera OPTIONAL)
-endif()
+# Use the consolidated install function
+pvr_install_target(TARGET PVRCamera HEADERS ${PVRCamera_HEADERS})
