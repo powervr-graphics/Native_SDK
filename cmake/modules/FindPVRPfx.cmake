@@ -9,22 +9,35 @@
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 include(CMakeFindDependencyMacro)
 
+# Include helper for Android paths
+include("${CMAKE_CURRENT_LIST_DIR}/../utilities/android_utils.cmake")
+
 if(NOT TARGET PVRUtilsVk)
 	find_dependency(PVRUtilsVk REQUIRED MODULE)
 endif()
 
 if(PVR_PREBUILT_DEPENDENCIES)
 	if(ANDROID)
-		string(TOLOWER ${CMAKE_BUILD_TYPE} PVR_ANDROID_BUILD_TYPE)
-		#set(PVRPfx_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRPfx/build-android/.cxx/cmake/${PVR_ANDROID_BUILD_TYPE}/${ANDROID_ABI}/PVRPfx")
+        # Allow finding packages in the host file system
+		set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 
-
-		file(GLOB PVRPfx_DIR_GLOB "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRPfx/build-android/.cxx/${CMAKE_BUILD_TYPE}/*/${ANDROID_ABI}/PVRPfx")
-		# The glob will return a list, but there should only be one match.
-		list(GET PVRPfx_DIR_GLOB 0 PVRPfx_DIR)
+        pvr_find_android_build_path(PVRPfx_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRPfx/build-android" "PVRPfx")
 	endif()
 endif()
 
 if(NOT TARGET PVRPfx)
-	find_package(PVRPfx REQUIRED CONFIG)
+	# Try to find the package configuration
+	find_package(PVRPfx CONFIG QUIET)
+
+    if(PVRPfx_FOUND)
+        message(STATUS "PVRPfx: Package configuration found.")
+    else()
+        message(STATUS "PVRPfx: Prebuilt package not found. Attempting to build from source...")
+        set(PVRPfx_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRPfx")
+        if(EXISTS "${PVRPfx_SOURCE_DIR}/CMakeLists.txt")
+            add_subdirectory("${PVRPfx_SOURCE_DIR}" "${CMAKE_BINARY_DIR}/framework/PVRPfx")
+        else()
+            message(FATAL_ERROR "PVRPfx: Could not find prebuilt package AND could not find source at ${PVRPfx_SOURCE_DIR}")
+        endif()
+    endif()
 endif()

@@ -13,6 +13,11 @@ if(NOT PVR_PREBUILT_DEPENDENCIES)
 	set(VulkanMemoryAllocator_SRC_DIR ${CMAKE_CURRENT_LIST_DIR}/source CACHE INTERNAL "")
 
 	add_library(VulkanMemoryAllocator INTERFACE)
+    
+    # Namespaced alias
+    if(NOT TARGET PVR::VulkanMemoryAllocator)
+        add_library(PVR::VulkanMemoryAllocator ALIAS VulkanMemoryAllocator)
+    endif()
 
 	target_include_directories(VulkanMemoryAllocator INTERFACE
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>

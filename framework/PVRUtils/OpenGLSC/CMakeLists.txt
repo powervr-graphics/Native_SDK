@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.3)
 project(PVRUtilsGlsc)
 include(GNUInstallDirs)
+include(CMakeFindDependencyMacro)
 include(../../FrameworkCommon.cmake)
 # Copyright (c) Imagination Technologies Limited.
 
@@ -57,9 +58,10 @@ list(APPEND PVRUtilsGlsc_EGL_HEADERS
 	../EGL/EglPlatformHandles.h)
 
 set(PVRUtilsGlsc_PRIVATE_LINK_LIBS "")
+# Use standardized paths
 set(PVRUtilsGlsc_INCLUDE_DIRECTORIES 
-	${CMAKE_CURRENT_LIST_DIR}/../../../include
-	${CMAKE_CURRENT_LIST_DIR}/../../)
+	${PVR_SDK_ROOT}/include
+	${PVR_FRAMEWORK_ROOT}/PVRUtils)
 set(PVRUtilsGlsc_PRIVATE_INCLUDE_DIRECTORIES "")
 
 # Handle the UNIX platform specific api specific libraries
@@ -108,21 +110,11 @@ target_include_directories(PVRUtilsGlsc
 		"$<BUILD_INTERFACE:${PVRUtilsGlsc_INCLUDE_DIRECTORIES}>"
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
+# Use the consolidated install function
+pvr_install_target(TARGET PVRUtilsGlsc HEADERS ${PVRUtilsGlsc_HEADERS})
+# Install extra headers
 if(PVR_ENABLE_INSTALL)
-	install(TARGETS PVRUtilsGlsc EXPORT PVRUtilsGlscTargets
-		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-		OPTIONAL)
 	install(FILES ${PVRUtils_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRUtils OPTIONAL)
-	install(FILES ${PVRUtilsGlsc_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRUtils/OpenGLES OPTIONAL)
 	install(FILES ${PVRUtilsGlsc_EAGL_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRUtils/OpenGLES OPTIONAL)
 	install(FILES ${PVRUtilsGlsc_EGL_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRUtils/OpenGLES OPTIONAL)
-	install(EXPORT PVRUtilsGlscTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRUtilsGlsc OPTIONAL)
-
-	export(EXPORT PVRUtilsGlscTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/PVRUtilsGlsc/PVRUtilsGlscTargets.cmake")
-	# build tree package config
-	file(COPY cmake/PVRUtilsGlscConfig.cmake.in DESTINATION "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRUtilsGlsc/" NO_SOURCE_PERMISSIONS)
-	configure_file("${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRUtilsGlsc/PVRUtilsGlscConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/PVRUtilsGlsc/PVRUtilsGlscConfig.cmake" COPYONLY)
-	install(FILES "${CMAKE_CURRENT_BINARY_DIR}/PVRUtilsGlsc/PVRUtilsGlscTargets.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRUtilsGles OPTIONAL)
 endif()

@@ -17,4 +17,9 @@ if(NOT PVR_PREBUILT_DEPENDENCIES)
 	# GLM provides a module GNUInstallDirs which overrides default CMake behaviour so ensure GNUInstallDirs is included prior to the add_subdirectory call for glm so that the "default" behaviour is observed
 	include(GNUInstallDirs)
 	add_subdirectory("${glm_SRC_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/build")
+
+    # Ensure the target is namespaced if we build it locally, for consistency
+    if(TARGET glm AND NOT TARGET PVR::glm)
+        add_library(PVR::glm ALIAS glm)
+    endif()
 endif()

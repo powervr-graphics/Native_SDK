@@ -5,6 +5,10 @@ if(NOT TARGET PVRScopeDeveloper OR NOT TARGET PVRScopeDeveloperShared)
 	add_library(PVRScopeDeveloper STATIC IMPORTED GLOBAL)
 	add_library(PVRScopeDeveloperShared SHARED IMPORTED GLOBAL)
 
+    # Namespaced aliases
+    add_library(PVR::PVRScopeDeveloper ALIAS PVRScopeDeveloper)
+    add_library(PVR::PVRScopeDeveloperShared ALIAS PVRScopeDeveloperShared)
+
 	if(WIN32)
 		set(PVR_SCOPE_STATIC_LIBRARY_PREFIX "")
 		set(PVR_SCOPE_STATIC_LIBRARY_SUFFIX ".lib")

@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 3.10)
 project(PVRUtilsCL)
 include(GNUInstallDirs)
 include(CMakeFindDependencyMacro)
+include(../../FrameworkCommon.cmake)
 
 message(STATUS "Adding PVRUtilsOpenCL")
 
@@ -14,15 +15,15 @@ set(PVRUtilsCL_HEADERS
 add_library(PVRUtilsCL INTERFACE)
 
 if(PVR_PREBUILT_DEPENDENCIES)
-	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../../cmake/modules")
+	list(APPEND CMAKE_MODULE_PATH "${PVR_SDK_ROOT}/cmake/modules")
 	find_dependency(PVRCore MODULE REQUIRED)
 endif()
 
 # Fix: Use generator expressions to avoid exporting absolute paths in INTERFACE_INCLUDE_DIRECTORIES
 target_include_directories(PVRUtilsCL 
 	INTERFACE 
-		"$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../../include>"
-		"$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../>"
+		"$<BUILD_INTERFACE:${PVR_SDK_ROOT}/include>"
+		"$<BUILD_INTERFACE:${PVR_FRAMEWORK_ROOT}>"
 		"$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
 )
 
@@ -32,18 +33,6 @@ target_link_libraries(PVRUtilsCL
 	INTERFACE
 		${PVRUtilsCL_LINK_LIBS})
 
-if(PVR_ENABLE_INSTALL)
-	install(TARGETS PVRUtilsCL EXPORT PVRUtilsCLTargets
-		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-		OPTIONAL)
-	install(FILES ${PVRUtilsCL_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PVRUtils/OpenCL OPTIONAL)
-	install(EXPORT PVRUtilsCLTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRUtilsCL OPTIONAL)
-
-	export(EXPORT PVRUtilsCLTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/PVRUtilsCL/PVRUtilsCLTargets.cmake")
-	# build tree package config
-	file(COPY cmake/PVRUtilsCLConfig.cmake.in DESTINATION "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRUtilsCL/" NO_SOURCE_PERMISSIONS)
-	configure_file("${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PVRUtilsCL/PVRUtilsCLConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/PVRUtilsCL/PVRUtilsCLConfig.cmake" COPYONLY)
-	install(FILES "${CMAKE_CURRENT_BINARY_DIR}/PVRUtilsCL/PVRUtilsCLTargets.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PVRUtilsCL OPTIONAL)
-endif()
+# Use the consolidated install function (installing INTERFACE libraries is slightly different, but pvr_install_target works for general targets)
+# But since this is INTERFACE library, the standard install command in the function works fine too
+pvr_install_target(TARGET PVRUtilsCL HEADERS ${PVRUtilsCL_HEADERS})

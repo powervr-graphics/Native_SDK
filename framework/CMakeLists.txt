@@ -3,6 +3,18 @@ cmake_minimum_required(VERSION 3.10)
 
 project(PowerVR_Framework)
 
+# Define global variables for framework structure if not defined yet
+# This is a good place to set them if they are used by subdirectories
+if(NOT DEFINED PVR_FRAMEWORK_ROOT)
+    set(PVR_FRAMEWORK_ROOT "${CMAKE_CURRENT_SOURCE_DIR}")
+endif()
+if(NOT DEFINED PVR_SDK_ROOT)
+    set(PVR_SDK_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
+endif()
+if(NOT DEFINED PVR_EXTERNAL_ROOT)
+    set(PVR_EXTERNAL_ROOT "${PVR_SDK_ROOT}/external")
+endif()
+
 # Add the default parts of the framework
 add_subdirectory_if_exists(PVRCore PVRCore)
 add_subdirectory_if_exists(PVRAssets PVRAssets)

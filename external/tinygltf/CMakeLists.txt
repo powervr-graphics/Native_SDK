@@ -9,6 +9,11 @@ if(NOT PVR_PREBUILT_DEPENDENCIES)
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/source>)
 
+    # Ensure the target is namespaced if we build it locally
+    if(TARGET tinygltf AND NOT TARGET PVR::tinygltf)
+        add_library(PVR::tinygltf ALIAS tinygltf)
+    endif()
+
 	if(PVR_ENABLE_INSTALL)
 
 		install(TARGETS tinygltf EXPORT tinygltfTargets)

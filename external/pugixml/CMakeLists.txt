@@ -20,6 +20,11 @@ if(NOT PVR_PREBUILT_DEPENDENCIES)
 	# Use c++14 with no extensions
 	set_target_properties(pugixml PROPERTIES CXX_STANDARD 14)
 
+    # Ensure the target is namespaced if we build it locally
+    if(TARGET pugixml AND NOT TARGET PVR::pugixml)
+        add_library(PVR::pugixml ALIAS pugixml)
+    endif()
+
 	# Export pugixml from the build tree for use by other projects
 	export(EXPORT pugixml-config FILE "${CMAKE_CURRENT_BINARY_DIR}/build/pugixmlConfig.cmake")
 	# build tree package config

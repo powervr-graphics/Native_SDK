@@ -15,6 +15,9 @@
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 include(CMakeFindDependencyMacro)
 
+# Include helper for Android paths
+include("${CMAKE_CURRENT_LIST_DIR}/../utilities/android_utils.cmake")
+
 if(NOT TARGET PVRCore)
 	find_dependency(PVRCore REQUIRED MODULE)
 endif()
@@ -52,22 +55,7 @@ if(PVR_PREBUILT_DEPENDENCIES)
 		# Allow finding packages in the host file system
 		set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 
-		string(TOLOWER "${CMAKE_BUILD_TYPE}" PVR_ANDROID_BUILD_TYPE)
-
-		# Use wildcard for build type to handle Debug/debug casing differences
-		file(GLOB PVRUtilsVk_DIR_GLOB "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRUtils/Vulkan/build-android/.cxx/${PVR_ANDROID_BUILD_TYPE}/*/${ANDROID_ABI}/PVRUtilsVk")
-		
-        # If not found, try original build type
-		if(NOT PVRUtilsVk_DIR_GLOB)
-			file(GLOB PVRUtilsVk_DIR_GLOB "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRUtils/Vulkan/build-android/.cxx/${CMAKE_BUILD_TYPE}/*/${ANDROID_ABI}/PVRUtilsVk")
-		endif()
-
-		# The glob will return a list, but there should only be one match.
-		if(PVRUtilsVk_DIR_GLOB)
-			list(GET PVRUtilsVk_DIR_GLOB 0 PVRUtilsVk_DIR)
-		else()
-			message(STATUS "PVRUtilsVk: No build directory found matching ${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRUtils/Vulkan/build-android/.cxx/${PVR_ANDROID_BUILD_TYPE}/*/${ANDROID_ABI}/PVRUtilsVk")
-		endif()
+        pvr_find_android_build_path(PVRUtilsVk_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRUtils/Vulkan/build-android" "PVRUtilsVk")
 	endif()
 endif()
 

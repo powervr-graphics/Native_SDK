@@ -60,10 +60,8 @@ function(pvr_install_target)
             # Configure package config file
             configure_file("${CONFIG_FILE_IN}" "${CMAKE_CURRENT_BINARY_DIR}/${ARG_TARGET}/${ARG_TARGET}Config.cmake" COPYONLY)
             
-            # Install config and targets
+            # Install config (but not the build-tree targets file, as install(EXPORT) handles that)
             install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${ARG_TARGET}/${ARG_TARGET}Config.cmake" 
-                    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${ARG_TARGET} OPTIONAL)
-            install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${ARG_TARGET}/${ARG_TARGET}Targets.cmake" 
                     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${ARG_TARGET} OPTIONAL)
         endif()
 	endif()
