@@ -29,8 +29,8 @@ allprojects {
 
 android {
     compileSdkVersion 29
-	namespace "com.powervr.VulkanHelloAPI"
-    ndkVersion "29.0.14206865"
+	namespace = "com.powervr.VulkanHelloAPI"
+    ndkVersion = "29.0.14206865"
     defaultConfig {
         applicationId "com.powervr.VulkanHelloAPI"
 		minSdkVersion 24
@@ -89,14 +89,28 @@ android {
 	externalNativeBuild {
 		cmake {
 			path "../CMakeLists.txt"
-			version "3.22.1"
+			version = "3.22.1"
 		}
 	}
 	// Ensure that the icons are copied early - we do this by making the preBuild task depends on the copyIcons task
 	task copyIcons(type: Copy) {
 		from file("${project.projectDir}/../../../../res/Android/Vulkan")
 		into sourceSets.main.res.srcDirs[0]
-		fileMode = 0664
+		filePermissions {
+                                user {
+                                    read = true
+                                    write = true
+                                }
+                                group {
+                                    read = true
+                                    write = true
+                                }
+                                other {
+                                    read = true
+                                    write = false
+                                }
+                                other.execute = false
+                            }
 	}
 	preBuild.dependsOn copyIcons
 }
@@ -138,7 +152,7 @@ task copyToBinRelease(type: Copy) {
 	rename('(.*)-release.apk', '$1.apk')
 }
 
-tasks.whenTaskAdded { task -> 	
+tasks.configureEach { task -> 	
 	// Copy the binary to the final bin folder.
 	if (task.name == 'packageRelease') {
 		task.dependsOn(checkReleaseSigning)

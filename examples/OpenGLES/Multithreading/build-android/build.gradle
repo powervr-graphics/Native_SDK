@@ -31,8 +31,8 @@ allprojects {
 
 android {
 
-	namespace "com.powervr.OpenGLESMultithreading"
-	ndkVersion "29.0.14206865"
+	namespace = "com.powervr.OpenGLESMultithreading"
+	ndkVersion = "29.0.14206865"
 	defaultConfig {
 		applicationId "com.powervr.OpenGLESMultithreading"
 		minSdkVersion 24
@@ -75,7 +75,7 @@ android {
 	externalNativeBuild {
 		cmake {
 			path "../CMakeLists.txt"
-			version "3.22.1"
+			version = "3.22.1"
 		}
 	}
 
@@ -83,7 +83,21 @@ android {
 	task copyIcons(type: Copy) {
 		from file("${project.projectDir}/../../../../res/Android/OpenGLES")
 		into sourceSets.main.res.srcDirs[0]
-		fileMode = 0664
+		filePermissions {
+                                user {
+                                    read = true
+                                    write = true
+                                }
+                                group {
+                                    read = true
+                                    write = true
+                                }
+                                other {
+                                    read = true
+                                    write = false
+                                }
+                                other.execute = false
+                            }
 	}
 	preBuild.dependsOn copyIcons
 
@@ -102,13 +116,41 @@ android {
 	task copyAssetsDebug(type: Copy) {
 		from assetFiles
 		into sourceSets.main.assets.srcDirs[0]
-		fileMode = 0664
+		filePermissions {
+                                user {
+                                    read = true
+                                    write = true
+                                }
+                                group {
+                                    read = true
+                                    write = true
+                                }
+                                other {
+                                    read = true
+                                    write = false
+                                }
+                                other.execute = false
+                            }
 	}
 	
 	task copyAssetsRelease(type: Copy) {
 		from assetFiles
 		into sourceSets.main.assets.srcDirs[0]
-		fileMode = 0664
+		filePermissions {
+                                user {
+                                    read = true
+                                    write = true
+                                }
+                                group {
+                                    read = true
+                                    write = true
+                                }
+                                other {
+                                    read = true
+                                    write = false
+                                }
+                                other.execute = false
+                            }
 	}
 }
 
@@ -149,13 +191,7 @@ task copyToBinRelease(type: Copy) {
 	rename('(.*)-release.apk', '$1.apk')
 }
 
-tasks.whenTaskAdded { task ->
-	// We add a dependency on all projects dependencies corresponding externalNativeBuild tasks - If these lines are removed, the dependencies are not built as they should be.
-	if (task.name.startsWith('generateJsonModel')) {
-		def flavor = task.name.substring('generateJsonModel'.length())
-		projectDependencies.each {s -> task.dependsOn ":${s}:externalNativeBuild${flavor}" }
-	}
-
+tasks.configureEach { task ->
 	// Ensure the assets folder is appropriately copied to the apk
 	if (task.name == 'externalNativeBuildRelease') {
 		copyAssetsRelease.dependsOn task

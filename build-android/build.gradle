@@ -53,7 +53,7 @@ gradle.projectsEvaluated {
 
                     if (externalNativeBuildTask) {
                         dependencies.each { dep ->
-                            def depProject = dep.dependencyProject
+                            def depProject = project.project(dep.path)
 
                             // Check if the dependency is also a native Android project.
                             // Since we are in projectsEvaluated, depProject should be fully configured.

@@ -3,9 +3,8 @@ apply plugin: 'com.android.library'
 def projectDependencies = ["PVRCore"]
 
 android {
-
-	namespace "com.powervr.PVRCamera"
-	ndkVersion "29.0.14206865"
+	namespace = "com.powervr.PVRCamera"
+	ndkVersion = "29.0.14206865"
 	defaultConfig {
 		minSdkVersion 24
 		targetSdkVersion 33
@@ -27,26 +26,15 @@ android {
 	externalNativeBuild {
 		cmake {
 			path "../CMakeLists.txt"
-			version "3.22.1"
-
+			version = "3.22.1"
 		}
-	}
-}
-
-Set taskDeleted = []
-
-tasks.whenTaskAdded { task ->
-	// We add a dependency on all projects dependencies corresponding externalNativeBuild tasks
-	if (task.name.startsWith('generateJsonModel')) {
-		def flavor = task.name.substring('generateJsonModel'.length()) // generateJsonModelDebug -> Debug
-		projectDependencies.each {s -> task.dependsOn ":${s}:externalNativeBuild${flavor}" }
 	}
 }
 
 // This block specifies dependencies required to build only the module itself
 dependencies {
-	// Dependency on a remote binary
-	implementation 'com.android.support:support-v4:28.0.0'
+    // Dependency on local binaries
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':PVRCore')
 }
 
@@ -59,6 +47,7 @@ buildscript {
 		classpath 'com.android.tools.build:gradle:8.13.1'
 	}
 }
+
 allprojects {
 	repositories {
 		google()

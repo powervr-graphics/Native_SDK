@@ -30,8 +30,8 @@ allprojects {
 
 android {
 
-	namespace "com.powervr.OpenCLPrefixSum"
-	ndkVersion "29.0.14206865"
+	namespace = "com.powervr.OpenCLPrefixSum"
+	ndkVersion = "29.0.14206865"
 	defaultConfig {
 		minSdkVersion 24
 		targetSdkVersion 33
@@ -50,7 +50,7 @@ android {
 	externalNativeBuild {
 		cmake {
 			path "../CMakeLists.txt"
-			version "3.22.1"
+			version = "3.22.1"
 		}
 	}
 }
@@ -92,7 +92,21 @@ tasks.whenTaskAdded { task ->
 						copy{
 							from inputPath
 							into outputPath
-							fileMode 0664
+                            filePermissions {
+                                user {
+                                    read = true
+                                    write = true
+                                }
+                                group {
+                                    read = true
+                                    write = true
+                                }
+                                other {
+                                    read = true
+                                    write = false
+                                }
+                                other.execute = false
+                            }
 							include "**"
 						}
 					})

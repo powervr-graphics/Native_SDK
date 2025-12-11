@@ -50,7 +50,6 @@ ext.PVR_VULKAN_EXAMPLES = [
 	'GnomeHorde',
 	'GPUControlledRendering',
 	'ImageBasedLighting',
-	'ImageBasedLightingMapGenerator',
 	'IMGTextureFilterCubic',
 	'MatrixMultiplication',
 	'MultiSampling',
@@ -105,8 +104,6 @@ if (hasProperty('PVR_BUILD_VULKAN_EXAMPLES') || (hasProperty('PVR_BUILD_EVERYTHI
 	ext.PVR_BUILD_VULKAN_EXAMPLES = 1
 	include('glslang')
 	project(':glslang').projectDir=file('../external/glslang/build-android')
-	include('glslangValidator')
-	project(':glslangValidator').projectDir=file('../external/glslangValidator/build-android')
 	include('VulkanMemoryAllocator')
 	project(':VulkanMemoryAllocator').projectDir=file('../external/VulkanMemoryAllocator/build-android')
 	include(':PVRVk')
