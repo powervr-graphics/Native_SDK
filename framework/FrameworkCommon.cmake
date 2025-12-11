@@ -4,6 +4,7 @@
 
 # Add a cmake function which streamlines adding submodues to the SDK
 include(${CMAKE_CURRENT_LIST_DIR}/../cmake/utilities/submodules.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../cmake/utilities/project_utils.cmake)
 
 # Add a cmake function which adds the default framework compile definitions
 include(${CMAKE_CURRENT_LIST_DIR}/../cmake/utilities/compile_options.cmake)

@@ -87,10 +87,6 @@ elseif(ANDROID)
 		Android/AndroidAssetStream.cpp)
 endif()
 
-# Set the include directories for PVRCore - relying on FrameworkCommon.cmake to set PVR_FRAMEWORK_ROOT
-# We need to find "PVRCore/..." headers, so we add the parent directory of PVRCore
-include_directories("${PVR_FRAMEWORK_ROOT}")
-
 # Create the library
 add_library(PVRCore STATIC ${PVRCore_SRC} ${PVRCore_HEADERS})
 
@@ -118,7 +114,7 @@ else()
 endif()
 
 if(PVR_PREBUILT_DEPENDENCIES)
-	list(APPEND CMAKE_MODULE_PATH "${PVR_SDK_ROOT}/cmake/modules")
+	# CMAKE_MODULE_PATH is handled by FrameworkCommon.cmake
 	find_dependency(glm MODULE REQUIRED)
 	find_dependency(pugixml MODULE REQUIRED)
 endif()

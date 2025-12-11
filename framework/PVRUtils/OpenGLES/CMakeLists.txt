@@ -81,7 +81,7 @@ add_library(PVRUtilsGles STATIC
 	${PVRUtilsGles_EGL_HEADERS})
 
 if(PVR_PREBUILT_DEPENDENCIES)
-	list(APPEND CMAKE_MODULE_PATH "${PVR_SDK_ROOT}/cmake/modules")
+    # CMAKE_MODULE_PATH handled by FrameworkCommon.cmake
 	find_dependency(PVRCore MODULE REQUIRED)
 	find_dependency(PVRAssets MODULE REQUIRED)
 endif()
@@ -111,7 +111,9 @@ endif()
 target_include_directories(PVRUtilsGles 
 	PUBLIC 
 		"$<BUILD_INTERFACE:${PVRUtilsGles_INCLUDE_DIRECTORIES}>"
-		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    "$<BUILD_INTERFACE:${PVR_FRAMEWORK_ROOT}>"
+)
 
 # Use the consolidated install function
 pvr_install_target(TARGET PVRUtilsGles HEADERS ${PVRUtilsGles_HEADERS})

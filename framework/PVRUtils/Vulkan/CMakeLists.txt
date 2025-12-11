@@ -63,7 +63,7 @@ add_library(PVRUtilsVk STATIC
 	${PVRUtilsVk_HEADERS})
 
 if(PVR_PREBUILT_DEPENDENCIES)
-	list(APPEND CMAKE_MODULE_PATH "${PVR_SDK_ROOT}/cmake/modules")
+    # CMAKE_MODULE_PATH handled by FrameworkCommon.cmake
 	find_dependency(PVRCore MODULE REQUIRED)
 	find_dependency(PVRAssets MODULE REQUIRED)
 	find_dependency(PVRVk MODULE REQUIRED)
@@ -87,7 +87,16 @@ target_link_libraries(PVRUtilsVk
 target_include_directories(PVRUtilsVk 
 	PUBLIC 
 		"$<BUILD_INTERFACE:${PVRUtilsVk_INCLUDE_DIRECTORIES}>"
-		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    # Add PVR_FRAMEWORK_ROOT so includes like <PVRUtils/Vulkan/Header.h> might work if they exist, 
+    # but based on PVRCore, headers are often relative.
+    # The variable PVRUtilsVk_INCLUDE_DIRECTORIES above points to ${PVR_FRAMEWORK_ROOT}/PVRUtils
+    # This seems to intend that users include <Vulkan/Header.h> or just <Header.h> if they add that dir?
+    # Actually PVRUtilsVk_INCLUDE_DIRECTORIES is set to ${PVR_FRAMEWORK_ROOT}/PVRUtils.
+    # So headers in PVRUtils/Vulkan are typically included as #include "PVRUtils/Vulkan/..." ?
+    # Let's add the framework root generally to be safe and consistent with PVRCore.
+    "$<BUILD_INTERFACE:${PVR_FRAMEWORK_ROOT}>"
+)
 
 # Use the consolidated install function
 pvr_install_target(TARGET PVRUtilsVk HEADERS ${PVRUtilsVk_HEADERS})

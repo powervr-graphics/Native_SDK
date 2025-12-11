@@ -30,6 +30,7 @@ set(PVRShell_SRC
 # Each platform links against different libraries
 # So we have to initialise an empty list of libraries to track
 set(PVRShell_PRIVATE_LINK_LIBS "")
+set(PVRShell_PRIVATE_INCLUDE_DIRECTORIES "")
 
 # Each platform has its own implementation of PVRShell
 # So we have to append a different list of headers, sources
@@ -191,7 +192,7 @@ endif()
 add_library(PVRShell STATIC ${PVRShell_SRC} ${PVRShell_HEADERS})
 
 if(PVR_PREBUILT_DEPENDENCIES)
-	list(APPEND CMAKE_MODULE_PATH "${PVR_SDK_ROOT}/cmake/modules")
+    # CMAKE_MODULE_PATH handled by FrameworkCommon.cmake
 	find_dependency(PVRCore MODULE REQUIRED)
 endif()
 
