@@ -529,11 +529,13 @@ class VulkanImageBasedLighting : public pvr::Shell
 
 		~DeviceResources()
 		{
-			if (device) { device->waitIdle(); }
-			uint32_t l = swapchain->getSwapchainLength();
-			for (uint32_t i = 0; i < l; ++i)
+			if (device)
 			{
-				if (perFrameResourcesFences[i]) perFrameResourcesFences[i]->wait();
+				device->waitIdle();
+				for (auto fence : perFrameResourcesFences)
+				{
+					if (fence) fence->wait();
+				}
 			}
 		}
 	};
@@ -592,6 +594,12 @@ public:
 			(++currentSkybox) %= numSkyBoxes;
 			_deviceResources->skyBoxPass.setSkyboxImage(*this, _deviceResources->queue, _deviceResources->commandPool, _deviceResources->descriptorPool,
 				_deviceResources->vmaAllocator, _deviceResources->samplerTrilinear);
+			_deviceResources->uboLights.view.getElement(2).setValue(_deviceResources->skyBoxPass.getNumPrefilteredMipLevels());
+			if (uint32_t(_deviceResources->uboLights.buffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
+			{
+				_deviceResources->uboLights.buffer->getDeviceMemory()->flushRange();
+			}
+
 			std::fill(_updateCommands.begin(), _updateCommands.end(), true);
 			_updateDescriptors = true;
 			break;

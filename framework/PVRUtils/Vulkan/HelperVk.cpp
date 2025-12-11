@@ -281,8 +281,7 @@ inline pvrvk::PipelineStageFlags getPipelineStageFlagsFromLayout(pvrvk::ImageLay
 
 	// Decide the flags that would be trigger for any shader read or write.
 	pvrvk::PipelineStageFlags shaderReadWrite = pvrvk::PipelineStageFlags::e_VERTEX_SHADER_BIT | pvrvk::PipelineStageFlags::e_COMPUTE_SHADER_BIT;
-	if (!isSafetyCritical) { shaderReadWrite |= pvrvk::PipelineStageFlags::e_RAY_TRACING_SHADER_BIT_KHR | pvrvk::PipelineStageFlags::e_ACCELERATION_STRUCTURE_BUILD_BIT_KHR; }
-
+	
 	switch (layout)
 	{
 	case pvrvk::ImageLayout::e_UNDEFINED: {
@@ -298,18 +297,10 @@ inline pvrvk::PipelineStageFlags getPipelineStageFlagsFromLayout(pvrvk::ImageLay
 		return pvrvk::PipelineStageFlags::e_EARLY_FRAGMENT_TESTS_BIT | pvrvk::PipelineStageFlags::e_LATE_FRAGMENT_TESTS_BIT;
 	}
 	case pvrvk::ImageLayout::e_TRANSFER_DST_OPTIMAL: {
-		if (isSafetyCritical) { return pvrvk::PipelineStageFlags::e_TRANSFER_BIT; }
-		else
-		{
-			return pvrvk::PipelineStageFlags::e_TRANSFER_BIT | pvrvk::PipelineStageFlags::e_ACCELERATION_STRUCTURE_BUILD_BIT_KHR;
-		}
+		return pvrvk::PipelineStageFlags::e_TRANSFER_BIT;
 	}
 	case pvrvk::ImageLayout::e_TRANSFER_SRC_OPTIMAL: {
-		if (isSafetyCritical) { return pvrvk::PipelineStageFlags::e_TRANSFER_BIT; }
-		else
-		{
-			return pvrvk::PipelineStageFlags::e_TRANSFER_BIT | pvrvk::PipelineStageFlags::e_ACCELERATION_STRUCTURE_BUILD_BIT_KHR;
-		}
+		return pvrvk::PipelineStageFlags::e_TRANSFER_BIT;
 	}
 	case pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL: {
 		return shaderReadWrite;
@@ -2196,9 +2187,16 @@ pvrvk::Instance createInstance(const std::string& applicationName, VulkanVersion
 		if (validationFeaturesSupported)
 		{
 			pvrvk::ValidationFeatures validationFeatures;
-			validationFeatures.addEnabledValidationFeature(pvrvk::ValidationFeatureEnableEXT::e_GPU_ASSISTED_EXT);
-			validationFeatures.addEnabledValidationFeature(pvrvk::ValidationFeatureEnableEXT::e_GPU_ASSISTED_RESERVE_BINDING_SLOT_EXT);
+
+			// GPU assisted validation requires Vulkan 1.1 and above
+			if (version.toVulkanVersion() >= VulkanVersion(1, 1, 0).toVulkanVersion())
+			{
+				validationFeatures.addEnabledValidationFeature(pvrvk::ValidationFeatureEnableEXT::e_GPU_ASSISTED_EXT);
+				validationFeatures.addEnabledValidationFeature(pvrvk::ValidationFeatureEnableEXT::e_GPU_ASSISTED_RESERVE_BINDING_SLOT_EXT);
+			}
+
 			validationFeatures.addEnabledValidationFeature(pvrvk::ValidationFeatureEnableEXT::e_BEST_PRACTICES_EXT);
+			
 			// sets a list of validation features to enable when creating the instance
 			instanceInfo.setValidationFeatures(validationFeatures);
 		}
@@ -2241,6 +2239,7 @@ pvrvk::Instance createInstance(const std::string& applicationName, VulkanVersion
 
 	if (!version.isSafetyCritical)
 	{
+		appInfo.setApplicationVersion(version.toVulkanVersion());
 		appInfo.setApiVersion(version.toVulkanVersion());
 		instanceInfo.setApplicationInfo(appInfo);
 	}

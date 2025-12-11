@@ -74,11 +74,13 @@ struct DeviceResources
 
 	~DeviceResources()
 	{
-		if (device) { device->waitIdle(); }
-		uint32_t l = swapchain ? swapchain->getSwapchainLength() : 0;
-		for (uint32_t i = 0; i < l; ++i)
+		if (device)
 		{
-			if (perFrameResourcesFences[i]) perFrameResourcesFences[i]->wait();
+			device->waitIdle();
+			for (auto fence : perFrameResourcesFences)
+			{
+				if (fence) fence->wait();
+			}
 		}
 	}
 };

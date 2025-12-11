@@ -1208,11 +1208,9 @@ struct DeviceResources
 		if (device)
 		{
 			device->waitIdle();
-			uint32_t l = swapchain->getSwapchainLength();
-			for (uint32_t i = 0; i < l; ++i)
+			for (auto fence : perFrameResourcesFences)
 			{
-				if (perFrameResourcesFences[i]) perFrameResourcesFences[i]->wait();
-				if (perFrameResourcesFences[i]) perFrameResourcesFences[i]->wait();
+				if (fence) fence->wait();
 			}
 		}
 	}

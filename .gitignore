@@ -509,3 +509,6 @@ CompilerldCXX.exe
 
 # Allow for the exception of an x86 validation layers prebuild
 !external/validation_layers/jniLibs/x86
+
+# Visual Studio cmake settings files
+CMakeSettings.json

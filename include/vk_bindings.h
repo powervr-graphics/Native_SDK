@@ -286,7 +286,9 @@ typedef struct VkInstanceBindings_ {
 	PFN_vkGetPhysicalDeviceExternalImageFormatPropertiesNV vkGetPhysicalDeviceExternalImageFormatPropertiesNV;
 #endif // VK_NV_external_memory_capabilities
 
-
+#if (defined(VK_KHR_cooperative_matrix))
+	PFN_vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR;
+#endif // VK_KHR_cooperative_matrix
 
 } VkInstanceBindings;
 // Device function pointers

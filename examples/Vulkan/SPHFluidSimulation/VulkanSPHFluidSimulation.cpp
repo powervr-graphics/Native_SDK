@@ -211,16 +211,13 @@ struct DeviceResources
 		if (device)
 		{
 			device->waitIdle();
-		}
-
-		if (swapchain)
-		{
-			uint32_t l = swapchain->getSwapchainLength();
-
-			for (uint32_t i = 0; i < l; ++i)
+			for (auto fence : graphicsFences)
 			{
-				if (graphicsFences[i]) { graphicsFences[i]->wait(); }
-				if (computeFences[i]) { computeFences[i]->wait(); }
+				if (fence) fence->wait();
+			}
+			for (auto fence : computeFences)
+			{
+				if (fence) fence->wait();
 			}
 		}
 	}
@@ -853,7 +850,7 @@ pvr::Result VulkanSPHFluidSimulation::initView()
 	_deviceResources = std::make_unique<DeviceResources>();
 
 	// Create Vulkan 1.0 instance and retrieve compatible physical devices
-	pvr::utils::VulkanVersion VulkanVersion(1, 0, 0);
+	pvr::utils::VulkanVersion VulkanVersion(1, 1, 0);
 	_deviceResources->instance = pvr::utils::createInstance(this->getApplicationName(), VulkanVersion, pvr::utils::InstanceExtensions(VulkanVersion));
 
 	if (_deviceResources->instance->getNumPhysicalDevices() == 0)

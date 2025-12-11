@@ -305,6 +305,11 @@ static inline void initVkInstanceBindings(VkInstance instance, VkInstanceBinding
 	bindings->vkGetPhysicalDeviceExternalImageFormatPropertiesNV = (PFN_vkGetPhysicalDeviceExternalImageFormatPropertiesNV)getInstanceProcAddr(instance, "vkGetPhysicalDeviceExternalImageFormatPropertiesNV");
 #endif // VK_NV_external_memory_capabilities
 
+#if (defined(VK_KHR_cooperative_matrix))
+	bindings->vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR =
+		(PFN_vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR)getInstanceProcAddr(instance, "vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR");
+#endif // VK_KHR_cooperative_matrix
+
 }
 
 static inline void initVkDeviceBindings(VkDevice device, VkDeviceBindings *bindings, PFN_vkGetDeviceProcAddr getDeviceProcAddr) {

@@ -130,12 +130,13 @@ struct DeviceResources
 
 	~DeviceResources()
 	{
-		if (device) { device->waitIdle(); }
-		// clear the swapchain resources
-		uint32_t swapchainLength = swapchain->getSwapchainLength();
-		for (uint32_t i = 0; i < swapchainLength; i++)
+		if (device)
 		{
-			if (perFrameResourcesFences[i]) { perFrameResourcesFences[i]->wait(); }
+			device->waitIdle();
+			for (auto fence : perFrameResourcesFences)
+			{
+				if (fence) fence->wait();
+			}
 		}
 	}
 };

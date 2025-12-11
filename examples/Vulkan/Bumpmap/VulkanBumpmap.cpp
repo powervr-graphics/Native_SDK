@@ -76,11 +76,13 @@ class VulkanBumpmap : public pvr::Shell
 
 		~DeviceResources()
 		{
-			if (device) { device->waitIdle(); }
-			uint32_t l = swapchain->getSwapchainLength();
-			for (uint32_t i = 0; i < l; ++i)
+			if (device)
 			{
-				if (perFrameResourcesFences[i]) perFrameResourcesFences[i]->wait();
+				device->waitIdle();
+				for (auto fence : perFrameResourcesFences)
+				{
+					if (fence) fence->wait();
+				}
 			}
 		}
 	};

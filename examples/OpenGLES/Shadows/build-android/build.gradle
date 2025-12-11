@@ -29,8 +29,9 @@ allprojects {
 
 android {
 
-	namespace = "com.powervr.OpenGLESShadows"
-	ndkVersion = "29.0.14206865"
+    namespace ="com.powervr.OpenGLESShadows"
+	compileSdkVersion 29
+	ndkVersion "26.2.11394342"
 	defaultConfig {
 		applicationId "com.powervr.OpenGLESShadows"
 		minSdkVersion 24

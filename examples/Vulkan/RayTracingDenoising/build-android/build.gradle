@@ -17,7 +17,7 @@ buildscript {
 
 	// Adds the Android plugin for Gradle as a classpath dependency
 	dependencies {
-		classpath 'com.android.tools.build:gradle:4.0.1'
+		classpath 'com.android.tools.build:gradle:8.13.1'
 	}
 }
 
@@ -25,17 +25,18 @@ buildscript {
 allprojects {
 	repositories {
 		google()
-		jcenter()
+		mavenCentral()
 	}
 }
 
 android {
-	compileSdkVersion 29
-	ndkVersion "26.2.11394342"
+	namespace "com.powervr.VulkanRayTracingDenoising"
+	ndkVersion "29.0.14206865"
 	defaultConfig {
 		applicationId "com.powervr.VulkanRayTracingDenoising"
-		minSdkVersion 21
-		targetSdkVersion 29
+		minSdkVersion 24
+		targetSdkVersion 33
+		compileSdkVersion 35
 		externalNativeBuild {
 			cmake {
 				cppFlags "-fexceptions"
@@ -89,7 +90,7 @@ android {
 	externalNativeBuild {
 		cmake {
 			path "../CMakeLists.txt"
-			version "3.10.2"
+			version "3.22.1+"
 		}
 	}
 
@@ -134,6 +135,8 @@ android {
 dependencies {
 	// Dependency on local binaries
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
+	implementation project(':PVRShell')
+    implementation project(':PVRUtilsVk')
 }
 
 // For release builds ensure that signing has taken place appropriately
@@ -188,6 +191,14 @@ tasks.whenTaskAdded { task ->
 	if (task.name == 'mergeDebugAssets') {
 		task.dependsOn copyAssetsDebug
 	}
+
+	// Fix implicit dependency errors
+    if (task.name == 'generateReleaseLintVitalReportModel') {
+        task.dependsOn copyAssetsRelease
+    }
+    if (task.name == 'lintVitalAnalyzeRelease') {
+        task.dependsOn copyAssetsRelease
+    }
 
 	// Copy the binary to the final bin folder.
 	if (task.name == 'packageRelease') {

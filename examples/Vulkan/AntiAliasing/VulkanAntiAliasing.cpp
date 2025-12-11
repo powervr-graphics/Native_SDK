@@ -243,6 +243,9 @@ struct DeviceResources
 	/// <summary>Descriptor set layout used by those postprocessing passes reading from a single texture.</summary>
 	pvrvk::DescriptorSetLayout postProcessDescriptorSetLayout;
 
+	/// <summary>Descriptor set layout used by the MSAA subpass.</summary>
+	pvrvk::DescriptorSetLayout msaaResolveDescriptorSetLayout;
+
 	/// <summary>Descriptor set layout for the TAA resolve pass.</summary>
 	pvrvk::DescriptorSetLayout taaResolveDescriptorSetLayout;
 
@@ -275,6 +278,9 @@ struct DeviceResources
 
 	/// <summary>Pipeline layout used by those postprocessing passes reading from a single texture.</summary>
 	pvrvk::PipelineLayout postProcessPipelineLayout;
+
+	/// <summary>Pipeline layout used by the MSAA.</summary>
+	pvrvk::PipelineLayout MSAAPipelineLayout;
 
 	/// <summary>Buffer used by the structured buffer view.</summary>
 	pvrvk::Buffer sceneUniformBuffer;
@@ -392,11 +398,13 @@ struct DeviceResources
 
 	~DeviceResources()
 	{
-		if (device) { device->waitIdle(); }
-		uint32_t l = swapchain->getSwapchainLength();
-		for (uint32_t i = 0; i < l; ++i)
+		if (device)
 		{
-			if (perFrameResourcesFences[i]) perFrameResourcesFences[i]->wait();
+			device->waitIdle();
+			for (auto fence : perFrameResourcesFences)
+			{
+				if (fence) fence->wait();
+			}
 		}
 	}
 };
@@ -574,6 +582,9 @@ private:
 
 	/// <summary>Creates and updated the descriptor set layout and pipeline layout used for postprocessing passes in several techniques.</summary>
 	void createPostprocessPassDescriptorSetsLayouts();
+
+	/// <summary>Creates and updated the descriptor set layout and pipeline layout used for the MSAA pass in several techniques.</summary>
+	void createMSAAPassDescriptorSetsLayouts();
 
 	/// <summary>Creates and updated the descriptor sets used for postprocessing passes in several techniques.</summary>
 	void createPostprocessPassDescriptorSets();
@@ -765,7 +776,8 @@ pvr::Result VulkanAntiAliasing::initView()
 														   .setMaxDescriptorSets(static_cast<uint16_t>(80 * _swapchainLength))
 														   .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, static_cast<uint16_t>(80 * _swapchainLength))
 														   .addDescriptorInfo(pvrvk::DescriptorType::e_STORAGE_IMAGE, static_cast<uint16_t>(80 * _swapchainLength))
-														   .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, static_cast<uint16_t>(80 * _swapchainLength)));
+														   .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, static_cast<uint16_t>(80 * _swapchainLength))
+														   .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, static_cast<uint16_t>(80 * _swapchainLength)));
 
 	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
 
@@ -792,6 +804,7 @@ pvr::Result VulkanAntiAliasing::initView()
 	createSceneDescriptorSets();
 	createTAADescriptorSets();
 	createPostprocessPassDescriptorSetsLayouts();
+	createMSAAPassDescriptorSetsLayouts();
 	createTAAResolveDescriptorSetsLayout();
 	createOnScreenGeometryRenderPass();
 	createMSAAGeometryRenderPass();
@@ -952,7 +965,7 @@ void VulkanAntiAliasing::createGraphicsPipelines()
 		ShaderFiles::NOAAVertexShaderFile, ShaderFiles::NOAAFragmentShaderFile, true, true, false);
 	_deviceResources->msaaOffscreenGeometryPipeline->setObjectName("MSAAOffScreenGeometryGraphicsPipeline");
 
-	_deviceResources->msaaResolvePassPipeline = createPostProcessingPipeline(_deviceResources->msaaOffscreenGeometryRenderPass, 1, _deviceResources->postProcessPipelineLayout,
+	_deviceResources->msaaResolvePassPipeline = createPostProcessingPipeline(_deviceResources->msaaOffscreenGeometryRenderPass, 1, _deviceResources->MSAAPipelineLayout,
 		ShaderFiles::AttributelessVertexShaderFile, ShaderFiles::MSAAFragmentShaderFile);
 	_deviceResources->msaaResolvePassPipeline->setObjectName("MSAAResolvePassGraphicsPipeline");
 
@@ -1525,6 +1538,17 @@ void VulkanAntiAliasing::createPostprocessPassDescriptorSetsLayouts()
 	_deviceResources->postProcessPipelineLayout = _deviceResources->device->createPipelineLayout(pipelineLayoutInfo);
 }
 
+void VulkanAntiAliasing::createMSAAPassDescriptorSetsLayouts()
+{
+	pvrvk::DescriptorSetLayoutCreateInfo descSetLayoutMSAAResolve;
+	descSetLayoutMSAAResolve.setBinding(0, pvrvk::DescriptorType::e_INPUT_ATTACHMENT, 1, pvrvk::ShaderStageFlags::e_FRAGMENT_BIT);
+	_deviceResources->msaaResolveDescriptorSetLayout = _deviceResources->device->createDescriptorSetLayout(descSetLayoutMSAAResolve);
+
+	pvrvk::PipelineLayoutCreateInfo pipelineLayoutInfo;
+	pipelineLayoutInfo.addDescSetLayout(_deviceResources->msaaResolveDescriptorSetLayout);
+	_deviceResources->MSAAPipelineLayout = _deviceResources->device->createPipelineLayout(pipelineLayoutInfo);
+}
+
 void VulkanAntiAliasing::updateSceneUniformBuffer(int swapchainIndex)
 {
 	_sceneInformationBuffer.lightDirModel = glm::vec3(SceneElements::LightDir * _modelMatrix);
@@ -1635,7 +1659,7 @@ void VulkanAntiAliasing::recordMSAAComandBuffers()
 		//_deviceResources->msaaCommandBuffer[i]->beginRenderPass(_deviceResources->onScreenFramebuffers[i], pvrvk::Rect2D(0, 0, getWidth(), getHeight()), true, _clearValues, 2);
 		_deviceResources->msaaCommandBuffer[i]->bindPipeline(_deviceResources->msaaResolvePassPipeline);
 		_deviceResources->msaaCommandBuffer[i]->bindDescriptorSet(
-			pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->postProcessPipelineLayout, 0u, _deviceResources->msaaResolvePassDescriptorSets[i]);
+			pvrvk::PipelineBindPoint::e_GRAPHICS, _deviceResources->MSAAPipelineLayout, 0u, _deviceResources->msaaResolvePassDescriptorSets[i]);
 		_deviceResources->msaaCommandBuffer[i]->draw(0, 3);
 
 		_deviceResources->msaaUIRenderer.beginRendering(_deviceResources->msaaCommandBuffer[i]);
@@ -1787,10 +1811,10 @@ void VulkanAntiAliasing::createPostprocessPassDescriptorSets()
 	for (uint32_t i = 0; i < _swapchainLength; ++i)
 	{
 		// Descriptor sets for MSAAResolvePass
-		_deviceResources->msaaResolvePassDescriptorSets.push_back(_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->postProcessDescriptorSetLayout));
+		_deviceResources->msaaResolvePassDescriptorSets.push_back(_deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->msaaResolveDescriptorSetLayout));
 		_deviceResources->msaaResolvePassDescriptorSets.back()->setObjectName("MSAAResolvePassSwapchain" + std::to_string(i) + "DescriptorSet");
 
-		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, _deviceResources->msaaResolvePassDescriptorSets[i], 0)
+		writeDescSets.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, _deviceResources->msaaResolvePassDescriptorSets[i], 0)
 									.setImageInfo(0,
 										pvrvk::DescriptorImageInfo(_deviceResources->offscreenColorAttachmentImageView4SPP[i], _deviceResources->samplerBilinear,
 											pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL)));
@@ -1914,7 +1938,7 @@ pvr::Result VulkanAntiAliasing::renderFrame()
 	submitInfo.waitDstStageMask = &submitWaitFlags;
 	submitInfo.waitSemaphores = &_deviceResources->imageAcquiredSemaphores[_frameId];
 	submitInfo.numWaitSemaphores = 1;
-	submitInfo.signalSemaphores = &_deviceResources->presentationSemaphores[_frameId];
+	submitInfo.signalSemaphores = &_deviceResources->presentationSemaphores[_swapchainIndex];
 	submitInfo.numSignalSemaphores = 1;
 	submitInfo.numCommandBuffers = 1;
 	submitInfo.commandBuffers = techniqueCommandBuffer;

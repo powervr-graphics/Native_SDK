@@ -45,7 +45,12 @@ For detailed instructions for building the SDK, see `here <BUILD.rst>`__.
 Ray Tracing
 -----------
 
-Some of our examples implement ray tracing techniques: HelloRayTracing, HybridHardShadows, HybridSoftShadows, and HybridReflections. These demos are compatible with RT-ready desktops and laptops running Windows 10 or Linux. They also require hardware/drivers supporting a minimum Vulkan version of 1.2.162.1.
+Some of our examples implement ray tracing techniques: HelloRayTracing, HybridHardShadows, HybridReflections, HybridRefractions, HybridSoftShadows, HybridTransparency, RayTracedHardShadows and RayTracingDenoising. These demos are compatible with RT-ready desktops and laptops running Windows 10 or Linux. They also require hardware/drivers supporting a minimum Vulkan version of 1.2.162.1.
+
+Neural Rendering
+----------------
+
+Currently one example (NeuralNetworkEnvironment) implements a neural rendering algorithm. It has a non-performant compute shader implementation, and a cooperative matrix implementation, which requires the VK_KHR_cooperative_matrix extension.
 
 PVRVFrame
 ---------

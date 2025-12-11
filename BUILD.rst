@@ -69,10 +69,12 @@ Android Setup
 1. Download and install the Android SDK or command-line only Android build tools
 2. Through the Android SDK Manager, either via Android Studio or command-line SDK manager, install the following packages:
 
-   - Android NDK bundle, recommended version 20.0.5594570
-   - The Android SDK Platform package for API level 29 (used as our targetSdkVersion)
-   - The Android SDK Build-Tools version 29 (used as our compileSdkVersion)
-   - CMake version 3.10.2
+   - Android NDK bundle, recommended version 29.0.14206865
+   - The Android SDK Platform package for API level 33 (used as our targetSdkVersion)
+   - The Android SDK Build-Tools version 35 (used as our compileSdkVersion)
+   - CMake version 3.22.1
+   - Java Development Kit (JDK) 21
+   - Gradle 8.13.1 (will be donwloaded automatically if not found)
    - LLDB [optional] - only required for on-device debugging
    - If you plan on using gradleW from the command-line, make sure that the environment variable ``JavaHome`` points to a valid Java JDK directory
 
@@ -134,6 +136,12 @@ To build from command-line navigate to the build-android folder and run the grad
 
    # An example of a debug build would be as follows :
    gradlew assembleDebug -PANDROID_ABIS=arm64-v8a
+
+The SDK can be built with a gradle (not gradlew) command when installing all the requirements (Gradle 8.13, NDK 29.0.14206865, CMake 3.22.1 and JDK 21). Example command (add the --stacktrace parameter for verbose information on any exceptions):
+
+.. code:: bash
+
+   gradle -PANDROID_ABI=arm64-v8a -PNOSIGN assembleDebug
 
 Android Studio
 ^^^^^^^^^^^^^^

@@ -164,14 +164,12 @@ struct DeviceResources
 	/// <summary>Default destructor.</summary>
 	~DeviceResources()
 	{
-		if (device) { device->waitIdle(); }
-
-		if (swapchain)
+		if (device)
 		{
-			uint32_t l = swapchain->getSwapchainLength();
-			for (uint32_t i = 0; i < l; ++i)
+			device->waitIdle();
+			for (auto fence : perFrameResourcesFences)
 			{
-				if (perFrameResourcesFences[i]) perFrameResourcesFences[i]->wait();
+				if (fence) fence->wait();
 			}
 		}
 	}

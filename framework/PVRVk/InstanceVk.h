@@ -36,7 +36,7 @@ private:
 	DebugUtilsMessengerCreateInfo debugUtilsMessengerCreateInfo; //!<  Used to capture events that occur while creating or destroying an instance
 	ValidationFeatures validationFeatures; //!<  Used to specify particular validation features to use
 
-	bool isSafetyCritical; //!< Specify whether the instance is built for standard Vulkan or for Vulkan Safety Critical
+	bool isSafetyCritical{false}; //!< Specify whether the instance is built for standard Vulkan or for Vulkan Safety Critical
 
 public:
 	/// <summary>Constructor. Default initialised to 0</summary>

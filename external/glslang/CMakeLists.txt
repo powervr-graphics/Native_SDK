@@ -19,6 +19,8 @@ else()
 	message(STATUS "Cross compilation not detected, building glslangValidator")
 	set(IS_CROSS_COMPILATION OFF CACHE INTERNAL "")
 endif()
+# message(STATUS "Temporal workaround: Setting cross compilation off to use prebuilt glslangValidator")
+# set(IS_CROSS_COMPILATION ON CACHE INTERNAL "")
 
 if(PVR_GLSLANG_VALIDATOR_INSTALL_DIR)
 	set(glslangValidator_BINARY_LOCATION "${PVR_GLSLANG_VALIDATOR_INSTALL_DIR}/bin/glslangValidator${HOST_EXECUTABLE_SUFFIX}")
