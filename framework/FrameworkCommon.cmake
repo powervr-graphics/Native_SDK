@@ -5,6 +5,15 @@
 # Add a cmake function which streamlines adding submodues to the SDK
 include(${CMAKE_CURRENT_LIST_DIR}/../cmake/utilities/submodules.cmake)
 
+get_filename_component(GLM_INC_DIR "${CMAKE_CURRENT_LIST_DIR}/../external/glm/source" ABSOLUTE)
+include_directories("${GLM_INC_DIR}")
+
+get_filename_component(PUGIXML_INC_DIR "${CMAKE_CURRENT_LIST_DIR}/../external/pugixml/source/src" ABSOLUTE)
+include_directories("${PUGIXML_INC_DIR}")
+
+get_filename_component(TINYGLTF_INC_DIR "${CMAKE_CURRENT_LIST_DIR}/../external/tinygltf/source" ABSOLUTE)
+include_directories("${TINYGLTF_INC_DIR}")
+
 # Add a cmake function which adds the default framework compile definitions
 include(${CMAKE_CURRENT_LIST_DIR}/../cmake/utilities/compile_options.cmake)
 

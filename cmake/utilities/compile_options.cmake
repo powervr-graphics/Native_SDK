@@ -58,9 +58,12 @@ function(apply_example_compile_options_to_target THETARGET)
 		endif()
 	endif()
 	
-	# Use c++14
-	set_target_properties(${THETARGET} PROPERTIES CXX_STANDARD 14)
+	# Use c++17
+	set_target_properties(${THETARGET} PROPERTIES CXX_STANDARD 17)
 	
+	target_include_directories(${THETARGET} PRIVATE "C:/bld/internal/DTSDK2/DT-SDK/external/glm/source")
+	target_include_directories(${THETARGET} PRIVATE "C:/bld/internal/DTSDK2/DT-SDK/external/pugixml/source/src")
+
 	# Enable Debug and Release flags as appropriate
 	target_compile_definitions(${THETARGET} PRIVATE $<$<CONFIG:Debug>:DEBUG=1> $<$<NOT:$<CONFIG:Debug>>:NDEBUG=1 RELEASE=1>)
 endfunction()
@@ -69,8 +72,8 @@ endfunction()
 function(apply_framework_compile_options_to_target THETARGET)
 
 	# The most important component to set is the C++ standard
-	# As of right now the SDK uses C++14 Standard
-	set(PVR_CXX_STANDARD 14)
+	# As of right now the SDK uses C++17 Standard
+	set(PVR_CXX_STANDARD 17)
 
 	if(WIN32)
 		if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
@@ -129,7 +132,7 @@ function(apply_framework_compile_options_to_target THETARGET)
 		endif()
 	endif()
 	
-	# Use c++14
+	# Use c++17
 	set_target_properties(${THETARGET} PROPERTIES CXX_STANDARD ${PVR_CXX_STANDARD})
 	
 	# Enable Debug and Release flags as appropriate

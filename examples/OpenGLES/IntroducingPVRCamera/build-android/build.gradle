@@ -1,0 +1,56 @@
+apply plugin: 'com.android.application'
+
+android {
+	namespace = "com.powervr.OpenGLESIntroducingPVRCamera"
+	ndkVersion = "29.0.14206865"
+	defaultConfig {
+		applicationId "com.powervr.OpenGLESIntroducingPVRCamera"
+		minSdkVersion 24
+		targetSdkVersion 33
+		compileSdkVersion 35
+		versionCode 1
+		versionName "1.0"
+		externalNativeBuild {
+			cmake {
+				cppFlags "-fexceptions"
+				arguments "-DANDROID_STL=c++_static"
+			}
+		}
+		ndk
+		{
+			abiFilters "$ANDROID_ABI".replace(" ", "").split(",")
+		}
+	}
+	externalNativeBuild {
+		cmake {
+			path "../CMakeLists.txt"
+			version = "3.22.1"
+		}
+	}
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+
+
+    // Fix duplicate classes issue
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.10"))
+}
+
+buildscript {
+	repositories {
+		google()
+		mavenCentral()
+	}
+	dependencies {
+		classpath 'com.android.tools.build:gradle:8.13.0'
+	}
+}
+
+allprojects {
+	repositories {
+		google()
+		mavenCentral()
+	}
+}

@@ -74,7 +74,7 @@ Android Setup
    - The Android SDK Build-Tools version 35 (used as our compileSdkVersion)
    - CMake version 3.22.1
    - Java Development Kit (JDK) 21
-   - Gradle 8.13.1 (will be donwloaded automatically if not found)
+   - Gradle 8.13.0 (will be donwloaded automatically if not found)
    - LLDB [optional] - only required for on-device debugging
    - If you plan on using gradleW from the command-line, make sure that the environment variable ``JavaHome`` points to a valid Java JDK directory
 

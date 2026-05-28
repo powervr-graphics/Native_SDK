@@ -3,9 +3,8 @@ apply plugin: 'com.android.library'
 def projectDependencies = ["PVRCore"]
 
 android {
-
-	namespace "com.powervr.PVRCamera"
-	ndkVersion "29.0.14206865"
+	namespace = "com.powervr.PVRCamera"
+	ndkVersion = "29.0.14206865"
 	defaultConfig {
 		minSdkVersion 24
 		targetSdkVersion 33
@@ -27,41 +26,58 @@ android {
 	externalNativeBuild {
 		cmake {
 			path "../CMakeLists.txt"
-			version "3.22.1+"
-
+			version = "3.22.1"
 		}
-	}
-}
-
-Set taskDeleted = []
-
-tasks.whenTaskAdded { task ->
-	// We add a dependency on all projects dependencies corresponding externalNativeBuild tasks
-	if (task.name.startsWith('generateJsonModel')) {
-		def flavor = task.name.substring('generateJsonModel'.length()) // generateJsonModelDebug -> Debug
-		projectDependencies.each {s -> task.dependsOn ":${s}:externalNativeBuild${flavor}" }
 	}
 }
 
 // This block specifies dependencies required to build only the module itself
 dependencies {
-	// Dependency on a remote binary
-	implementation 'com.android.support:support-v4:28.0.0'
+    // Dependency on local binaries
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'androidx.core:core:1.10.1'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    
+    // Resolve duplicate class issue by forcing a specific kotlin-stdlib version
+    // or excluding duplicate modules if possible.
+    // However, usually upgrading the kotlin plugin or aligning versions is better.
+    // Given the error, it seems `kotlin-stdlib-jdk8` (and 7) are included transitively
+    // but are also now part of `kotlin-stdlib` in newer versions (1.8+).
+    // Let's try to align them.
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.10"))
+
     implementation project(':PVRCore')
 }
 
 buildscript {
 	repositories {
-		google()
-		mavenCentral()
+		if (project.hasProperty('GRADLE_DEPS_PROXY_URL')) {
+			maven {
+				url "$GRADLE_DEPS_PROXY_URL"
+			}
+		}
+		else {
+			google()
+			mavenCentral()
+		}
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:8.13.1'
+		classpath 'com.android.tools.build:gradle:8.13.0'
 	}
 }
+
 allprojects {
 	repositories {
-		google()
-		mavenCentral()
+		if (project.hasProperty('GRADLE_DEPS_PROXY_URL')) {
+			maven {
+				url "$GRADLE_DEPS_PROXY_URL"
+			}
+		}
+		else {
+			google()
+			mavenCentral()
+		}
 	}
 }
+

@@ -187,6 +187,32 @@ inline glm::mat4 perspective(Api api, float fovy, float aspect, float near1, flo
 	return (rotate == 0.f ? mat : glm::rotate(rotate, glm::vec3(0.0f, 0.0f, 1.0f)) * mat);
 }
 
+/// <summary>Projection matrix for inverse (fragments closer to camera have values closer to 1, and 
+/// fragments more distant from camera have values closer to 0) and infinite zfar</summary>
+/// <param name="api">The graphics API for which this matrix will be created. It is used for the
+/// Framebuffer coordinate convention.</param>
+/// <param name="fovy">The field of vision in the y axis</param>
+/// <param name="aspect">The aspect of the viewport</param>
+/// <param name="near1">The near clipping plane distance (trailing 1 to avoid win32 keyword)</param>
+/// <param name="rotate">Angle of tilt (rotation around the z axis), in radians</param>
+/// <returns>A projection matrix for the specified parameters, tilted by rotate</returns>
+inline glm::mat4 inverseInfinitePerspective(Api api, float fovy, float aspect, float near1, float rotate = .0f)
+{
+	glm::mat4 mat = glm::mat4(0.0f);
+
+	mat[0][0] = aspect * tan(fovy / 2.0f);
+	mat[1][1] = 1.0f / tan(fovy / 2.0f);
+	mat[2][3] = -1.0f;
+	mat[3][2] = near1;
+
+	if (api == Api::Vulkan)
+	{
+		mat[1][1] *= -1.f; // negate the y axis's y component, because vulkan coordinate system is +y down.
+		// We would normally negate the entire row, but the rest of the components are zero.
+	}
+	return (rotate == 0.f ? mat : glm::rotate(rotate, glm::vec3(0.0f, 0.0f, 1.0f)) * mat);
+}
+
 /// <summary>Calculated a tilted perspective projection matrix</summary>
 /// <param name="fovy">The field of vision in the y axis</param>
 /// <param name="width">The width of the viewport</param>

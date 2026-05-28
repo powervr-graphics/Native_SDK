@@ -28,6 +28,7 @@ else()
 	ImageBasedLighting
 	IMGFramebufferDownsample
 	IMGTextureFilterCubic
+	LUTColorCorrection
 	Multithreading
 	MultiviewVR
 	OpenCLExample

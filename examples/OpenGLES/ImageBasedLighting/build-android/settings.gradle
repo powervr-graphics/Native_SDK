@@ -1,3 +1,4 @@
+if (gradle.parent == null) { throw new GradleException("This project should not be built directly. Please build the entire SDK from the main build-android folder in the root.") }
 rootProject.name='OpenGLESImageBasedLighting'
 
 //Copy all the build output stuff into the SDK/bin folder
@@ -17,3 +18,4 @@ include('tinygltf')
 project(':tinygltf').projectDir=file('../../../../external/tinygltf/build-android')
 include('PVRUtilsGles')
 project(':PVRUtilsGles').projectDir=file('../../../../framework/PVRUtils/OpenGLES/build-android')
+

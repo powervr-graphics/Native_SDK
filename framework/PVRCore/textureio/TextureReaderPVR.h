@@ -19,5 +19,11 @@ Texture readPVR(const Stream& stream);
 
 bool isPVR(const Stream& assetStream);
 
+/// <summary>Load a texture from binary data. Synchronous.</summary>
+/// <param name="stream">A stream from which to load the texture header data.</param>
+/// <param name="textureHeader">Where to write the texture header data.</param>
+/// <returns>PVR header version.</returns>
+uint32_t readPVRTextureHeader(const Stream& stream, TextureHeader& textureHeader);
+
 } // namespace assetReaders
 } // namespace pvr

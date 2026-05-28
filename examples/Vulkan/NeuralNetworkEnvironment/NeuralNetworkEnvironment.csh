@@ -9,7 +9,7 @@ precision highp float;
 // Workgroup size is declared here and not before main() as it is used in functions defined before main() and in that case
 // the value before it is declared is (1, 1, 1) ( see https://github.com/KhronosGroup/glslang/issues/2479 )
 // layout(local_size_x = [Subgroup_size], local_size_y = 1, local_size_z = 1) in;
-%s3
+layout(local_size_x = 32, local_size_y = 1, local_size_z = 1) in;
 
 // Each element in this buffer takes 5 indices from the buffer:
 //      index 0: Patch index (which depends on the number of rows and columns the texture approximated is partitioned in)
@@ -85,12 +85,12 @@ const float PI = 3.141593;
 // Build a shared variavble where to sotre for this workgroup the information from the neural network patch that will be used
 // by all threads in the subgroup to approximate pixels from the environment
 // shared float sharedArrayNNBiases[];
-%s0
+shared float sharedArrayNNBiases[45];
 
 // Build a shared variavble where to sotre for this workgroup the information from the neural network patch that will be used
 // by all threads in the subgroup to approximate pixels from the environment
 // shared float sharedArrayNNWeights[];
-%s1
+shared float sharedArrayNNWeights[360];
 
 // Define a custom-size array for sotring the activation values
 float arrayActivation[layerMaxNumber * neuronLayerMaxNumber];

@@ -594,6 +594,8 @@ const std::vector<std::string>& Shell::getReadPaths() const { return getOS().get
 
 void Shell::addReadPath(const std::string& readPaths) { getOS().addReadPath(readPaths); }
 
+const pvr::OSApplication Shell::getOSApplication() { return _data->os->getApplication(); }
+
 const std::string& Shell::getWritePath() const { return getOS().getWritePath(); }
 
 ShellOS& Shell::getOS() const { return *_data->os; }

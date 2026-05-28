@@ -1,3 +1,4 @@
+if (gradle.parent == null) { throw new GradleException("This project should not be built directly. Please build the entire SDK from the main build-android folder in the root.") }
 rootProject.name='OpenCLPrefixSum'
 
 //Copy all the build output stuff into the SDK/bin folder
@@ -11,3 +12,4 @@ include('PVRCore')
 project(':PVRCore').projectDir=file('../../../../framework/PVRCore/build-android')
 include('PVRUtilsCL')
 project(':PVRUtilsCL').projectDir=file('../../../../framework/PVRUtils/OpenCL/build-android')
+

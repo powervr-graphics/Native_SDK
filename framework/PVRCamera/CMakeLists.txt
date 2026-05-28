@@ -27,6 +27,11 @@ else()
 	list(APPEND PVRCamera_SRC CameraInterface_Dummy.cpp)
 endif()
 
+# Explicitly add the parent directory to the include path for this directory
+# This ensures that #include "PVRCamera/CameraInterface.h" works correctly
+include_directories("${CMAKE_CURRENT_LIST_DIR}/..")
+include_directories("${CMAKE_CURRENT_LIST_DIR}/../../include")
+
 # Create the library
 add_library(PVRCamera STATIC ${PVRCamera_SRC} ${PVRCamera_HEADERS})
 
@@ -44,15 +49,11 @@ target_link_libraries(PVRCamera
 	PRIVATE
 		${PVRCamera_PRIVATE_LINK_LIBS})
 
-# Explicitly add the parent directory to the include path for this directory
-# This ensures that #include "PVRCamera/CameraInterface.h" works correctly
-include_directories("${CMAKE_CURRENT_LIST_DIR}/..")
-
-# Use generator expressions to ensure export compatibility
-target_include_directories(PVRCamera 
+get_filename_component(INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../include" ABSOLUTE)
+target_include_directories(PVRCamera
 	PUBLIC
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/..>
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../include>
+		$<BUILD_INTERFACE:${INCLUDE_DIR}>
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 

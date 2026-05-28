@@ -20,9 +20,9 @@ const char VertShaderFileName[]{ "VertShader.vsh.spv" };
 const char PBRFragShaderFileName[]{ "PBRFragShader.fsh.spv" };
 const char SkyboxVertShaderFileName[]{ "SkyboxVertShader.vsh.spv" };
 const char SkyboxFragShaderFileName[]{ "SkyboxFragShader.fsh.spv" };
-const char ComputeShaderScreenSpaceBoxSrcFile[]{ "ScreenSpaceBox.csh" };
-const char ComputeShaderOrganizePatchWorkload[]{ "OrganizePatchWorkload.csh" };
-const char ComputeShaderNeuralNetworkEnvironment[]{ "NeuralNetworkEnvironment.csh" };
+const char ComputeShaderScreenSpaceBoxSrcFile[]{ "ScreenSpaceBox.csh.spv" };
+const char ComputeShaderOrganizePatchWorkload[]{ "OrganizePatchWorkload.csh.spv" };
+const char ComputeShaderNeuralNetworkEnvironment[]{ "NeuralNetworkEnvironment.csh.spv" };
 const char ComputeShaderNeuralNetworkEnvironmentCooperativeMatrix[]{ "NeuralNetworkEnvironmentCooperativeMatrix.csh.spv" };
 
 // Models
@@ -742,7 +742,7 @@ class VulkanNeuralNetworkEnvironment : public pvr::Shell
 	uint32_t _textureNumPatches{ 0 };
 
 	/// <summary>Size of the compute subgroup used in the GPU used by the application.</summary>
-	uint32_t _subgroupSize{ 0 };
+	uint32_t _subgroupSize{ 32 };
 
 	/// <summary>Number of threads per workgroup in the compute shader where each thread computes the screen space box of the environment texture patches.</summary>
 	uint32_t _screenSpaceBoxWorkgroupSize{ 0 };
@@ -897,7 +897,9 @@ pvr::Result VulkanNeuralNetworkEnvironment::initView()
 		VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME, 
 		VK_KHR_COOPERATIVE_MATRIX_EXTENSION_NAME, 
 		VK_KHR_VULKAN_MEMORY_MODEL_EXTENSION_NAME,
-		VK_KHR_16BIT_STORAGE_EXTENSION_NAME, 
+		VK_KHR_16BIT_STORAGE_EXTENSION_NAME,
+		VK_EXT_SCALAR_BLOCK_LAYOUT_EXTENSION_NAME,
+		VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME
 	};
 
 	std::vector<int> vectorPhysicalDevicesIndex = pvr::utils::validatePhysicalDeviceExtensions(_deviceResources->instance, vectorExtensionNames);
@@ -2504,14 +2506,9 @@ void VulkanNeuralNetworkEnvironment::buildScreenSpaceBoxComputePipeline()
 	}
 
 	{
-		std::string shaderSource;
-		getAssetStream(ComputeShaderScreenSpaceBoxSrcFile)->readIntoString(shaderSource);
+		pvrvk::ShaderModule computeShaderModule =
+			_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream(ComputeShaderScreenSpaceBoxSrcFile)->readToEnd<uint32_t>()));
 
-		// Add the workgroup local thread dimensions
-		std::string replaceString = "layout(local_size_x = " + std::to_string(_screenSpaceBoxWorkgroupSize) + ", local_size_y = 1, local_size_z = 1) in;\n";
-		shaderSource = std::regex_replace(shaderSource, std::regex("\\%s1"), replaceString);	
-
-		pvrvk::ShaderModule computeShaderModule = pvr::utils::createShaderModule(_deviceResources->device, shaderSource, pvrvk::ShaderStageFlags::e_COMPUTE_BIT);
 		pvrvk::ComputePipelineCreateInfo createInfo;
 		createInfo.computeShader.setShader(computeShaderModule);
 		createInfo.pipelineLayout = _deviceResources->computeScreenSpaceBoxPipelinelayout;
@@ -2531,14 +2528,9 @@ void VulkanNeuralNetworkEnvironment::buildOrganizePatchWorkloadComputePipeline()
 	}
 
 	{
-		std::string shaderSource;
-		getAssetStream(ComputeShaderOrganizePatchWorkload)->readIntoString(shaderSource);
+		pvrvk::ShaderModule computeShaderModule =
+			_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream(ComputeShaderOrganizePatchWorkload)->readToEnd<uint32_t>()));
 
-		// Add the workgroup local thread dimensions
-		std::string replaceString = "layout(local_size_x = " + std::to_string(_subgroupSize) + ", local_size_y = 1, local_size_z = 1) in;\n";
-		shaderSource = std::regex_replace(shaderSource, std::regex("\\%s1"), replaceString);
-
-		pvrvk::ShaderModule computeShaderModule = pvr::utils::createShaderModule(_deviceResources->device, shaderSource, pvrvk::ShaderStageFlags::e_COMPUTE_BIT);
 		pvrvk::ComputePipelineCreateInfo createInfo;
 		createInfo.computeShader.setShader(computeShaderModule);
 		createInfo.pipelineLayout = _deviceResources->computeOrganizePatchWorkloadPipelinelayout;
@@ -2558,21 +2550,9 @@ void VulkanNeuralNetworkEnvironment::buildNeuralNetworkEnvironmentInferenceCompu
 	}
 
 	{
-		std::string shaderSource;
-		getAssetStream(ComputeShaderNeuralNetworkEnvironment)->readIntoString(shaderSource);
+		pvrvk::ShaderModule computeShaderModule =
+			_deviceResources->device->createShaderModule(pvrvk::ShaderModuleCreateInfo(getAssetStream(ComputeShaderNeuralNetworkEnvironment)->readToEnd<uint32_t>()));
 
-		// Add two shared variable arrays which can hold the neural network information
-		std::string replaceString = "shared float sharedArrayNNBiases[" + std::to_string(nnConfiguration.nnBiasesNumberElement) + "];";
-		shaderSource = std::regex_replace(shaderSource, std::regex("\\%s0"), replaceString);
-
-		replaceString = "shared float sharedArrayNNWeights[" + std::to_string(nnConfiguration.nnWeightsNumberElement) + "];";
-		shaderSource = std::regex_replace(shaderSource, std::regex("\\%s1"), replaceString);
-
-		// Add the workgroup local thread dimensions
-		replaceString = "layout(local_size_x = " + std::to_string(_subgroupSize) + ", local_size_y = 1, local_size_z = 1) in;\n";
-		shaderSource = std::regex_replace(shaderSource, std::regex("\\%s3"), replaceString);
-
-		pvrvk::ShaderModule computeShaderModule = pvr::utils::createShaderModule(_deviceResources->device, shaderSource, pvrvk::ShaderStageFlags::e_COMPUTE_BIT);
 		pvrvk::ComputePipelineCreateInfo createInfo;
 		createInfo.computeShader.setShader(computeShaderModule);
 		createInfo.pipelineLayout = _deviceResources->computeNeuralNetworkEnvironmentPipelinelayout;

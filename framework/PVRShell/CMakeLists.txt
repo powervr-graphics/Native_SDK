@@ -7,6 +7,11 @@ include(GNUInstallDirs)
 include(CMakeFindDependencyMacro)
 include(../FrameworkCommon.cmake)
 
+get_filename_component(PVR_SHELL_ABS_FRAMEWORK "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
+get_filename_component(PVR_SHELL_ABS_INCLUDE "${CMAKE_CURRENT_LIST_DIR}/../../include" ABSOLUTE)
+include_directories("${PVR_SHELL_ABS_FRAMEWORK}")
+include_directories("${PVR_SHELL_ABS_INCLUDE}")
+
 # Prevent PVRShell being added multiple times
 if(TARGET PVRShell)
 	return()
@@ -49,6 +54,7 @@ elseif(ANDROID)
 		${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
 	
 	list(APPEND PVRShell_PRIVATE_INCLUDE_DIRECTORIES ${ANDROID_NDK}/sources/android/native_app_glue)
+	include_directories("${ANDROID_NDK}/sources/android/native_app_glue")
 elseif(UNIX)
 	if(NOT CMAKE_SYSTEM_NAME MATCHES "QNX")
 		list(APPEND PVRShell_OS_HEADERS
@@ -205,16 +211,18 @@ target_link_libraries(PVRShell
 
 target_include_directories(PVRShell 
 	PUBLIC 
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/..>
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../include>
+		$<BUILD_INTERFACE:${PVR_SHELL_ABS_FRAMEWORK}>
+		$<BUILD_INTERFACE:${PVR_SHELL_ABS_INCLUDE}>
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 	PRIVATE
-		${PVRShell_PRIVATE_INCLUDE_DIRECTORIES})
+		${PVRShell_PRIVATE_INCLUDE_DIRECTORIES}
+		"${PVR_SHELL_ABS_FRAMEWORK}"
+		"${PVR_SHELL_ABS_INCLUDE}")
 
 target_compile_definitions(PVRShell 
 	PUBLIC ${PVR_WINDOW_SYSTEM_DEFINE})
 
-if(PVR_ENABLE_INSTALL)
+if(TRUE)
 	install(TARGETS PVRShell EXPORT PVRShellTargets
 		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

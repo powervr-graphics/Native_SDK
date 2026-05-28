@@ -56,6 +56,14 @@ Image_::Image_(make_shared_enabler, const DeviceWeakPtr& device, const ImageCrea
 	vkCreateInfo.pQueueFamilyIndices = _createInfo.getQueueFamilyIndices();
 	vkCreateInfo.initialLayout = static_cast<VkImageLayout>(_createInfo.getInitialLayout());
 
+	VkExternalMemoryImageCreateInfo externalMemoryImageCreateInfo = {};
+	if (_createInfo.getExternalMemoryHandleTypeFlags() != pvrvk::ExternalMemoryHandleTypeFlags::e_NONE)
+	{
+		externalMemoryImageCreateInfo.sType = VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO;
+		externalMemoryImageCreateInfo.handleTypes = static_cast<VkExternalMemoryHandleTypeFlags>(_createInfo.getExternalMemoryHandleTypeFlags());
+		vkCreateInfo.pNext = &externalMemoryImageCreateInfo;
+	}
+
 #ifdef DEBUG
 	deviceSharedPtr->getPhysicalDevice()->getImageFormatProperties(static_cast<pvrvk::Format>(_createInfo.getFormat()), static_cast<pvrvk::ImageType>(_createInfo.getImageType()),
 		static_cast<pvrvk::ImageTiling>(_createInfo.getTiling()), static_cast<pvrvk::ImageUsageFlags>(_createInfo.getUsageFlags()),

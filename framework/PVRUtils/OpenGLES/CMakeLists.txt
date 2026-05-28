@@ -6,6 +6,12 @@ include(GNUInstallDirs)
 include(CMakeFindDependencyMacro)
 include(../../FrameworkCommon.cmake)
 
+get_filename_component(PVR_UTILS_ABS_FRAMEWORK "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
+get_filename_component(PVR_UTILS_ABS_INCLUDE "${CMAKE_CURRENT_LIST_DIR}/../../../include" ABSOLUTE)
+
+include_directories("${PVR_UTILS_ABS_FRAMEWORK}")
+include_directories("${PVR_UTILS_ABS_INCLUDE}")
+
 # Prevent PVRUtilsGles being added multiple times
 if(TARGET PVRUtilsGles)
 	return()
@@ -59,8 +65,8 @@ list(APPEND PVRUtilsGles_EGL_HEADERS
 
 set(PVRUtilsGles_PRIVATE_LINK_LIBS "")
 set(PVRUtilsGles_INCLUDE_DIRECTORIES 
-	${CMAKE_CURRENT_LIST_DIR}/../../../include
-	${CMAKE_CURRENT_LIST_DIR}/../../)
+	${PVR_UTILS_ABS_INCLUDE}
+	${PVR_UTILS_ABS_FRAMEWORK})
 set(PVRUtilsGles_PRIVATE_INCLUDE_DIRECTORIES "")
 
 # Handle the UNIX platform specific api specific libraries
@@ -107,15 +113,15 @@ if(PVR_WINDOW_SYSTEM)
 	target_compile_definitions(PVRUtilsGles PUBLIC ${PVR_WINDOW_SYSTEM_DEFINE})
 endif()
 
-# Explicitly add include paths for internal compilation
-include_directories(${PVRUtilsGles_INCLUDE_DIRECTORIES})
-
 target_include_directories(PVRUtilsGles 
 	PUBLIC 
-		"$<BUILD_INTERFACE:${PVRUtilsGles_INCLUDE_DIRECTORIES}>"
-		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+		$<BUILD_INTERFACE:${PVR_UTILS_ABS_INCLUDE}>
+		$<BUILD_INTERFACE:${PVR_UTILS_ABS_FRAMEWORK}>
+		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+	PRIVATE
+		${PVRUtilsGles_INCLUDE_DIRECTORIES})
 
-if(PVR_ENABLE_INSTALL)
+if(TRUE)
 	install(TARGETS PVRUtilsGles EXPORT PVRUtilsGlesTargets
 		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

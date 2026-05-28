@@ -15,6 +15,6 @@ set(SRC_FILES VulkanIBLMapsGenerator.cpp)
 # Adds a platform specific executable
 add_executable(VulkanIBLMapsGenerator ${SRC_FILES})
 
-set_target_properties(VulkanIBLMapsGenerator PROPERTIES CXX_STANDARD 14)
+set_target_properties(VulkanIBLMapsGenerator PROPERTIES CXX_STANDARD 17)
 
 target_link_libraries(VulkanIBLMapsGenerator PVRUtilsVk)

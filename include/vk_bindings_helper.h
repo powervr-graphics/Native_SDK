@@ -474,6 +474,31 @@ static inline void initVkDeviceBindings(VkDevice device, VkDeviceBindings *bindi
 	bindings->vkWaitSemaphores = (PFN_vkWaitSemaphores)getDeviceProcAddr(device, "vkWaitSemaphores");
 #endif // VK_VERSION_1_2
 
+#if (defined(VK_VERSION_1_3))
+	bindings->vkCmdBeginRenderPass2 = (PFN_vkCmdBeginRenderPass2)getDeviceProcAddr(device, "vkCmdBeginRenderPass2");
+	bindings->vkCmdDrawIndexedIndirectCount = (PFN_vkCmdDrawIndexedIndirectCount)getDeviceProcAddr(device, "vkCmdDrawIndexedIndirectCount");
+	bindings->vkCmdDrawIndirectCount = (PFN_vkCmdDrawIndirectCount)getDeviceProcAddr(device, "vkCmdDrawIndirectCount");
+	bindings->vkCmdEndRenderPass2 = (PFN_vkCmdEndRenderPass2)getDeviceProcAddr(device, "vkCmdEndRenderPass2");
+	bindings->vkCmdNextSubpass2 = (PFN_vkCmdNextSubpass2)getDeviceProcAddr(device, "vkCmdNextSubpass2");
+	bindings->vkCreateRenderPass2 = (PFN_vkCreateRenderPass2)getDeviceProcAddr(device, "vkCreateRenderPass2");
+	bindings->vkGetBufferDeviceAddress = (PFN_vkGetBufferDeviceAddress)getDeviceProcAddr(device, "vkGetBufferDeviceAddress");
+	bindings->vkGetBufferOpaqueCaptureAddress = (PFN_vkGetBufferOpaqueCaptureAddress)getDeviceProcAddr(device, "vkGetBufferOpaqueCaptureAddress");
+	bindings->vkGetDeviceMemoryOpaqueCaptureAddress = (PFN_vkGetDeviceMemoryOpaqueCaptureAddress)getDeviceProcAddr(device, "vkGetDeviceMemoryOpaqueCaptureAddress");
+	bindings->vkGetSemaphoreCounterValue = (PFN_vkGetSemaphoreCounterValue)getDeviceProcAddr(device, "vkGetSemaphoreCounterValue");
+	bindings->vkResetQueryPool = (PFN_vkResetQueryPool)getDeviceProcAddr(device, "vkResetQueryPool");
+	bindings->vkSignalSemaphore = (PFN_vkSignalSemaphore)getDeviceProcAddr(device, "vkSignalSemaphore");
+	bindings->vkWaitSemaphores = (PFN_vkWaitSemaphores)getDeviceProcAddr(device, "vkWaitSemaphores");
+#endif // VK_VERSION_1_2
+
+#if (defined(VK_VERSION_1_3))
+	bindings->vkCmdSetEvent2 = (PFN_vkCmdSetEvent2)getDeviceProcAddr(device, "vkCmdSetEvent2");
+	bindings->vkCmdResetEvent2 = (PFN_vkCmdResetEvent2)getDeviceProcAddr(device, "vkCmdResetEvent2");
+	bindings->vkCmdWaitEvents2 = (PFN_vkCmdWaitEvents2)getDeviceProcAddr(device, "vkCmdWaitEvents2");
+	bindings->vkCmdPipelineBarrier2 = (PFN_vkCmdPipelineBarrier2)getDeviceProcAddr(device, "vkCmdPipelineBarrier2");
+	bindings->vkCmdWriteTimestamp2 = (PFN_vkCmdWriteTimestamp2)getDeviceProcAddr(device, "vkCmdWriteTimestamp2");
+	bindings->vkQueueSubmit2 = (PFN_vkQueueSubmit2)getDeviceProcAddr(device, "vkQueueSubmit2");
+#endif // VK_VERSION_1_3
+
 #if (defined(VK_AMD_buffer_marker))
 	bindings->vkCmdWriteBufferMarkerAMD = (PFN_vkCmdWriteBufferMarkerAMD)getDeviceProcAddr(device, "vkCmdWriteBufferMarkerAMD");
 #endif // VK_AMD_buffer_marker

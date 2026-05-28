@@ -625,7 +625,9 @@ Result StateMachine::executeFrame()
 	// Have we reached the point where we need to die?
 	if ((_shellData.dieAfterFrame >= 0 && _shellData.frameNo >= static_cast<uint32_t>(_shellData.dieAfterFrame)) ||
 		(_shellData.dieAfterTime >= 0 && ((_shellData.timer.getElapsedMilliSecs() - _shellData.startTime) * 0.001f) > _shellData.dieAfterTime))
-	{ _shellData.weAreDone = true; }
+	{
+		_shellData.weAreDone = true;
+	}
 	if (_shellData.forceReleaseInitWindow || _shellData.forceReleaseInitView)
 	{
 		Log(LogLevel::Information,

@@ -1,3 +1,7 @@
+if (gradle.parent == null) {
+    throw new GradleException("This project should not be built directly. Please build the entire SDK from the main build-android folder in the root.")
+}
+
 rootProject.name='VulkanSkinning'
 
 //Copy all the build output stuff into the SDK/bin folder
@@ -25,5 +29,3 @@ include('PVRUtilsVk')
 project(':PVRUtilsVk').projectDir=file('../../../../framework/PVRUtils/Vulkan/build-android')
 include('PVRPfx')
 project(':PVRPfx').projectDir=file('../../../../framework/PVRPfx/build-android')
-include('glslangValidator')
-project(':glslangValidator').projectDir=file('../../../../external/glslangValidator/build-android')

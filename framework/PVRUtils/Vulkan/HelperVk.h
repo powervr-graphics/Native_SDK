@@ -623,6 +623,12 @@ struct ImageUpdateInfo
 void updateImage(pvrvk::Device& device, pvrvk::CommandBufferBase transferCommandBuffer, ImageUpdateInfo* updateInfos, uint32_t numUpdateInfos, pvrvk::Format format,
 	pvrvk::ImageLayout layout, bool isCubeMap, pvrvk::Image& image, vma::Allocator bufferAllocator = nullptr, bool isSafetyCritical = false);
 
+/// <summary>Read the texture header information from an image, not loading its contents.</summary>
+/// <param name="fileName">Path to the image file to read.</param>
+/// <param name="assetProvider">Specifies an asset provider to use for loading image.</param>
+/// <param name="textureHeader">TextureHeader struct to fill with information.</param>
+void readImageTextureHeader(const char* fileName, IAssetProvider& assetProvider, TextureHeader& textureHeader);
+
 /// <summary>Utility function to update a buffer's data. This function maps and unmap the buffer only if the buffer is not already mapped.</summary>
 /// <param name="buffer">The buffer to map -> update -> unmap.</param>
 /// <param name="data">The data to use in the update</param>

@@ -75,23 +75,17 @@ add_spirv_shaders_to_target(VulkanNeuralNetworkEnvironment
 	SPIRV_SOURCE_GROUP "shaders_generated"
 	ASSET_FOLDER ${ASSET_FOLDER} 
 	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/
-	VULKAN_TARGET_ENV vulkan1.3
-	VULKAN_TARGET_ENV spirv1.3
+	VULKAN_TARGET_ENV vulkan1.4
+	VULKAN_TARGET_ENV spirv1.4
 	FILE_LIST
 		PBRFragShader.fsh
 		SkyboxFragShader.fsh
 		SkyboxVertShader.vsh
 		VertShader.vsh
-		NeuralNetworkEnvironmentCooperativeMatrix.csh)
-
-add_assets_to_target(VulkanNeuralNetworkEnvironment
-	SOURCE_GROUP "assets" 
-	ASSET_FOLDER ${ASSET_FOLDER} 
-	BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/
-	FILE_LIST 
 		ScreenSpaceBox.csh
 		OrganizePatchWorkload.csh
-		NeuralNetworkEnvironment.csh)
+		NeuralNetworkEnvironment.csh
+		NeuralNetworkEnvironmentCooperativeMatrix.csh)
 
 # Create and adds a Windows resource file (Resources.rc) with all the assets that have been added to the target with the previous functions
 add_assets_resource_file(VulkanNeuralNetworkEnvironment)

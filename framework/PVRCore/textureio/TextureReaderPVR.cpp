@@ -1368,91 +1368,60 @@ bool isPVR(const Stream& assetStream)
 
 	return false;
 }
-Texture readPVR(const Stream& stream)
+
+uint32_t readPVRTextureHeader(const Stream& stream, TextureHeader& textureHeader)
 {
 	if (!stream.isReadable()) { throw InvalidOperationError("[pvr::assetReaders::readPVR] Attempted to read a non-readable assetStream"); }
 
 	Texture asset;
-	// Get the file header to Read.
-	TextureHeader textureFileHeader;
+	uint32_t version = 0;
 
 	try
 	{
 		// Read the texture header version
-		uint32_t version;
 		stream.readExact(sizeof(version), 1, &version);
 
 		if (version == TextureHeader::PVRv3)
 		{
 			// Read the flags
-			stream.readExact(sizeof(textureFileHeader.flags), 1, &textureFileHeader.flags);
+			stream.readExact(sizeof(textureHeader.flags), 1, &textureHeader.flags);
 
 			// Read the pixel format
-			stream.readExact(sizeof(textureFileHeader.pixelFormat), 1, &textureFileHeader.pixelFormat);
+			stream.readExact(sizeof(textureHeader.pixelFormat), 1, &textureHeader.pixelFormat);
 
 			// Read the color space
-			stream.readExact(sizeof(textureFileHeader.colorSpace), 1, &textureFileHeader.colorSpace);
+			stream.readExact(sizeof(textureHeader.colorSpace), 1, &textureHeader.colorSpace);
 
 			// Read the channel type
-			stream.readExact(sizeof(textureFileHeader.channelType), 1, &textureFileHeader.channelType);
+			stream.readExact(sizeof(textureHeader.channelType), 1, &textureHeader.channelType);
 
 			// Read the height
-			stream.readExact(sizeof(textureFileHeader.height), 1, &textureFileHeader.height);
+			stream.readExact(sizeof(textureHeader.height), 1, &textureHeader.height);
 
 			// Read the width
-			stream.readExact(sizeof(textureFileHeader.width), 1, &textureFileHeader.width);
+			stream.readExact(sizeof(textureHeader.width), 1, &textureHeader.width);
 
 			// Read the depth
-			stream.readExact(sizeof(textureFileHeader.depth), 1, &textureFileHeader.depth);
+			stream.readExact(sizeof(textureHeader.depth), 1, &textureHeader.depth);
 
 			// Read the number of surfaces
-			stream.readExact(sizeof(textureFileHeader.numSurfaces), 1, &textureFileHeader.numSurfaces);
+			stream.readExact(sizeof(textureHeader.numSurfaces), 1, &textureHeader.numSurfaces);
 
 			// Read the number of faces
-			stream.readExact(sizeof(textureFileHeader.numFaces), 1, &textureFileHeader.numFaces);
+			stream.readExact(sizeof(textureHeader.numFaces), 1, &textureHeader.numFaces);
 
 			// Read the number of MIP maps
-			stream.readExact(sizeof(textureFileHeader.numMipMaps), 1, &textureFileHeader.numMipMaps);
+			stream.readExact(sizeof(textureHeader.numMipMaps), 1, &textureHeader.numMipMaps);
 
 			// Read the number of planes
-			std::string ycbcrFormat = to_string(textureFileHeader.pixelFormat);
+			std::string ycbcrFormat = to_string(textureHeader.pixelFormat);
 			uint32_t numplanes = 1;
-			if (ycbcrFormat.find("2P") != std::string::npos)
-			{
-				numplanes = 2;
-			}
-			else if (ycbcrFormat.find("3P") != std::string::npos)
-			{
-				numplanes = 3;
-			}
-			textureFileHeader.setNumPlanes(numplanes);
+			if (ycbcrFormat.find("2P") != std::string::npos) { numplanes = 2; }
+			else if (ycbcrFormat.find("3P") != std::string::npos) { numplanes = 3; }
+			textureHeader.setNumPlanes(numplanes);
 
-			// Read the meta data size, but store it for now.
-			uint32_t tempMetaDataSize = 0;
-			stream.readExact(sizeof(tempMetaDataSize), 1, &tempMetaDataSize);
-			// Construct a texture header.
-			// Set the meta data size to 0
-			textureFileHeader.metaDataSize = 0;
-
-			asset.initializeWithHeader(textureFileHeader);
-			// Read the meta data
-			uint32_t metaDataRead = 0;
-			while (metaDataRead < tempMetaDataSize)
-			{
-				TextureMetaData metaDataBlock = loadTextureMetadataFromStream(stream);
-
-				// Add the meta data
-				asset.addMetaData(metaDataBlock);
-
-				// Evaluate the meta data read
-				metaDataRead = asset.getMetaDataSize();
-			}
-
-			// Make sure the provided data size wasn't wrong. If it was, there are no guarantees about the contents of the texture data.
-			if (metaDataRead > tempMetaDataSize) { throw InvalidDataError("[TextureReaderPVR::readAsset_] Metadata seems to be corrupted while reading."); }
-
-			// Read the texture data
-			stream.readExact(1, asset.getDataSize(), asset.getDataPointer());
+			// Read the meta data size
+			stream.readExact(sizeof(textureHeader.metaDataSize), 1, &textureHeader.metaDataSize);
 		}
 		else if (version == texture_legacy::c_headerSizeV1 || version == texture_legacy::c_headerSizeV2)
 		{
@@ -1507,20 +1476,67 @@ Texture readPVR(const Stream& stream)
 			}
 
 			// Construct a texture header by converting the old one
-			TextureHeader textureHeader;
 			convertTextureHeader2To3(legacyHeader, textureHeader);
+		}
+		else { throw InvalidDataError("[TextureReaderPVR::readAsset_]: Unsupported PVR Version"); }
+	}
+	catch (const FileEOFError&)
+	{
+		throw InvalidDataError("[TextureReaderPVR::readAsset_]: Not a not a valid PVR file.");
+	}
 
+	return version;
+}
+
+Texture readPVR(const Stream& stream)
+{
+	if (!stream.isReadable()) { throw InvalidOperationError("[pvr::assetReaders::readPVR] Attempted to read a non-readable assetStream"); }
+
+	Texture asset;
+	// Get the file header to Read.
+	TextureHeader textureFileHeader;
+
+	uint32_t version = readPVRTextureHeader(stream, textureFileHeader);
+
+	try
+	{
+		if (version == TextureHeader::PVRv3)
+		{
+			uint32_t tempMetadataSize = textureFileHeader.metaDataSize;
+			textureFileHeader.metaDataSize = 0;
+			asset.initializeWithHeader(textureFileHeader);
+			// Read the meta data
+			uint32_t metaDataRead = 0;
+			while (metaDataRead < tempMetadataSize)
+			{
+				TextureMetaData metaDataBlock = loadTextureMetadataFromStream(stream);
+
+				// Add the meta data
+				asset.addMetaData(metaDataBlock);
+
+				// Evaluate the meta data read
+				metaDataRead = asset.getMetaDataSize();
+			}
+
+			// Make sure the provided data size wasn't wrong. If it was, there are no guarantees about the contents of the texture data.
+			if (metaDataRead > tempMetadataSize) { throw InvalidDataError("[TextureReaderPVR::readAsset_] Metadata seems to be corrupted while reading."); }
+
+			// Read the texture data
+			stream.readExact(1, asset.getDataSize(), asset.getDataPointer());
+		}
+		else if (version == texture_legacy::c_headerSizeV1 || version == texture_legacy::c_headerSizeV2)
+		{
 			// Copy the texture header to the asset.
-			asset.initializeWithHeader(textureHeader);
+			asset.initializeWithHeader(textureFileHeader);
 
 			// Write the texture data
-			for(uint32_t surface = 0; surface < asset.getNumArrayMembers(); ++surface)
+			for (uint32_t surface = 0; surface < asset.getNumArrayMembers(); ++surface)
 			{
-				for(uint32_t depth = 0; depth < asset.getDepth(); ++depth)
+				for (uint32_t depth = 0; depth < asset.getDepth(); ++depth)
 				{
-					for(uint32_t face = 0; face < asset.getNumFaces(); ++face)
+					for (uint32_t face = 0; face < asset.getNumFaces(); ++face)
 					{
-						for(uint32_t mipMap = 0; mipMap < asset.getNumMipMapLevels(); ++mipMap)
+						for (uint32_t mipMap = 0; mipMap < asset.getNumMipMapLevels(); ++mipMap)
 						{
 							uint32_t surfaceSize = asset.getDataSize(mipMap, false, false, false) / asset.getDepth();
 							unsigned char* surfacePointer = asset.getDataPointer(mipMap, surface, face) + depth * surfaceSize;
@@ -1532,10 +1548,7 @@ Texture readPVR(const Stream& stream)
 				}
 			}
 		}
-		else
-		{
-			throw InvalidDataError("[TextureReaderPVR::readAsset_]: Unsupported PVR Version");
-		}
+		else { throw InvalidDataError("[TextureReaderPVR::readAsset_]: Unsupported PVR Version"); }
 	}
 	catch (const FileEOFError&)
 	{

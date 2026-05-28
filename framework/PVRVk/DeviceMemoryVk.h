@@ -7,6 +7,7 @@
 
 #pragma once
 #include "PVRVk/DeviceVk.h"
+
 namespace pvrvk {
 
 /// <summary>Implementation of the VkExportMemoryAllocateInfoKHR  class used by the VK_KHR_external_memory extension</summary>
@@ -181,22 +182,54 @@ private:
 		memAllocInfo.allocationSize = allocationInfo.getAllocationSize();
 		memAllocInfo.memoryTypeIndex = allocationInfo.getMemoryTypeIndex();
 
+		if (memAllocInfo.memoryTypeIndex == static_cast<uint32_t>(-1))
+		{
+			throw ErrorValidationFailedEXT("Device Memory allocation failed: Could not get a Memory Type Index for the specified combination specified memory bits, properties and "
+										   "flags");
+		}
+
 		// handle extension
-		VkExportMemoryAllocateInfoKHR memAllocateInfoKHR = {};
 		if (allocationInfo.getExportMemoryAllocateInfoKHR().handleTypes != ExternalMemoryHandleTypeFlags::e_NONE)
 		{
-			memAllocateInfoKHR.sType = static_cast<VkStructureType>(StructureType::e_EXPORT_MEMORY_ALLOCATE_INFO_KHR);
-			memAllocateInfoKHR.handleTypes = static_cast<VkExternalMemoryHandleTypeFlags>(allocationInfo.getExportMemoryAllocateInfoKHR().handleTypes);
-			memAllocInfo.pNext = &memAllocateInfoKHR;
+			VkExportMemoryAllocateInfoKHR exportMemoryAllocateInfoKHR = {};
+			exportMemoryAllocateInfoKHR.sType = static_cast<VkStructureType>(StructureType::e_EXPORT_MEMORY_ALLOCATE_INFO_KHR);
+			exportMemoryAllocateInfoKHR.handleTypes = static_cast<VkExternalMemoryHandleTypeFlags>(allocationInfo.getExportMemoryAllocateInfoKHR().handleTypes);
+			memAllocInfo.pNext = &exportMemoryAllocateInfoKHR;
+
+			// TODO: Analyse whether this code can be deleted or moved somewhere else
+			// Taken from https://www.gpultra.com/blog/vulkan-cuda-memory-interoperability/
+			if (exportMemoryAllocateInfoKHR.handleTypes == VkExternalMemoryHandleTypeFlagBits::VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT_KHR)
+			{
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+				WindowsExportMemorySecurity windowsExportMemorySecurity;
+				windowsExportMemorySecurity.init();
+
+				VkExportMemoryWin32HandleInfoKHR exportMemoryWin32HandleInfoKHR = {};
+				exportMemoryWin32HandleInfoKHR.sType = VK_STRUCTURE_TYPE_EXPORT_MEMORY_WIN32_HANDLE_INFO_KHR;
+				exportMemoryWin32HandleInfoKHR.pAttributes = windowsExportMemorySecurity.getSecurityAttributes();
+				exportMemoryWin32HandleInfoKHR.dwAccess = DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE;
+				
+				exportMemoryAllocateInfoKHR.pNext = &exportMemoryWin32HandleInfoKHR;
+
+				vkThrowIfFailed(getDevice()->getVkBindings().vkAllocateMemory(device->getVkHandle(), &memAllocInfo, nullptr, &outMemory), "Failed to allocate device memory");
+				return;
+#else
+				vkThrowIfFailed(Result::e_ERROR_UNKNOWN, "Error: Trying to use Win32 memory handle not on Windows OS");
+#endif
+			}
+			else
+			{
+				vkThrowIfFailed(getDevice()->getVkBindings().vkAllocateMemory(device->getVkHandle(), &memAllocInfo, nullptr, &outMemory), "Failed to allocate device memory");
+				return;
+			}
 		}
 
 		// handle VkMemoryAllocateFlagsInfo
-		VkMemoryAllocateFlagsInfo memoryAllocateFlagsInfo = {};
 		if (memoryAllocateFlags != pvrvk::MemoryAllocateFlags::e_NONE)
 		{
 			// VK_MEMORY_ALLOCATE_DEVICE_MASK_BIT not supported until we provide api for passing deviceMask to here
 			assert(!static_cast<bool>(memoryAllocateFlags & pvrvk::MemoryAllocateFlags::e_DEVICE_MASK_BIT));
-
+			VkMemoryAllocateFlagsInfo memoryAllocateFlagsInfo = {};
 			memoryAllocateFlagsInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO;
 			memoryAllocateFlagsInfo.flags = static_cast<VkMemoryAllocateFlagBits>(memoryAllocateFlags);
 			memoryAllocateFlagsInfo.deviceMask = 0;
@@ -206,16 +239,16 @@ private:
 			}
 			else
 			{
-				memAllocateInfoKHR.pNext = &memoryAllocateFlagsInfo; // append to pNext chain
+				// TODO: Verify this path was ever executed before
+				//exportMemoryAllocateInfoKHR.pNext = &memoryAllocateFlagsInfo; // append to pNext chain
 			}
+
+			vkThrowIfFailed(getDevice()->getVkBindings().vkAllocateMemory(device->getVkHandle(), &memAllocInfo, nullptr, &outMemory), "Failed to allocate device memory");
+			return;
 		}
 
-		if (memAllocInfo.memoryTypeIndex == static_cast<uint32_t>(-1))
-		{
-			throw ErrorValidationFailedEXT("Device Memory allocation failed: Could not get a Memory Type Index for the specified combination specified memory bits, properties and "
-										   "flags");
-		}
 		vkThrowIfFailed(getDevice()->getVkBindings().vkAllocateMemory(device->getVkHandle(), &memAllocInfo, nullptr, &outMemory), "Failed to allocate device memory");
+		return;
 	}
 
 	/// <summary>The memory property flags for the device memory</summary>

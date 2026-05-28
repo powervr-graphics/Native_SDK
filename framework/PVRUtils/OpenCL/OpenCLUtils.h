@@ -37,13 +37,17 @@ inline const char* getOpenCLError(cl_int error)
 	case CL_IMAGE_FORMAT_NOT_SUPPORTED: return "CL_IMAGE_FORMAT_NOT_SUPPORTED";
 	case CL_BUILD_PROGRAM_FAILURE: return "CL_BUILD_PROGRAM_FAILURE";
 	case CL_MAP_FAILURE: return "CL_MAP_FAILURE";
+#ifdef CL_VERSION_1_1
 	case CL_MISALIGNED_SUB_BUFFER_OFFSET: return "CL_MISALIGNED_SUB_BUFFER_OFFSET";
 	case CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST: return "CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST";
+#endif
+#ifdef CL_VERSION_1_2
 	case CL_COMPILE_PROGRAM_FAILURE: return "CL_COMPILE_PROGRAM_FAILURE";
 	case CL_LINKER_NOT_AVAILABLE: return "CL_LINKER_NOT_AVAILABLE";
 	case CL_LINK_PROGRAM_FAILURE: return "CL_LINK_PROGRAM_FAILURE";
 	case CL_DEVICE_PARTITION_FAILED: return "CL_DEVICE_PARTITION_FAILED";
 	case CL_KERNEL_ARG_INFO_NOT_AVAILABLE: return "CL_KERNEL_ARG_INFO_NOT_AVAILABLE";
+#endif
 	case CL_INVALID_VALUE: return "CL_INVALID_VALUE";
 	case CL_INVALID_DEVICE_TYPE: return "CL_INVALID_DEVICE_TYPE";
 	case CL_INVALID_PLATFORM: return "CL_INVALID_PLATFORM";
@@ -78,52 +82,23 @@ inline const char* getOpenCLError(cl_int error)
 	case CL_INVALID_BUFFER_SIZE: return "CL_INVALID_BUFFER_SIZE";
 	case CL_INVALID_MIP_LEVEL: return "CL_INVALID_MIP_LEVEL";
 	case CL_INVALID_GLOBAL_WORK_SIZE: return "CL_INVALID_GLOBAL_WORK_SIZE";
+#ifdef CL_VERSION_1_1
 	case CL_INVALID_PROPERTY: return "CL_INVALID_PROPERTY";
+#endif
+#ifdef CL_VERSION_1_2
 	case CL_INVALID_IMAGE_DESCRIPTOR: return "CL_INVALID_IMAGE_DESCRIPTOR";
 	case CL_INVALID_COMPILER_OPTIONS: return "CL_INVALID_COMPILER_OPTIONS";
 	case CL_INVALID_LINKER_OPTIONS: return "CL_INVALID_LINKER_OPTIONS";
 	case CL_INVALID_DEVICE_PARTITION_COUNT: return "CL_INVALID_DEVICE_PARTITION_COUNT";
-#ifdef CL_INVALID_PIPE_SIZE
-	case CL_INVALID_PIPE_SIZE: return "CL_INVALID_PIPE_SIZE";
 #endif
-#ifdef CL_INVALID_DEVICE_QUEUE
+#ifdef CL_VERSION_2_0
+	case CL_INVALID_PIPE_SIZE: return "CL_INVALID_PIPE_SIZE";
 	case CL_INVALID_DEVICE_QUEUE: return "CL_INVALID_DEVICE_QUEUE";
 #endif
-#ifdef CL_INVALID_GL_SHAREGROUP_REFERENCE_KHR
-	case CL_INVALID_GL_SHAREGROUP_REFERENCE_KHR: return "CL_INVALID_GL_SHAREGROUP_REFERENCE_KHR";
+#ifdef CL_VERSION_2_2
+	case CL_INVALID_SPEC_ID: return "CL_INVALID_SPEC_ID";
+	case CL_MAX_SIZE_RESTRICTION_EXCEEDED: return "CL_MAX_SIZE_RESTRICTION_EXCEEDED";
 #endif
-#ifdef CL_PLATFORM_NOT_FOUND_KHR
-	case CL_PLATFORM_NOT_FOUND_KHR: return "CL_PLATFORM_NOT_FOUND_KHR";
-#endif
-#ifdef CL_INVALID_D3D10_DEVICE_KHR
-	case CL_INVALID_D3D10_DEVICE_KHR: return "CL_INVALID_D3D10_DEVICE_KHR";
-	case CL_INVALID_D3D10_RESOURCE_KHR: return "CL_INVALID_D3D10_RESOURCE_KHR";
-	case CL_D3D10_RESOURCE_ALREADY_ACQUIRED_KHR: return "CL_D3D10_RESOURCE_ALREADY_ACQUIRED_KHR";
-	case CL_D3D10_RESOURCE_NOT_ACQUIRED_KHR: return "CL_D3D10_RESOURCE_NOT_ACQUIRED_KHR";
-	case CL_INVALID_D3D11_DEVICE_KHR: return "CL_INVALID_D3D11_DEVICE_KHR";
-	case CL_INVALID_D3D11_RESOURCE_KHR: return "CL_INVALID_D3D11_RESOURCE_KHR";
-	case CL_D3D11_RESOURCE_ALREADY_ACQUIRED_KHR: return "CL_D3D11_RESOURCE_ALREADY_ACQUIRED_KHR";
-	case CL_D3D11_RESOURCE_NOT_ACQUIRED_KHR: return "CL_D3D11_RESOURCE_NOT_ACQUIRED_KHR";
-	case CL_INVALID_D3D9_DEVICE_NV: return "CL_INVALID_D3D9_DEVICE_NV";
-	case CL_INVALID_D3D9_RESOURCE_NV: return "CL_INVALID_D3D9_RESOURCE_NV";
-	case CL_D3D9_RESOURCE_ALREADY_ACQUIRED_NV: return "CL_D3D9_RESOURCE_ALREADY_ACQUIRED_NV";
-	case CL_D3D9_RESOURCE_NOT_ACQUIRED_NV: return "CL_D3D9_RESOURCE_NOT_ACQUIRED_NV";
-#endif
-#ifdef CL_EGL_RESOURCE_NOT_ACQUIRED_KHR
-	case CL_EGL_RESOURCE_NOT_ACQUIRED_KHR: return "CL_EGL_RESOURCE_NOT_ACQUIRED_KHR";
-	case CL_INVALID_EGL_OBJECT_KHR: return "CL_INVALID_EGL_OBJECT_KHR";
-#endif
-#ifdef CL_INVALID_ACCELERATOR_INTEL
-	case CL_INVALID_ACCELERATOR_INTEL: return "CL_INVALID_ACCELERATOR_INTEL";
-	case CL_INVALID_ACCELERATOR_TYPE_INTEL: return "CL_INVALID_ACCELERATOR_TYPE_INTEL";
-	case CL_INVALID_ACCELERATOR_DESCRIPTOR_INTEL: return "CL_INVALID_ACCELERATOR_DESCRIPTOR_INTEL";
-	case CL_ACCELERATOR_TYPE_NOT_SUPPORTED_INTEL: return "CL_ACCELERATOR_TYPE_NOT_SUPPORTED_INTEL";
-	case CL_INVALID_VA_API_MEDIA_ADAPTER_INTEL: return "CL_INVALID_VA_API_MEDIA_ADAPTER_INTEL";
-	case CL_INVALID_VA_API_MEDIA_SURFACE_INTEL: return "CL_INVALID_VA_API_MEDIA_SURFACE_INTEL";
-	case CL_VA_API_MEDIA_SURFACE_ALREADY_ACQUIRED_INTEL: return "CL_VA_API_MEDIA_SURFACE_ALREADY_ACQUIRED_INTEL";
-	case CL_VA_API_MEDIA_SURFACE_NOT_ACQUIRED_INTEL: return "CL_VA_API_MEDIA_SURFACE_NOT_ACQUIRED_INTEL";
-#endif
-	case -9999: return "NVIDIA_INVALID_BUFFER_ACCESS";
 	default: return "UNKNOWN_OPENCL_ERROR_CODE";
 	}
 }
@@ -195,18 +170,9 @@ inline cl_channel_type convertChannelContent(int bits0, int bits1, int bits2, in
 	{
 		if ((bits1 != 0 && bits1 != 8) || (bits2 != 0 && bits2 != 8) || (bits3 != 0 && bits3 != 8)) { return 0; }
 		if (type == pvr::VariableType::UnsignedByteNorm) { return CL_UNORM_INT8; }
-		else if (type == pvr::VariableType::SignedByteNorm)
-		{
-			return CL_UNORM_INT8;
-		}
-		else if (type == pvr::VariableType::UnsignedByte)
-		{
-			return CL_UNSIGNED_INT8;
-		}
-		else if (type == pvr::VariableType::SignedByte)
-		{
-			return CL_SIGNED_INT8;
-		}
+		else if (type == pvr::VariableType::SignedByteNorm) { return CL_UNORM_INT8; }
+		else if (type == pvr::VariableType::UnsignedByte) { return CL_UNSIGNED_INT8; }
+		else if (type == pvr::VariableType::SignedByte) { return CL_SIGNED_INT8; }
 		return 0;
 	}
 	if (bits0 == 16)
@@ -313,8 +279,61 @@ inline cl_image_format convertToOpenCLFormat(const pvr::PixelFormat& format, pvr
 	retval.image_channel_data_type = convertChannelContent(format.getChannelBits(0), format.getChannelBits(1), format.getChannelBits(2), format.getChannelBits(3), variableType);
 
 	if (retval.image_channel_order == 0 || retval.image_channel_data_type == 0)
-	{ throw OpenCLFormatConversionError(format, variableType, colorSpace, "Could not match to an OpenCL format"); }
+	{
+		throw OpenCLFormatConversionError(format, variableType, colorSpace, "Could not match to an OpenCL format");
+	}
 	return retval;
+}
+
+/// <summary>Verify the extensions required specified in vectorRequiredExtensions are present in vectorOpenCLExtensions.</summary>
+/// <param name="vectorOpenCLExtensions">Vector of char with all OpenCL extension names.</param>
+/// <param name="vectorRequiredExtensions">Vector with the required extensions.</param>
+/// <returns>True if the required extensions are supported, false otherwise.</returns>
+bool verifySupportedExtensions(std::vector<char> vectorOpenCLExtensions, const std::vector<std::string>& vectorRequiredExtensions)
+{
+	for (size_t i = 0; i < vectorRequiredExtensions.size(); ++i)
+	{
+		if (strstr(vectorOpenCLExtensions.data(), vectorRequiredExtensions[i].c_str()) == nullptr) { return false; }
+	}
+
+	return true;
+}
+
+/// <summary>Creates an OpenCL context.</summary>
+/// <param name="vectorPlatformID">Vector with the platform IDs to rearrange.</param>
+/// <param name="vectorLessPrioritaryVendor">Vector with vendors which are less prioritary when selecting one platform for the context.</param>
+/// <param name="vectorRearrangedPlatformID">Vector with the rearra nged platform IDs, where prioritary vendors are present in the first part of the vector, and non prioritary vendors are present in the last part of the vector.</param>
+void rearrangePlatformIDForLessPrioritayVendor(
+	const std::vector<cl_platform_id>& vectorPlatformID, const std::vector<std::string>& vectorLessPrioritaryVendor, std::vector<cl_platform_id>& vectorRearrangedPlatformID)
+{
+	for (std::vector<cl_platform_id>::const_iterator it = vectorPlatformID.begin(); it != vectorPlatformID.end(); ++it)
+	{
+		size_t platformVendorLength = 0;
+		cl_int errcode = cl::GetPlatformInfo(*it, CL_PLATFORM_VENDOR, 0, NULL, &platformVendorLength);
+
+		if (errcode != 0) { Log(LogLevel::Error, "[clutils::createOpenCLContext] GetPlatformInfo had error %d.", getOpenCLError(errcode)); }
+
+		std::vector<char> platformVendor(platformVendorLength);
+		errcode = cl::GetPlatformInfo(*it, CL_PLATFORM_VENDOR, platformVendorLength, platformVendor.data(), NULL);
+
+		if (errcode != 0) { Log(LogLevel::Error, "[clutils::createOpenCLContext] GetPlatformInfo had error %d.", getOpenCLError(errcode)); }
+
+		std::string vendorLowerCase = std::string(platformVendor.data());
+		std::transform(vendorLowerCase.begin(), vendorLowerCase.end(), vendorLowerCase.begin(), ::tolower);
+		bool isLessPrioritaryVendor = false;
+		for (size_t j = 0; (j < vectorLessPrioritaryVendor.size()) && !isLessPrioritaryVendor; ++j)
+		{
+			std::string lessPrioritaryVendorLowerCase = std::string(vectorLessPrioritaryVendor[j].data());
+			std::transform(lessPrioritaryVendorLowerCase.begin(), lessPrioritaryVendorLowerCase.end(), lessPrioritaryVendorLowerCase.begin(), ::tolower);
+			if (vendorLowerCase.find(lessPrioritaryVendorLowerCase.c_str()) != std::string::npos)
+			{
+				vectorRearrangedPlatformID.insert(vectorRearrangedPlatformID.end(), *it);
+				isLessPrioritaryVendor = true;
+			}
+		}
+
+		if (!isLessPrioritaryVendor) { vectorRearrangedPlatformID.insert(vectorRearrangedPlatformID.begin(), *it); }
+	}
 }
 
 /// <summary>Creates an OpenCL context.</summary>
@@ -326,8 +345,11 @@ inline cl_image_format convertToOpenCLFormat(const pvr::PixelFormat& format, pvr
 /// <param name="device_type">The OpenCL device type.</param>
 /// <param name="platformName">The OpenCL platform name to use.</param>
 /// <param name="err">The OpenCL error.</param>
+/// <param name="vectorRequiredExtensions">Extensions required to be supported.</param>
+/// <param name="forceDeviceUUID">If != nullptr, force a device UUID from each platform ID to build the OpenCL context.</param>
 inline void createOpenCLContext(cl_platform_id& outPlatform, cl_device_id& outDevice, cl_context& outContext, cl_command_queue& outQueue,
-	cl_command_queue_properties queue_properties = 0, cl_device_type device_type = CL_DEVICE_TYPE_ALL, const char* const platformName = NULL, cl_int* err = 0)
+	cl_command_queue_properties queue_properties = 0, cl_device_type device_type = CL_DEVICE_TYPE_ALL, const char* const platformName = NULL, cl_int* err = 0,
+	const std::vector<std::string>& vectorRequiredExtensions = std::vector<std::string>(), cl_uchar* forceDeviceUUID = nullptr)
 {
 	bool contextCreated = false;
 	cl_int errstr = 0;
@@ -341,8 +363,8 @@ inline void createOpenCLContext(cl_platform_id& outPlatform, cl_device_id& outDe
 
 	if (numPlatforms == 0) { throw OpenCLError(errcode, "[clutils::createOpenCLContext] clGetPlatformIDs : No OpenCL capable platform found (clutils::createOpenCLContext)"); }
 
-	std::vector<cl_platform_id> platforms(numPlatforms);
-	errcode = cl::GetPlatformIDs(numPlatforms, platforms.data(), &numPlatforms);
+	std::vector<cl_platform_id> vectorPlatforms(numPlatforms);
+	errcode = cl::GetPlatformIDs(numPlatforms, vectorPlatforms.data(), &numPlatforms);
 
 	if (errcode != CL_SUCCESS) { throw OpenCLError(errcode, "[clutils::createOpenCLContext] clGetPlatformIDs : Failed to query platform IDs"); }
 
@@ -350,15 +372,15 @@ inline void createOpenCLContext(cl_platform_id& outPlatform, cl_device_id& outDe
 	 *  Iterate over all of the available platforms until one is found that matches the
 	 * requirements.
 	 */
-	for (cl_uint i = 0; i < platforms.size(); i++)
+	for (cl_uint i = 0; i < vectorPlatforms.size(); i++)
 	{
 		/*
 		 *  Check whether the platform matches the requested one.
 		 */
 		size_t platformNameLength = 0;
-		errcode = cl::GetPlatformInfo(platforms[i], CL_PLATFORM_NAME, 0, NULL, &platformNameLength);
+		errcode = cl::GetPlatformInfo(vectorPlatforms[i], CL_PLATFORM_NAME, 0, NULL, &platformNameLength);
 		std::vector<char> platName(platformNameLength);
-		errcode = cl::GetPlatformInfo(platforms[i], CL_PLATFORM_NAME, platformNameLength, platName.data(), NULL);
+		errcode = cl::GetPlatformInfo(vectorPlatforms[i], CL_PLATFORM_NAME, platformNameLength, platName.data(), NULL);
 		if (errcode != CL_SUCCESS)
 		{
 			Log(LogLevel::Error, "[clutils::createOpenCLContext] clGetPlatformInfo had error %d, attempting next platform.", getOpenCLError(errcode));
@@ -376,33 +398,82 @@ inline void createOpenCLContext(cl_platform_id& outPlatform, cl_device_id& outDe
 		/*
 		 *  Query for the first available device that matches the requirements.
 		 */
-		cl_uint numDevices;
-		errcode = cl::GetDeviceIDs(platforms[i], device_type, 0, NULL, &numDevices);
+		cl_uint numDevices = 0;
+		errcode = cl::GetDeviceIDs(vectorPlatforms[i], device_type, 0, NULL, &numDevices);
+		std::vector<cl_device_id> vectorDevices;
 		if (errcode != CL_SUCCESS && errcode != CL_DEVICE_NOT_FOUND)
-		{ throw OpenCLError(errcode, "[clutils::createOpenCLContext] clGetDeviceIds: Failed to query OpenCL devices"); }
-		std::vector<cl_device_id> devices(numDevices);
-		errcode = cl::GetDeviceIDs(platforms[i], device_type, numDevices, devices.data(), NULL);
-		if (errcode != CL_SUCCESS && errcode != CL_DEVICE_NOT_FOUND)
-		{ throw OpenCLError(errcode, "[clutils::createOpenCLContext] clGetDeviceIds: Failed to query OpenCL devices"); }
-		if (devices.size() == 0)
+		{
+			throw OpenCLError(errcode, "[clutils::createOpenCLContext] clGetDeviceIds: Failed to query OpenCL devices");
+		}
+		if (errcode == CL_SUCCESS)
+		{
+			vectorDevices.resize(numDevices);
+
+			errcode = cl::GetDeviceIDs(vectorPlatforms[i], device_type, numDevices, vectorDevices.data(), NULL);
+			if (errcode != CL_SUCCESS && errcode != CL_DEVICE_NOT_FOUND)
+			{
+				throw OpenCLError(errcode, "[clutils::createOpenCLContext] clGetDeviceIds: Failed to query OpenCL devices");
+			}
+		}
+
+		if (vectorDevices.empty())
 		{
 			Log(LogLevel::Information, "c.", getOpenCLError(errcode));
 			// This platform does not have a suitable device, continue with the next platform.
 			continue;
 		}
 
-		size_t platformExtensionsStringLength, deviceExtensionsStringLength;
-		cl::GetPlatformInfo(platforms[i], CL_PLATFORM_EXTENSIONS, 0, NULL, &platformExtensionsStringLength);
-		std::vector<char> platform_extensions(platformExtensionsStringLength);
-		cl::GetPlatformInfo(platforms[i], CL_PLATFORM_EXTENSIONS, platformExtensionsStringLength, platform_extensions.data(), NULL);
+		cl_device_id finalDeviceID = nullptr;
 
-		cl::GetDeviceInfo(devices[0], CL_DEVICE_EXTENSIONS, 0, NULL, &deviceExtensionsStringLength);
-		std::vector<char> device_extensions(deviceExtensionsStringLength);
-		cl::GetDeviceInfo(devices[0], CL_DEVICE_EXTENSIONS, deviceExtensionsStringLength, device_extensions.data(), NULL);
+		for (auto device = vectorDevices.begin(); device != vectorDevices.end(); ++device)
+		{
+			size_t platformExtensionsStringLength, deviceExtensionsStringLength;
+			cl::GetPlatformInfo(vectorPlatforms[i], CL_PLATFORM_EXTENSIONS, 0, NULL, &platformExtensionsStringLength);
+			std::vector<char> platform_extensions(platformExtensionsStringLength);
+			cl::GetPlatformInfo(vectorPlatforms[i], CL_PLATFORM_EXTENSIONS, platformExtensionsStringLength, platform_extensions.data(), NULL);
+
+			if (!verifySupportedExtensions(platform_extensions, vectorRequiredExtensions))
+			{
+				Log(LogLevel::Warning, "Extensions required not supported by current device %s", platName.data());
+				continue;
+			}
+
+			cl::GetDeviceInfo(*device, CL_DEVICE_EXTENSIONS, 0, NULL, &deviceExtensionsStringLength);
+			std::vector<char> device_extensions(deviceExtensionsStringLength);
+			cl::GetDeviceInfo(*device, CL_DEVICE_EXTENSIONS, deviceExtensionsStringLength, device_extensions.data(), NULL);
+
+			if (!verifySupportedExtensions(device_extensions, vectorRequiredExtensions))
+			{
+				Log(LogLevel::Warning, "Extensions required not supported by current device %s", platName.data());
+				continue;
+			}
+
+			if (forceDeviceUUID != nullptr)
+			{
+				cl_uchar deviceUUID[CL_UUID_SIZE_KHR];
+				cl::GetDeviceInfo(*device, CL_DEVICE_UUID_KHR, sizeof(deviceUUID), &deviceUUID, nullptr);
+				bool matchingUUID = true;
+				for (uint32_t j = 0; j < CL_UUID_SIZE_KHR; ++j)
+				{
+					if (deviceUUID[j] != forceDeviceUUID[j])
+					{
+						matchingUUID = false;
+						break;
+					}
+				}
+
+				if (!matchingUUID) { continue; }
+			}
+
+			finalDeviceID = *device;
+			break;
+		}
+
+		if (finalDeviceID == nullptr) { continue; }
 
 		cl_context_properties contextProperties[] = {
 			CL_CONTEXT_PLATFORM,
-			(cl_context_properties)platforms[i],
+			(cl_context_properties)vectorPlatforms[i],
 			0,
 			0,
 			0,
@@ -412,23 +483,23 @@ inline void createOpenCLContext(cl_platform_id& outPlatform, cl_device_id& outDe
 			0,
 		};
 
-		cl_context context = cl::CreateContext(contextProperties, static_cast<cl_uint>(devices.size()), devices.data(), nullptr, nullptr, &errcode);
+		cl_context context = cl::CreateContext(contextProperties, 1, &finalDeviceID, nullptr, nullptr, &errcode);
 		if (errcode != CL_SUCCESS) { throw OpenCLError(errcode, "[cl::createOpenCLContext]: Failed to create context"); }
 
 		cl_command_queue q;
 		{
 			typedef cl_command_queue(CL_API_CALL * PFNclCreateCommandQueue)(cl_context context, cl_device_id device, cl_command_queue_properties properties, cl_int * errcode_ret);
 			static PFNclCreateCommandQueue _clCreateCommandQueue = (PFNclCreateCommandQueue)cl::internals::getClFunction(cl::CLFunctions::CreateCommandQueue);
-			q = _clCreateCommandQueue(context, devices[0], queue_properties, &errcode);
+			q = _clCreateCommandQueue(context, finalDeviceID, queue_properties, &errcode);
 		}
 
 		cl_command_queue queue(q);
 		if (errcode != CL_SUCCESS || q == NULL) { throw OpenCLError(errcode, "[cl::createOpenCLContext]: Failed to create command queue"); }
 
 		Log(LogLevel::Information, "[cl::createOpenCLContext]: Created context on platform %s.", platName.data());
-		outPlatform = platforms[i];
+		outPlatform = vectorPlatforms[i];
 		outContext = context;
-		outDevice = devices[0];
+		outDevice = finalDeviceID;
 		outQueue = queue;
 		contextCreated = true;
 		break;

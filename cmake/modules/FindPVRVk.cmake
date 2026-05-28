@@ -5,31 +5,18 @@
 # This will define the following imported targets
 #     PVRVk
 
-if(PVR_PREBUILT_DEPENDENCIES)
-	if(ANDROID)
-		# Allow finding packages in the host file system
-		set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 
-		string(TOLOWER "${CMAKE_BUILD_TYPE}" PVR_ANDROID_BUILD_TYPE)
 
-		# Use wildcard for build type to handle Debug/debug casing differences
-        file(GLOB PVRVk_DIR_GLOB "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRVk/build-android/.cxx/${PVR_ANDROID_BUILD_TYPE}/*/${ANDROID_ABI}/PVRVk")
-        
-        # If not found, try original build type
-		if(NOT PVRVk_DIR_GLOB)
-			file(GLOB PVRVk_DIR_GLOB "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRVk/build-android/.cxx/${CMAKE_BUILD_TYPE}/*/${ANDROID_ABI}/PVRVk")
-		endif()
-
-        # The glob will return a list, but there should only be one match.
-		if(PVRVk_DIR_GLOB)
-			list(GET PVRVk_DIR_GLOB 0 PVRVk_DIR)
-		else()
-			message(STATUS "PVRVk: No build directory found matching ${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRVk/build-android/.cxx/${PVR_ANDROID_BUILD_TYPE}/*/${ANDROID_ABI}/PVRVk")
-		endif()
-	endif()
+if(PVR_PREBUILT_DEPENDENCIES AND ANDROID)
+    set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
+    pvr_find_android_build_path(PVRVk_PREBUILT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRVk/build-android" "PVRVk")
+    if(PVRVk_PREBUILT_DIR)
+        list(APPEND CMAKE_PREFIX_PATH "${PVRVk_PREBUILT_DIR}")
+    endif()
 endif()
 
 if(NOT TARGET PVRVk)
+
 	# Try to find the package configuration
 	find_package(PVRVk CONFIG QUIET)
 	
@@ -49,4 +36,7 @@ if(NOT TARGET PVRVk)
             message(FATAL_ERROR "PVRVk: Could not find prebuilt package AND could not find source at ${PVRVk_SOURCE_DIR}")
         endif()
     endif()
+endif()
+if(TARGET PVRVk)
+    set(PVRVk_FOUND TRUE)
 endif()

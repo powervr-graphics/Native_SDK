@@ -49,6 +49,11 @@ set(PVRAssets_SRC
 	ShadowVolume.cpp
 	Volume.cpp)
 
+# Explicitly add the parent directory to the include path for this directory
+get_filename_component(PVR_ASSETS_ABS_FRAMEWORK "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
+get_filename_component(PVR_ASSETS_ABS_INCLUDE "${CMAKE_CURRENT_LIST_DIR}/../../include" ABSOLUTE)
+include_directories("${PVR_ASSETS_ABS_FRAMEWORK}")
+
 # Create the library
 add_library(PVRAssets STATIC ${PVRAssets_SRC} ${PVRAssets_HEADERS})
 
@@ -74,7 +79,8 @@ target_link_libraries(PVRAssets
 # As well as tinygltf
 target_include_directories(PVRAssets 
 	PUBLIC 
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../>
+		$<BUILD_INTERFACE:${PVR_ASSETS_ABS_FRAMEWORK}>
+		$<BUILD_INTERFACE:${PVR_ASSETS_ABS_INCLUDE}>
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 if(PVR_ENABLE_INSTALL)

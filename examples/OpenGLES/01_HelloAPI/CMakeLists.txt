@@ -184,7 +184,7 @@ elseif(UNIX)
 endif()
 
 set_target_properties(OpenGLESHelloAPI PROPERTIES
-    CXX_STANDARD 14)
+    CXX_STANDARD 17)
 
 target_link_libraries(OpenGLESHelloAPI ${PLATFORM_LIBS})
 target_include_directories(OpenGLESHelloAPI PUBLIC ${HelloAPI_INCLUDE_DIRECTORIES})

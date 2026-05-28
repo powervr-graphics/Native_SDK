@@ -10,21 +10,35 @@ def projectDependencies = ["PVRCore", "PVRUtilsCL"]
 // the additional instructions Gradle needs to build Android app modules
 buildscript {
 	repositories {
-		google()
-		mavenCentral()
+		if (project.hasProperty('GRADLE_DEPS_PROXY_URL')) {
+			maven {
+				url "$GRADLE_DEPS_PROXY_URL"
+			}
+		}
+		else {
+			google()
+			mavenCentral()
+		}
 	}
 
 	// Adds the Android plugin for Gradle as a classpath dependency
 	dependencies {
-		classpath 'com.android.tools.build:gradle:8.13.1'
+		classpath 'com.android.tools.build:gradle:8.13.0'
 	}
 }
 
 // This block configures the repositories and dependencies used by all modules in the project
 allprojects {
 	repositories {
-		google()
-		mavenCentral()
+		if (project.hasProperty('GRADLE_DEPS_PROXY_URL')) {
+			maven {
+				url "$GRADLE_DEPS_PROXY_URL"
+			}
+		}
+		else {
+			google()
+			mavenCentral()
+		}
 	}
 }
 
@@ -84,14 +98,19 @@ tasks.whenTaskAdded { task ->
 				task.doLast({
 					"$ANDROID_ABI".replace(" ", "").split(",").each ({
 						abi -> 
-						def path = new File("${project.projectDir}/.cxx/cmake/${flavor.toLowerCase()}/${abi}").getCanonicalPath().replace("\\", "/")
-						def inputPath = path + "/bin"
-						def outputPath = "${binOutput}/${flavor.toLowerCase()}/${path.substring(path.lastIndexOf("/")+1)}"
-						copy{
-							from inputPath
-							into outputPath
-							fileMode 0664
-							include "**"
+						def baseCxx = new File("${project.projectDir}/.cxx/${flavor}")
+						if (baseCxx.exists()) {
+							def hashDir = baseCxx.listFiles()?.find { it.isDirectory() }
+							if (hashDir != null) {
+								def inputPath = new File(hashDir, "${abi}/bin").getAbsolutePath()
+								def outputPath = "${binOutput}/${flavor.toLowerCase()}/${abi}"
+								copy{
+									from inputPath
+									into outputPath
+									fileMode 0664
+									include "**"
+								}
+							}
 						}
 					})
 				})

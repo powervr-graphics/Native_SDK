@@ -9,6 +9,7 @@
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 include(CMakeFindDependencyMacro)
+include("${CMAKE_CURRENT_LIST_DIR}/../utilities/android_utils.cmake")
 
 if(NOT TARGET PVRCore)
 	find_dependency(PVRCore REQUIRED MODULE)
@@ -19,33 +20,18 @@ if(NOT TARGET tinygltf)
 endif()
 
 # Try to find prebuilt if configured
-if(PVR_PREBUILT_DEPENDENCIES)
-	if(ANDROID)
-		# Allow finding packages in the host file system
-		set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 
-		string(TOLOWER "${CMAKE_BUILD_TYPE}" PVR_ANDROID_BUILD_TYPE)
 
-		# Search for the config file directly
-		# Try lowercase build type first
-		set(SEARCH_PATH "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRAssets/build-android/.cxx/${PVR_ANDROID_BUILD_TYPE}/*/${ANDROID_ABI}/PVRAssets/PVRAssetsConfig.cmake")
-		file(GLOB PVRAssets_CONFIG_GLOB "${SEARCH_PATH}")
-		
-		# If not found, try original build type
-		if(NOT PVRAssets_CONFIG_GLOB)
-			set(SEARCH_PATH "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRAssets/build-android/.cxx/${CMAKE_BUILD_TYPE}/*/${ANDROID_ABI}/PVRAssets/PVRAssetsConfig.cmake")
-			file(GLOB PVRAssets_CONFIG_GLOB "${SEARCH_PATH}")
-		endif()
-		
-		if(PVRAssets_CONFIG_GLOB)
-			list(GET PVRAssets_CONFIG_GLOB 0 PVRAssets_CONFIG_FILE)
-			get_filename_component(PVRAssets_DIR ${PVRAssets_CONFIG_FILE} DIRECTORY)
-			message(STATUS "PVRAssets: Found prebuilt directory ${PVRAssets_DIR}")
-		endif()
-	endif()
+if(PVR_PREBUILT_DEPENDENCIES AND ANDROID)
+    set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
+    pvr_find_android_build_path(PVRAssets_PREBUILT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRAssets/build-android" "PVRAssets")
+    if(PVRAssets_PREBUILT_DIR)
+        list(APPEND CMAKE_PREFIX_PATH "${PVRAssets_PREBUILT_DIR}")
+    endif()
 endif()
 
 if(NOT TARGET PVRAssets)
+
 	# Try to find the package configuration
 	find_package(PVRAssets CONFIG QUIET)
 	
@@ -65,4 +51,7 @@ if(NOT TARGET PVRAssets)
 			message(FATAL_ERROR "PVRAssets: Could not find prebuilt package AND could not find source at ${PVRAssets_SOURCE_DIR}")
 		endif()
 	endif()
+endif()
+if(TARGET PVRAssets)
+    set(PVRAssets_FOUND TRUE)
 endif()

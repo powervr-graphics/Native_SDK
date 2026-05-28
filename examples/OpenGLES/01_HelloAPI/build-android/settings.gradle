@@ -1,3 +1,4 @@
+if (gradle.parent == null) { throw new GradleException("This project should not be built directly. Please build the entire SDK from the main build-android folder in the root.") }
 rootProject.name='OpenGLESHelloAPI'
 
 //Copy all the build output stuff into the SDK/bin folder
@@ -14,3 +15,21 @@ include('glslang')
 project(':glslang').projectDir = file('../../../../external/glslang/build-android')
 include('VulkanMemoryAllocator')
 project(':VulkanMemoryAllocator').projectDir = file('../../../../external/VulkanMemoryAllocator/build-android')
+
+
+// --- Framework Dependencies ---
+include('PVRCore')
+project(':PVRCore').projectDir = file('../../../../framework/PVRCore/build-android')
+include('PVRShell')
+project(':PVRShell').projectDir = file('../../../../framework/PVRShell/build-android')
+include('PVRAssets')
+project(':PVRAssets').projectDir = file('../../../../framework/PVRAssets/build-android')
+include('PVRCamera')
+project(':PVRCamera').projectDir = file('../../../../framework/PVRCamera/build-android')
+include('PVRUtilsGles')
+project(':PVRUtilsGles').projectDir = file('../../../../framework/PVRUtils/OpenGLES/build-android')
+include('PVRVk')
+project(':PVRVk').projectDir = file('../../../../framework/PVRVk/build-android')
+include('PVRUtilsVk')
+project(':PVRUtilsVk').projectDir = file('../../../../framework/PVRUtils/Vulkan/build-android')
+

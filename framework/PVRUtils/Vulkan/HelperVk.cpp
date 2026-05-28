@@ -1368,6 +1368,12 @@ void updateImage(pvrvk::Device& device, pvrvk::CommandBufferBase cbuffTransfer, 
 	}
 }
 
+void readImageTextureHeader(const char* fileName, IAssetProvider& assetProvider, TextureHeader& textureHeader)
+{
+	auto assetStream = assetProvider.getAssetStream(fileName);
+	pvr::readImageTextureHeader(*assetStream, pvr::getTextureFormatFromFilename(fileName), textureHeader);
+}
+
 #pragma endregion
 
 #pragma region //////////// DEVICES AND QUEUES //////////////
@@ -1407,6 +1413,12 @@ pvrvk::Device createDeviceAndQueues(pvrvk::PhysicalDevice physicalDevice, const 
 			{
 				uint32_t supportedFlags = static_cast<uint32_t>(queueFamilyProperties[j].getQueueFlags());
 				uint32_t requestedFlags = static_cast<uint32_t>(queueCreateInfos[i].queueFlags);
+
+				if ((supportedFlags & static_cast<uint32_t>(pvrvk::QueueFlags::e_GRAPHICS_BIT)) ||
+					(supportedFlags & static_cast<uint32_t>(pvrvk::QueueFlags::e_COMPUTE_BIT)))
+				{
+					supportedFlags |= static_cast<uint32_t>(pvrvk::QueueFlags::e_TRANSFER_BIT);
+				}
 
 				// look for the supported flags
 				if ((supportedFlags & requestedFlags) == requestedFlags)
@@ -2494,8 +2506,11 @@ pvrvk::Image createImage(const pvrvk::Device& device, const pvrvk::ImageCreateIn
 				pvrvk::MemoryPropertyFlags memoryPropertyFlags;
 				getMemoryTypeIndex(device->getPhysicalDevice(), memoryRequirements.getMemoryTypeBits(), requiredMemoryFlags, optimalMemoryFlags, memoryTypeIndex, memoryPropertyFlags);
 
+				pvrvk::MemoryAllocationInfo memoryAllocationInfo = pvrvk::MemoryAllocationInfo(memoryRequirements.getSize(), memoryTypeIndex);
+				memoryAllocationInfo.setExportMemoryAllocationInfoKHR(createInfo.getExternalMemoryHandleTypeFlags());
+
 				// allocate the image memory using the retrieved memory type index and memory property flags
-				pvrvk::DeviceMemory memBlock = device->allocateMemory(pvrvk::MemoryAllocationInfo(memoryRequirements.getSize(), memoryTypeIndex));
+				pvrvk::DeviceMemory memBlock = device->allocateMemory(memoryAllocationInfo);
 
 				// attach the memory to the image
 				image->bindMemoryNonSparse(memBlock);

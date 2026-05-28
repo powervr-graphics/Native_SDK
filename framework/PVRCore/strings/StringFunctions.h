@@ -34,7 +34,10 @@ inline std::basic_string<wchar_t> vaFormatString(const wchar_t* const format, va
 	va_list argumentListCopy;
 
 	va_copy(argumentListCopy, argumentList);
-	size_t newStringSize = (size_t)vswprintf(0, 0, format, argumentListCopy);
+	// We pass a dummy wchar_t buffer instead of nullptr/0, as some compilers/C libraries
+	// strictly require a non-null pointer for vswprintf even if size is 0.
+	wchar_t dummyBuffer[1];
+	size_t newStringSize = (size_t)vswprintf(dummyBuffer, 0, format, argumentListCopy);
 	va_end(argumentListCopy);
 #endif
 

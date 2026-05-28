@@ -36,4 +36,26 @@ inline Texture textureLoad(const Stream& textureStream, TextureFileFormat type)
 /// <param name="textureStream">A stream from which to load the binary data</param>
 /// <returns>True if successful, otherwise false</returns>
 inline Texture textureLoad(const Stream& textureStream) { return textureLoad(textureStream, getTextureFormatFromFilename(textureStream.getFileName().c_str())); }
+
+/// <summary>Read the texture header information from an image, not loading its contents.</summary>
+/// <param name="textureStream">A stream from which to load the binary data</param>
+/// <param name="type">The type of the texture. Several supported formats.</param>
+/// <param name="textureHeader">TextureHeader struct to fill with information.</param>
+inline void readImageTextureHeader(const Stream& textureStream, TextureFileFormat type, TextureHeader& textureHeader)
+{
+	switch (type)
+	{
+	case TextureFileFormat::KTX: throw InvalidArgumentError("type", "Format not implemented");
+	case TextureFileFormat::PVR:
+	{
+		assetReaders::readPVRTextureHeader(textureStream, textureHeader);
+		break;
+	}
+	case TextureFileFormat::TGA: throw InvalidArgumentError("type", "Format not implemented");
+	case TextureFileFormat::BMP: throw InvalidArgumentError("type", "Format not implemented");
+	case TextureFileFormat::DDS: throw InvalidArgumentError("type", "Format not implemented");
+	default: throw InvalidArgumentError("type", "Unknown texture file format passed");
+	}
+}
+
 } // namespace pvr

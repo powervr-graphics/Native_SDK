@@ -1836,6 +1836,15 @@ public:
 	/// <summary>Get the Semaphore type</summary>
 	/// <returns>The Semaphore type</returns>
 	inline SemaphoreType getSemaphoreType() const { return this->_semaphoreType; }
+	/// <summary>Set the _externalSemaphoreHandleTypeFlagBits variable.</summary>
+	/// <param name="externalSemaphoreHandleTypeFlagBits">The external semaphore handle type flag bits</param>
+	inline ExternalSemaphoreHandleTypeFlagBits getExternalSemaphoreHandleTypeFlagBitslags() const { return _externalSemaphoreHandleTypeFlagBits; }
+	/// <summary>Get the _externalSemaphoreHandleTypeFlagBits variable.</summary>
+	/// <param name="externalSemaphoreHandleTypeFlagBits">The external semaphore handle type flag bits</param>
+	inline void setExternalSemaphoreHandleTypeFlagBitslags(ExternalSemaphoreHandleTypeFlagBits externalSemaphoreHandleTypeFlagBits)
+	{
+		_externalSemaphoreHandleTypeFlagBits = externalSemaphoreHandleTypeFlagBits;
+	}
 
 private:
 	/// <summary>Flags to use for creating the Semaphore</summary>
@@ -1843,6 +1852,9 @@ private:
 
 	/// <summary>Type of semaphore, binary or timeline</summary>
 	SemaphoreType _semaphoreType{ SemaphoreType::e_BINARY };
+
+	/// <summary>External semaphore handle type, in case it is shared with other APIs like OpenCL</summary>
+	ExternalSemaphoreHandleTypeFlagBits _externalSemaphoreHandleTypeFlagBits = ExternalSemaphoreHandleTypeFlagBits::e_FLAG_BITS_MAX_ENUM;
 };
 
 /// <summary>Containes a ValidationFeatures structure which specifies a set of validation features which should be enabled or disabled.</summary>

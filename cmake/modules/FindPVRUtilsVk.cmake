@@ -9,11 +9,12 @@
 #     VulkanMemoryAllocator
 #     glslang
 #     SPIRV
-# 	  MachineIndependent
-#	  GenericCodeGen
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 include(CMakeFindDependencyMacro)
+
+# Include helper for Android paths
+include("${CMAKE_CURRENT_LIST_DIR}/../utilities/android_utils.cmake")
 
 if(NOT TARGET PVRCore)
 	find_dependency(PVRCore REQUIRED MODULE)
@@ -47,31 +48,18 @@ if(NOT TARGET MachineIndependent)
 	find_dependency(MachineIndependent REQUIRED MODULE)
 endif()
 
-if(PVR_PREBUILT_DEPENDENCIES)
-	if(ANDROID)
-		# Allow finding packages in the host file system
-		set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 
-		string(TOLOWER "${CMAKE_BUILD_TYPE}" PVR_ANDROID_BUILD_TYPE)
 
-		# Use wildcard for build type to handle Debug/debug casing differences
-		file(GLOB PVRUtilsVk_DIR_GLOB "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRUtils/Vulkan/build-android/.cxx/${PVR_ANDROID_BUILD_TYPE}/*/${ANDROID_ABI}/PVRUtilsVk")
-		
-        # If not found, try original build type
-		if(NOT PVRUtilsVk_DIR_GLOB)
-			file(GLOB PVRUtilsVk_DIR_GLOB "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRUtils/Vulkan/build-android/.cxx/${CMAKE_BUILD_TYPE}/*/${ANDROID_ABI}/PVRUtilsVk")
-		endif()
-
-		# The glob will return a list, but there should only be one match.
-		if(PVRUtilsVk_DIR_GLOB)
-			list(GET PVRUtilsVk_DIR_GLOB 0 PVRUtilsVk_DIR)
-		else()
-			message(STATUS "PVRUtilsVk: No build directory found matching ${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRUtils/Vulkan/build-android/.cxx/${PVR_ANDROID_BUILD_TYPE}/*/${ANDROID_ABI}/PVRUtilsVk")
-		endif()
-	endif()
+if(PVR_PREBUILT_DEPENDENCIES AND ANDROID)
+    set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
+    pvr_find_android_build_path(PVRUtilsVk_PREBUILT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRUtils/Vulkan/build-android" "PVRUtilsVk")
+    if(PVRUtilsVk_PREBUILT_DIR)
+        list(APPEND CMAKE_PREFIX_PATH "${PVRUtilsVk_PREBUILT_DIR}")
+    endif()
 endif()
 
 if(NOT TARGET PVRUtilsVk)
+
 	# Try to find the package configuration
 	find_package(PVRUtilsVk CONFIG QUIET)
 	
@@ -91,4 +79,7 @@ if(NOT TARGET PVRUtilsVk)
             message(FATAL_ERROR "PVRUtilsVk: Could not find prebuilt package AND could not find source at ${PVRUtilsVk_SOURCE_DIR}")
         endif()
     endif()
+endif()
+if(TARGET PVRUtilsVk)
+    set(PVRUtilsVk_FOUND TRUE)
 endif()

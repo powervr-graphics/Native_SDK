@@ -62,7 +62,7 @@ public:
 	ImageCreateInfo()
 		: _flags(ImageCreateFlags::e_NONE), _imageType(ImageType::e_2D), _extent(Extent3D()), _numMipLevels(1), _numArrayLayers(1), _numSamples(SampleCountFlags::e_1_BIT),
 		  _format(Format::e_UNDEFINED), _sharingMode(SharingMode::e_EXCLUSIVE), _usageFlags(ImageUsageFlags::e_NONE), _initialLayout(ImageLayout::e_UNDEFINED),
-		  _tiling(ImageTiling::e_OPTIMAL), _numQueueFamilyIndices(0), _queueFamilyIndices(nullptr)
+		  _tiling(ImageTiling::e_OPTIMAL), _numQueueFamilyIndices(0), _queueFamilyIndices(nullptr), _externalMemoryHandleTypeFlags(ExternalMemoryHandleTypeFlags::e_NONE)
 	{}
 
 	/// <summary>Constructor</summary>
@@ -85,7 +85,7 @@ public:
 		const uint32_t* queueFamilyIndices = nullptr, uint32_t numQueueFamilyIndices = 0)
 		: _flags(flags), _imageType(imageType), _extent(extent), _numMipLevels(numMipLevels), _numArrayLayers(numArrayLayers), _numSamples(samples), _format(format),
 		  _sharingMode(sharingMode), _usageFlags(usage), _initialLayout(initialLayout), _tiling(tiling), _numQueueFamilyIndices(numQueueFamilyIndices),
-		  _queueFamilyIndices(queueFamilyIndices)
+		  _queueFamilyIndices(queueFamilyIndices), _externalMemoryHandleTypeFlags(ExternalMemoryHandleTypeFlags::e_NONE)
 	{}
 
 	/// <summary>Get Image creation Flags</summary>
@@ -166,6 +166,12 @@ public:
 	/// <summary>Set a pointer to a list of queue family inidices for the image</summary>
 	/// <param name="queueFamilyIndices">A pointer to the list of Image queue families</param>
 	inline void setQueueFamilyIndices(const uint32_t* queueFamilyIndices) { _queueFamilyIndices = queueFamilyIndices; }
+	/// <summary>External memory handle setter.</summary>
+	/// <param name="externalMemoryHandleTypeFlags">External memory handle type</param>
+	inline void setExternalMemoryHandleTypeFlags(const ExternalMemoryHandleTypeFlags& externalMemoryHandleTypeFlags) { _externalMemoryHandleTypeFlags = externalMemoryHandleTypeFlags; }
+	/// <summary>ImageCreateInfo::_externalMemoryHandleTypeFlags getter</summary>
+	/// <returns>Value of ImageCreateInfo::_externalMemoryHandleTypeFlags</returns>
+	inline ExternalMemoryHandleTypeFlags getExternalMemoryHandleTypeFlags() const { return _externalMemoryHandleTypeFlags; }
 
 private:
 	/// <summary>Flags to use for creating the image</summary>
@@ -194,6 +200,8 @@ private:
 	uint32_t _numQueueFamilyIndices;
 	/// <summary>The list of queue families that will access this image</summary>
 	const uint32_t* _queueFamilyIndices;
+	/// <summary>Flags for external memory handle in case this image is used by other APIs</summary>
+	ExternalMemoryHandleTypeFlags _externalMemoryHandleTypeFlags;
 };
 
 namespace impl {

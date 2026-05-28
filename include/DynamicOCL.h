@@ -5,6 +5,12 @@
 #ifndef CL_NO_PROTOTYPES
 #define CL_NO_PROTOTYPES
 #endif
+#ifndef CL_NO_CORE_PROTOTYPES
+#define CL_NO_CORE_PROTOTYPES
+#endif
+#ifndef CL_EXT_SUFFIX__VERSION_1_2_DEPRECATED
+#define CL_EXT_SUFFIX__VERSION_1_2_DEPRECATED
+#endif
 #if defined(_WIN32)
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -26,6 +32,7 @@
 #else
 #include <CL/opencl.h>
 #endif
+#include <CL/cl_platform.h>
 #include <CL/cl_egl.h>
 
 #include "pvr_openlib.h"
@@ -52,6 +59,7 @@ static const char* clLibAltName = "libPVROCL.so";
 } // namespace cl
 
 namespace cl {
+
 namespace CLFunctions {
 enum Enum
 {
@@ -175,11 +183,19 @@ enum Enum
 	CreateFromGLTexture2D,
 	CreateFromGLTexture3D,
 	GetGLContextInfoKHR,
+	CreateImageWithProperties,
+	EnqueueSignalSemaphoresKHR,
+	ReleaseSemaphoreKHR,
+	EnqueueWaitSemaphoresKHR,
+	EnqueueAcquireExternalMemObjectsKHR,
+	EnqueueReleaseExternalMemObjectsKHR,
+	CreateSemaphoreWithPropertiesKHR,
 	NUMBER_OF_CL_FUNCTIONS
 };
 }
 
 namespace internals {
+
 inline void* getClFunction(CLFunctions::Enum func)
 {
 	static void* CLFunctionTable[CLFunctions::NUMBER_OF_CL_FUNCTIONS];
@@ -319,9 +335,16 @@ inline void* getClFunction(CLFunctions::Enum func)
 		CLFunctionTable[CLFunctions::CreateFromGLTexture2D] = pvr::lib::getLibFunctionChecked<void*>(lib, "clCreateFromGLTexture2D");
 		CLFunctionTable[CLFunctions::CreateFromGLTexture3D] = pvr::lib::getLibFunctionChecked<void*>(lib, "clCreateFromGLTexture3D");
 		CLFunctionTable[CLFunctions::GetGLContextInfoKHR] = pvr::lib::getLibFunctionChecked<void*>(lib, "clGetGLContextInfoKHR");
+		CLFunctionTable[CLFunctions::CreateImageWithProperties] = pvr::lib::getLibFunctionChecked<void*>(lib, "clCreateImageWithProperties");
+		CLFunctionTable[CLFunctions::EnqueueSignalSemaphoresKHR] = pvr::lib::getLibFunctionChecked<void*>(lib, "clEnqueueSignalSemaphoresKHR");
+		CLFunctionTable[CLFunctions::ReleaseSemaphoreKHR] = pvr::lib::getLibFunctionChecked<void*>(lib, "clReleaseSemaphoreKHR");
+		CLFunctionTable[CLFunctions::EnqueueWaitSemaphoresKHR] = pvr::lib::getLibFunctionChecked<void*>(lib, "clEnqueueWaitSemaphoresKHR");
+		CLFunctionTable[CLFunctions::EnqueueAcquireExternalMemObjectsKHR] = pvr::lib::getLibFunctionChecked<void*>(lib, "clEnqueueAcquireExternalMemObjectsKHR");
+		CLFunctionTable[CLFunctions::EnqueueReleaseExternalMemObjectsKHR] = pvr::lib::getLibFunctionChecked<void*>(lib, "clEnqueueReleaseExternalMemObjectsKHR");		
 	}
 	return CLFunctionTable[func];
 }
+
 } // namespace internals
 
 bool testFunctionExists(CLFunctions::Enum function) { return internals::getClFunction(function) != 0; }
@@ -1077,7 +1100,8 @@ inline void* CL_API_CALL DEFINE_CL_FUNCTION_NAME(GetExtensionFunctionAddressForP
 		(PFNclGetExtensionFunctionAddressForPlatform)cl::internals::getClFunction(cl::CLFunctions::GetExtensionFunctionAddressForPlatform);
 	return _clGetExtensionFunctionAddressForPlatform(platform, func_name);
 }
-CL_EXT_PREFIX__VERSION_1_1_DEPRECATED inline cl_mem CL_EXT_SUFFIX__VERSION_1_1_DEPRECATED CL_API_CALL DEFINE_CL_FUNCTION_NAME(CreateImage2D)(cl_context context, cl_mem_flags flags,
+/*CL_API_PREFIX__VERSION_1_1_DEPRECATED inline cl_mem CL_EXT_SUFFIX__VERSION_1_1_DEPRECATED CL_API_CALL DEFINE_CL_FUNCTION_NAME(CreateImage2D)(cl_context context,
+	cl_mem_flags flags,
 	const cl_image_format* image_format, size_t image_width, size_t image_height, size_t image_row_pitch, void* host_ptr, cl_int* errcode_ret)
 {
 	typedef cl_mem(CL_API_CALL * PFNclCreateImage2D)(cl_context context, cl_mem_flags flags, const cl_image_format* image_format, size_t image_width, size_t image_height,
@@ -1126,9 +1150,9 @@ CL_EXT_PREFIX__VERSION_1_1_DEPRECATED inline void* CL_EXT_SUFFIX__VERSION_1_1_DE
 	static PFNclGetExtensionFunctionAddress _clGetExtensionFunctionAddress =
 		(PFNclGetExtensionFunctionAddress)cl::internals::getClFunction(cl::CLFunctions::GetExtensionFunctionAddress);
 	return _clGetExtensionFunctionAddress(func_name);
-}
+}*/
 #ifdef CL_EXT_SUFFIX__VERSION_1_2_DEPRECATED
-CL_EXT_PREFIX__VERSION_1_2_DEPRECATED inline cl_command_queue CL_EXT_SUFFIX__VERSION_1_2_DEPRECATED CL_API_CALL DEFINE_CL_FUNCTION_NAME(CreateCommandQueue)(
+/*CL_EXT_PREFIX__VERSION_1_2_DEPRECATED inline cl_command_queue CL_EXT_SUFFIX__VERSION_1_2_DEPRECATED CL_API_CALL DEFINE_CL_FUNCTION_NAME(CreateCommandQueue)(
 	cl_context context, cl_device_id device, cl_command_queue_properties properties, cl_int* errcode_ret)
 {
 	typedef cl_command_queue(CL_API_CALL * PFNclCreateCommandQueue)(cl_context context, cl_device_id device, cl_command_queue_properties properties, cl_int * errcode_ret);
@@ -1144,6 +1168,28 @@ CL_EXT_PREFIX__VERSION_1_2_DEPRECATED inline cl_sampler CL_EXT_SUFFIX__VERSION_1
 	return _clCreateSampler(context, normalized_coords, addressing_mode, filter_mode, errcode_ret);
 }
 CL_EXT_PREFIX__VERSION_1_2_DEPRECATED inline cl_int CL_EXT_SUFFIX__VERSION_1_2_DEPRECATED CL_EXT_SUFFIX__VERSION_1_2_DEPRECATED CL_API_CALL DEFINE_CL_FUNCTION_NAME(EnqueueTask)(
+	cl_command_queue command_queue, cl_kernel kernel, cl_uint num_events_in_wait_list, const cl_event* event_wait_list, cl_event* event)
+{
+	typedef cl_int(CL_API_CALL * PFNclEnqueueTask)(cl_command_queue command_queue, cl_kernel kernel, cl_uint num_events_in_wait_list, const cl_event* event_wait_list, cl_event* event);
+	static PFNclEnqueueTask _clEnqueueTask = (PFNclEnqueueTask)cl::internals::getClFunction(cl::CLFunctions::EnqueueTask);
+	return _clEnqueueTask(command_queue, kernel, num_events_in_wait_list, event_wait_list, event);
+}*/
+inline cl_command_queue CL_EXT_SUFFIX__VERSION_1_2_DEPRECATED CL_API_CALL DEFINE_CL_FUNCTION_NAME(CreateCommandQueue)(
+	cl_context context, cl_device_id device, cl_command_queue_properties properties, cl_int* errcode_ret)
+{
+	typedef cl_command_queue(CL_API_CALL * PFNclCreateCommandQueue)(cl_context context, cl_device_id device, cl_command_queue_properties properties, cl_int * errcode_ret);
+	static PFNclCreateCommandQueue _clCreateCommandQueue = (PFNclCreateCommandQueue)cl::internals::getClFunction(cl::CLFunctions::CreateCommandQueue);
+	return _clCreateCommandQueue(context, device, properties, errcode_ret);
+}
+inline cl_sampler CL_EXT_SUFFIX__VERSION_1_2_DEPRECATED CL_API_CALL DEFINE_CL_FUNCTION_NAME(CreateSampler)(
+	cl_context context, cl_bool normalized_coords, cl_addressing_mode addressing_mode, cl_filter_mode filter_mode, cl_int* errcode_ret)
+{
+	typedef cl_sampler(CL_API_CALL * PFNclCreateSampler)(
+		cl_context context, cl_bool normalized_coords, cl_addressing_mode addressing_mode, cl_filter_mode filter_mode, cl_int * errcode_ret);
+	static PFNclCreateSampler _clCreateSampler = (PFNclCreateSampler)cl::internals::getClFunction(cl::CLFunctions::CreateSampler);
+	return _clCreateSampler(context, normalized_coords, addressing_mode, filter_mode, errcode_ret);
+}
+inline cl_int CL_EXT_SUFFIX__VERSION_1_2_DEPRECATED CL_EXT_SUFFIX__VERSION_1_2_DEPRECATED CL_API_CALL DEFINE_CL_FUNCTION_NAME(EnqueueTask)(
 	cl_command_queue command_queue, cl_kernel kernel, cl_uint num_events_in_wait_list, const cl_event* event_wait_list, cl_event* event)
 {
 	typedef cl_int(CL_API_CALL * PFNclEnqueueTask)(cl_command_queue command_queue, cl_kernel kernel, cl_uint num_events_in_wait_list, const cl_event* event_wait_list, cl_event* event);
@@ -1199,7 +1245,7 @@ inline cl_int CL_API_CALL DEFINE_CL_FUNCTION_NAME(EnqueueReleaseGLObjects)(cl_co
 	static PFN_clEnqueueReleaseGLObjects _EnqueueReleaseGLObjects = (PFN_clEnqueueReleaseGLObjects)cl::internals::getClFunction(cl::CLFunctions::EnqueueReleaseGLObjects);
 	return _EnqueueReleaseGLObjects(command_queue, num_objects, mem_objects, num_events_in_wait_list, event_wait_list, event);
 }
-inline CL_EXT_PREFIX__VERSION_1_1_DEPRECATED cl_mem CL_EXT_SUFFIX__VERSION_1_1_DEPRECATED CL_API_CALL DEFINE_CL_FUNCTION_NAME(CreateFromGLTexture2D)(
+/*inline CL_EXT_PREFIX__VERSION_1_1_DEPRECATED cl_mem CL_EXT_SUFFIX__VERSION_1_1_DEPRECATED CL_API_CALL DEFINE_CL_FUNCTION_NAME(CreateFromGLTexture2D)(
 	cl_context context, cl_mem_flags flags, cl_GLenum target, cl_GLint miplevel, cl_GLuint texture, cl_int* errcode_ret)
 {
 	typedef cl_mem(CL_API_CALL * PFN_clCreateFromGLTexture2D)(cl_context, cl_mem_flags, cl_GLenum, cl_GLint, cl_GLuint, cl_int*);
@@ -1212,7 +1258,17 @@ inline CL_EXT_PREFIX__VERSION_1_1_DEPRECATED cl_mem CL_EXT_SUFFIX__VERSION_1_1_D
 	typedef cl_mem(CL_API_CALL * PFN_clCreateFromGLTexture3D)(cl_context, cl_mem_flags, cl_GLenum, cl_GLint, cl_GLuint, cl_int*);
 	static PFN_clCreateFromGLTexture3D _CreateFromGLTexture3D = (PFN_clCreateFromGLTexture3D)cl::internals::getClFunction(cl::CLFunctions::CreateFromGLTexture3D);
 	return _CreateFromGLTexture3D(context, flags, target, miplevel, texture, errcode_ret);
+}*/
+#ifdef CL_API_SUFFIX__VERSION_3_0
+inline cl_mem CL_API_CALL DEFINE_CL_FUNCTION_NAME(CreateImageWithProperties)(cl_context context, const cl_mem_properties* properties, cl_mem_flags flags,
+	const cl_image_format* image_format, const cl_image_desc* image_desc, void* host_ptr, cl_int* errcode_ret) CL_API_SUFFIX__VERSION_3_0
+{
+	typedef cl_mem(CL_API_CALL * PFN_clCreateImageWithProperties)(cl_context context, const cl_mem_properties* properties, cl_mem_flags flags, const cl_image_format* image_format,
+		const cl_image_desc* image_desc, void* host_ptr, cl_int* errcode_ret);
+	static PFN_clCreateImageWithProperties _createImageWithProperties = (PFN_clCreateImageWithProperties)cl::internals::getClFunction(cl::CLFunctions::CreateImageWithProperties);
+	return _createImageWithProperties(context, properties, flags, image_format, image_desc, host_ptr, errcode_ret);
 }
+#endif
 #ifdef cl_gl_context_info
 inline cl_int CL_API_CALL DEFINE_CL_FUNCTION_NAME(GetGLContextInfoKHR)(
 	const cl_context_properties* properties, cl_gl_context_info param_name, size_t param_value_size, void* param_value, size_t* param_value_size_ret) CL_API_SUFFIX__VERSION_1_0
@@ -1222,6 +1278,66 @@ inline cl_int CL_API_CALL DEFINE_CL_FUNCTION_NAME(GetGLContextInfoKHR)(
 	return _GetGLContextInfoKHR(properties, param_name, param_value_size, param_value, param_value_size_ret);
 }
 #endif
+
+#ifdef cl_khr_semaphore
+inline cl_semaphore_khr CL_API_CALL DEFINE_CL_FUNCTION_NAME(CreateSemaphoreWithPropertiesKHR)(
+	cl_context context, const cl_semaphore_properties_khr* sema_props, cl_int* errcode_ret) CL_API_SUFFIX__VERSION_1_2
+{
+	typedef cl_semaphore_khr(CL_API_CALL * PFN_clCreateSemaphoreWithPropertiesKHR)(cl_context context, const cl_semaphore_properties_khr* sema_props, cl_int* errcode_ret);
+	static PFN_clCreateSemaphoreWithPropertiesKHR _clCreateSemaphoreWithPropertiesKHR =
+		(PFN_clCreateSemaphoreWithPropertiesKHR)cl::internals::getClFunction(cl::CLFunctions::CreateSemaphoreWithPropertiesKHR);
+	return _clCreateSemaphoreWithPropertiesKHR(context, sema_props, errcode_ret);
+}
+
+inline cl_int CL_API_CALL DEFINE_CL_FUNCTION_NAME(EnqueueSignalSemaphoresKHR)(cl_command_queue command_queue, cl_uint num_sema_objects, const cl_semaphore_khr* sema_objects, const cl_semaphore_payload_khr* sema_payload_list, cl_uint num_events_in_wait_list, const cl_event* event_wait_list, cl_event* event) CL_API_SUFFIX__VERSION_1_2
+{
+	typedef cl_int(CL_API_CALL * PFN_clEnqueueSignalSemaphoresKHR)(cl_command_queue command_queue, cl_uint num_sema_objects, const cl_semaphore_khr* sema_objects, const cl_semaphore_payload_khr* sema_payload_list, cl_uint num_events_in_wait_list, const cl_event* event_wait_list, cl_event* event);
+	static PFN_clEnqueueSignalSemaphoresKHR _clEnqueueSignalSemaphoresKHR = (PFN_clEnqueueSignalSemaphoresKHR)cl::internals::getClFunction(cl::CLFunctions::EnqueueSignalSemaphoresKHR);
+	return _clEnqueueSignalSemaphoresKHR(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, event);
+}
+
+inline cl_int CL_API_CALL DEFINE_CL_FUNCTION_NAME(ReleaseSemaphoreKHR)(cl_semaphore_khr sema_object) CL_API_SUFFIX__VERSION_1_2
+{
+	typedef cl_int(CL_API_CALL * PFN_clReleaseSemaphoreKHR)(cl_semaphore_khr sema_object);
+	static PFN_clReleaseSemaphoreKHR _clReleaseSemaphoreKHR = (PFN_clReleaseSemaphoreKHR)cl::internals::getClFunction(cl::CLFunctions::ReleaseSemaphoreKHR);
+	return _clReleaseSemaphoreKHR(sema_object);
+}
+
+inline void* CL_API_CALL DEFINE_CL_FUNCTION_NAME(EnqueueWaitSemaphoresKHR)(cl_command_queue command_queue, cl_uint num_sema_objects, const cl_semaphore_khr* sema_objects,
+	const cl_semaphore_payload_khr* sema_payload_list, cl_uint num_events_in_wait_list, const cl_event* event_wait_list, cl_event* event) CL_API_SUFFIX__VERSION_1_2
+{
+	typedef void*(CL_API_CALL * PFN_clEnqueueWaitSemaphoresKHR)(cl_command_queue command_queue, cl_uint num_sema_objects, const cl_semaphore_khr* sema_objects,
+		const cl_semaphore_payload_khr* sema_payload_list, cl_uint num_events_in_wait_list, const cl_event* event_wait_list, cl_event* event);
+
+	static PFN_clEnqueueWaitSemaphoresKHR _clEnqueueWaitSemaphoresKHR = (PFN_clEnqueueWaitSemaphoresKHR)cl::internals::getClFunction(cl::CLFunctions::EnqueueWaitSemaphoresKHR);
+	return _clEnqueueWaitSemaphoresKHR(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, event);
+}
+#endif
+
+#ifdef cl_khr_external_memory
+inline cl_int CL_API_CALL DEFINE_CL_FUNCTION_NAME(EnqueueAcquireExternalMemObjectsKHR)(cl_command_queue command_queue, cl_uint num_mem_objects, const cl_mem* mem_objects,
+	cl_uint num_events_in_wait_list, const cl_event* event_wait_list, cl_event* event) CL_API_SUFFIX__VERSION_3_0
+{
+	typedef cl_int(CL_API_CALL * PFN_clEnqueueAcquireExternalMemObjectsKHR)(
+		cl_command_queue command_queue, cl_uint num_mem_objects, const cl_mem* mem_objects, cl_uint num_events_in_wait_list, const cl_event* event_wait_list, cl_event* event);
+
+	static PFN_clEnqueueAcquireExternalMemObjectsKHR _clEnqueueAcquireExternalMemObjectsKHR =
+		(PFN_clEnqueueAcquireExternalMemObjectsKHR)cl::internals::getClFunction(cl::CLFunctions::EnqueueAcquireExternalMemObjectsKHR);
+	return _clEnqueueAcquireExternalMemObjectsKHR(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, event);
+}
+
+inline cl_int CL_API_CALL DEFINE_CL_FUNCTION_NAME(EnqueueReleaseExternalMemObjectsKHR)(cl_command_queue command_queue, cl_uint num_mem_objects, const cl_mem* mem_objects,
+	cl_uint num_events_in_wait_list, const cl_event* event_wait_list, cl_event* event) CL_API_SUFFIX__VERSION_3_0
+{
+	typedef cl_int(CL_API_CALL * PFN_clEnqueueReleaseExternalMemObjectsKHR)(
+		cl_command_queue command_queue, cl_uint num_mem_objects, const cl_mem* mem_objects, cl_uint num_events_in_wait_list, const cl_event* event_wait_list, cl_event* event);
+
+	static PFN_clEnqueueReleaseExternalMemObjectsKHR _clEnqueueReleaseExternalMemObjectsKHR =
+		(PFN_clEnqueueReleaseExternalMemObjectsKHR)cl::internals::getClFunction(cl::CLFunctions::EnqueueReleaseExternalMemObjectsKHR);
+	return _clEnqueueReleaseExternalMemObjectsKHR(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, event);
+}
+#endif
+
 #ifndef DYNAMICCL_NO_NAMESPACE
 }
 #endif

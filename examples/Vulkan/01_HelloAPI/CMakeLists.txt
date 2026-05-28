@@ -163,7 +163,7 @@ elseif(UNIX)
 endif()
 
 set_target_properties(VulkanHelloAPI PROPERTIES
-    CXX_STANDARD 14)
+    CXX_STANDARD 17)
 
 target_link_libraries(VulkanHelloAPI ${PLATFORM_LIBS})
 target_include_directories(VulkanHelloAPI PRIVATE ${HelloAPI_INCLUDE_DIRECTORIES})

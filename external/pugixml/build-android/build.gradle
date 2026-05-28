@@ -31,17 +31,31 @@ android {
 
 buildscript {
 	repositories {
-		google()
-		mavenCentral()
+		if (project.hasProperty('GRADLE_DEPS_PROXY_URL')) {
+			maven {
+				url "$GRADLE_DEPS_PROXY_URL"
+			}
+		}
+		else {
+			google()
+			mavenCentral()
+		}
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:8.13.1'
+		classpath 'com.android.tools.build:gradle:8.13.0'
 	}
 }
 
 allprojects {
 	repositories {
-		google()
-		mavenCentral()
+		if (project.hasProperty('GRADLE_DEPS_PROXY_URL')) {
+			maven {
+				url "$GRADLE_DEPS_PROXY_URL"
+			}
+		}
+		else {
+			google()
+			mavenCentral()
+		}
 	}
 }

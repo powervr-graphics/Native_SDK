@@ -56,7 +56,6 @@ const mediump int maxNumberTilePerThread = 4;
 
 // The shader code is loaded and is changed to make a shared variable array with number elements
 // shared int sharedArrayVisiblePatches[maxNumberTilePerThread * NUMBER_WORKGROUP_THREADS];
-// %s0
 
 highp vec2 convertDirectionToUVEquirectangular(highp vec3 direction)
 {
@@ -120,7 +119,8 @@ highp vec2 convertTexturePixelToScreenPixel(highp vec2 texturePixelCoordinates)
 
 // The shader code is loaded and in "local_size_x = %d", "%d" is changed to match the size of the subgroup in the current GPU
 // layout(local_size_x = [Subgroup_size], local_size_y = 1, local_size_z = 1) in;
-%s1
+layout(local_size_x = 32, local_size_y = 1, local_size_z = 1) in;
+
 void main()
 {
     // For the screen pixel being processes, compute the UV coordinates of the environment texture

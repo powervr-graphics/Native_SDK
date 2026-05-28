@@ -1,3 +1,4 @@
+if (gradle.parent == null) { throw new GradleException("This project should not be built directly. Please build the entire SDK from the main build-android folder in the root.") }
 rootProject.name='OpenGLESIntroducingPVRCamera'
 
 //Copy all the build output stuff into the SDK/bin folder
@@ -19,3 +20,4 @@ include('PVRUtilsGles')
 project(':PVRUtilsGles').projectDir=file('../../../../framework/PVRUtils/OpenGLES/build-android')
 include('PVRCamera')
 project(':PVRCamera').projectDir=file('../../../../framework/PVRCamera/build-android')
+

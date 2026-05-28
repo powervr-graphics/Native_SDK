@@ -89,7 +89,8 @@ endif()
 
 # Set the include directories for PVRCore
 # Using explicit include_directories for private use
-include_directories("${CMAKE_CURRENT_LIST_DIR}/..")
+get_filename_component(PVR_CORE_ABS_FRAMEWORK "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
+include_directories("${PVR_CORE_ABS_FRAMEWORK}")
 
 # Create the library
 add_library(PVRCore STATIC ${PVRCore_SRC} ${PVRCore_HEADERS})
@@ -128,14 +129,17 @@ apply_framework_compile_options_to_target(PVRCore)
 target_link_libraries(PVRCore PUBLIC glm)
 target_link_libraries(PVRCore PRIVATE pugixml)
 
+get_filename_component(GLM_INC_DIR "${CMAKE_CURRENT_LIST_DIR}/../../external/glm/source" ABSOLUTE)
+target_include_directories(PVRCore PUBLIC $<BUILD_INTERFACE:${GLM_INC_DIR}>)
+
 # Set the include directories for PVRCore
 # Using generator expressions for INTERFACE properties to avoid absolute path issues during export
 target_include_directories(PVRCore 
 	PUBLIC 
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/..>
+		$<BUILD_INTERFACE:${PVR_CORE_ABS_FRAMEWORK}>
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
-if(PVR_ENABLE_INSTALL)
+if(TRUE)
 	install(TARGETS PVRCore EXPORT PVRCoreTargets
 		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

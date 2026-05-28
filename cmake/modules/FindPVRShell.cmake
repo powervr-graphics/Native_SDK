@@ -8,38 +8,24 @@
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 include(CMakeFindDependencyMacro)
+include("${CMAKE_CURRENT_LIST_DIR}/../utilities/android_utils.cmake")
 
 if(NOT TARGET PVRCore)
 	find_dependency(PVRCore REQUIRED MODULE)
 endif()
 
-if(PVR_PREBUILT_DEPENDENCIES)
-	if(ANDROID)
-		# Allow finding packages in the host file system
-		set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 
-		string(TOLOWER "${CMAKE_BUILD_TYPE}" PVR_ANDROID_BUILD_TYPE)
 
-		# Search for the config file directly
-		# Try lowercase build type first
-		set(SEARCH_PATH "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRShell/build-android/.cxx/${PVR_ANDROID_BUILD_TYPE}/*/${ANDROID_ABI}/PVRShell/PVRShellConfig.cmake")
-		file(GLOB PVRShell_CONFIG_GLOB "${SEARCH_PATH}")
-		
-		# If not found, try original build type
-		if(NOT PVRShell_CONFIG_GLOB)
-			set(SEARCH_PATH "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRShell/build-android/.cxx/${CMAKE_BUILD_TYPE}/*/${ANDROID_ABI}/PVRShell/PVRShellConfig.cmake")
-			file(GLOB PVRShell_CONFIG_GLOB "${SEARCH_PATH}")
-		endif()
-		
-		if(PVRShell_CONFIG_GLOB)
-			list(GET PVRShell_CONFIG_GLOB 0 PVRShell_CONFIG_FILE)
-			get_filename_component(PVRShell_DIR ${PVRShell_CONFIG_FILE} DIRECTORY)
-			message(STATUS "PVRShell: Found prebuilt directory ${PVRShell_DIR}")
-		endif()
-	endif()
+if(PVR_PREBUILT_DEPENDENCIES AND ANDROID)
+    set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
+    pvr_find_android_build_path(PVRShell_PREBUILT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRShell/build-android" "PVRShell")
+    if(PVRShell_PREBUILT_DIR)
+        list(APPEND CMAKE_PREFIX_PATH "${PVRShell_PREBUILT_DIR}")
+    endif()
 endif()
 
 if(NOT TARGET PVRShell)
+
 	# Try to find the package configuration
 	find_package(PVRShell CONFIG QUIET)
 	
@@ -60,4 +46,7 @@ if(NOT TARGET PVRShell)
 			message(FATAL_ERROR "PVRShell: Could not find prebuilt package AND could not find source at ${PVRShell_SOURCE_DIR}")
 		endif()
 	endif()
+endif()
+if(TARGET PVRShell)
+    set(PVRShell_FOUND TRUE)
 endif()

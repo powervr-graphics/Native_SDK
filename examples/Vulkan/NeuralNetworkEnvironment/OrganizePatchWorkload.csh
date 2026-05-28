@@ -71,7 +71,7 @@ const int numberElementPerSlot = 5;
 
 // The shader code is loaded and in "local_size_x = %d", "%d" is changed to match the size of the subgroup in the current GPU
 // layout(local_size_x = [Subgroup_size], local_size_y = 1, local_size_z = 1) in;
-%s1
+layout(local_size_x = 32, local_size_y = 1, local_size_z = 1) in;
 
 void main()
 {

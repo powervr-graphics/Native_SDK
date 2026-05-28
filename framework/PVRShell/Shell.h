@@ -998,6 +998,10 @@ public:
 	/// <param name="readPath">A new read path to add to the set of read paths.</param>
 	void addReadPath(const std::string& readPath);
 
+	/// <summary>Getter of Shell::_data::os::_instance</summary>
+	/// <returns>Pointer to Shell::_data::os::_instance.</returns>
+	const pvr::OSApplication getOSApplication();
+
 private:
 	bool _dragging;
 	std::bitset<256> _keystate;

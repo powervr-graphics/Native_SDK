@@ -452,6 +452,15 @@ typedef struct VkDeviceBindings_ {
 	PFN_vkWaitSemaphores vkWaitSemaphores;
 #endif // VK_VERSION_1_2
 
+#if (defined(VK_VERSION_1_3))
+	PFN_vkCmdSetEvent2 vkCmdSetEvent2;
+	PFN_vkCmdResetEvent2 vkCmdResetEvent2;
+	PFN_vkCmdWaitEvents2 vkCmdWaitEvents2;
+	PFN_vkCmdPipelineBarrier2 vkCmdPipelineBarrier2;
+	PFN_vkCmdWriteTimestamp2 vkCmdWriteTimestamp2;
+	PFN_vkQueueSubmit2 vkQueueSubmit2;
+#endif // VK_VERSION_1_3
+
 #if (defined(VK_AMD_buffer_marker))
 	PFN_vkCmdWriteBufferMarkerAMD vkCmdWriteBufferMarkerAMD;
 #endif // VK_AMD_buffer_marker

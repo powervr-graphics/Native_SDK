@@ -4,8 +4,18 @@
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
-#define VMA_IMPLEMENTATION
 #include "MemoryAllocator.h"
+
+#define VMA_IMPLEMENTATION
+namespace pvr {
+namespace utils {
+namespace vma {
+namespace impl {
+#include "vk_mem_alloc.h"
+}
+}
+}
+}
 namespace pvr {
 namespace utils {
 namespace vma {
