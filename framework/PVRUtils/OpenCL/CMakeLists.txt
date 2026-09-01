@@ -1,7 +1,8 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.22.1)
 # Copyright (c) Imagination Technologies Limited.
 
 project(PVRUtilsCL)
+set(CMAKE_UNITY_BUILD ON)
 include(GNUInstallDirs)
 include(CMakeFindDependencyMacro)
 
@@ -19,12 +20,14 @@ if(PVR_PREBUILT_DEPENDENCIES)
 endif()
 
 # Fix: Use generator expressions to avoid exporting absolute paths in INTERFACE_INCLUDE_DIRECTORIES
-target_include_directories(PVRUtilsCL 
+get_filename_component(PVRUtilsCL_INC_INCLUDE "${CMAKE_CURRENT_LIST_DIR}/../../../include" ABSOLUTE)
+get_filename_component(PVRUtilsCL_INC_FRAMEWORK "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE)
+
+target_include_directories(PVRUtilsCL
 	INTERFACE 
-		"$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../../include>"
-		"$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../>"
-		"$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
-)
+		$<BUILD_INTERFACE:${PVRUtilsCL_INC_INCLUDE}>
+		$<BUILD_INTERFACE:${PVRUtilsCL_INC_FRAMEWORK}>
+		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 list(APPEND PVRUtilsCL_LINK_LIBS PVRCore)
 

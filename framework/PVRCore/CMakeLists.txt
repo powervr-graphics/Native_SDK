@@ -1,7 +1,8 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.22.1)
 # Copyright (c) Imagination Technologies Limited.
 
 project(PVRCore)
+set(CMAKE_UNITY_BUILD ON)
 
 include(GNUInstallDirs)
 include(CMakeFindDependencyMacro)
@@ -101,7 +102,7 @@ if (WIN32)
 # No extra libraries for windows. We need this if though as if it is an unknown platform we error out
 elseif (ANDROID)
 	find_library(lib-log log)
-	target_link_libraries(PVRCore PRIVATE ${lib-log})
+	target_link_libraries(PVRCore PRIVATE ${lib-log} android)
 elseif (APPLE)
 	if (IOS)
 		find_library(lib-foundation Foundation)

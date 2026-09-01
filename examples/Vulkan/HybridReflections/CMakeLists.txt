@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.22.1)
 project(VulkanHybridReflections)
+set(CMAKE_UNITY_BUILD ON)
 if(ANDROID)
 	message("Skipping VulkanHybridReflections : Not supported on Android")
 	return()

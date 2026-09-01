@@ -40,13 +40,7 @@ if(NOT TARGET SPIRV)
 	find_dependency(SPIRV REQUIRED MODULE)
 endif()
 
-if(NOT TARGET GenericCodeGen)
-	find_dependency(GenericCodeGen REQUIRED MODULE)
-endif()
 
-if(NOT TARGET MachineIndependent)
-	find_dependency(MachineIndependent REQUIRED MODULE)
-endif()
 
 
 
@@ -82,4 +76,19 @@ if(NOT TARGET PVRUtilsVk)
 endif()
 if(TARGET PVRUtilsVk)
     set(PVRUtilsVk_FOUND TRUE)
+endif()
+
+
+if(TARGET PVRUtilsVk)
+    get_target_property(_loc_debug PVRUtilsVk IMPORTED_LOCATION_DEBUG)
+    if(_loc_debug AND NOT EXISTS "${_loc_debug}")
+        message(STATUS "Restoring PVRUtilsVk IMPORTED_LOCATION_DEBUG")
+        get_filename_component(_fw_dir "${CMAKE_CURRENT_LIST_DIR}/../../framework" ABSOLUTE)
+        # Find the .a file!
+        file(GLOB_RECURSE _a_file "${_fw_dir}/*/build-android/.cxx/Debug/*/${ANDROID_ABI}/libPVRUtilsVk.a")
+        if(_a_file)
+            list(GET _a_file 0 _a_file_path)
+            set_property(TARGET PVRUtilsVk PROPERTY IMPORTED_LOCATION_DEBUG "${_a_file_path}")
+        endif()
+    endif()
 endif()

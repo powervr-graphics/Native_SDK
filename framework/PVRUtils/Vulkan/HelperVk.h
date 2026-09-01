@@ -592,13 +592,14 @@ struct ImageUpdateInfo
 	// 3D texture Only. Derive all states above Except arrayIndex
 	int32_t offsetZ; //!< Valid for 3D texture updates only
 	uint32_t depth; //!< Valid for texture updates only
+	uint32_t imageDepth; //!< Valid for 3D texture updates only
 
 	// YCbCr texture only
 	uint32_t numPlanes; //!< Valid for YCbCr texture updates only
 	uint32_t planeIndex; //!< Valid for YCbCr texture updates only
 
 	ImageUpdateInfo()
-		: offsetX(0), imageWidth(1), dataWidth(1), mipLevel(0), data(nullptr), dataSize(0), offsetY(0), imageHeight(1), dataHeight(1), cubeFace(0), offsetZ(0), depth(1), numPlanes(1)
+		: offsetX(0), imageWidth(1), dataWidth(1), mipLevel(0), data(nullptr), dataSize(0), offsetY(0), imageHeight(1), dataHeight(1), cubeFace(0), offsetZ(0), depth(1), imageDepth(1), numPlanes(1)
 	{}
 };
 

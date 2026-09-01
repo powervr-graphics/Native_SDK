@@ -97,9 +97,13 @@ private:
 
 	void applyCommandLine();
 	void readApiFromCommandLine();
+	void beginStdLogCapture();
+	void endStdLogCapture();
 
 	NewState _currentState;
 	bool _pause;
+	FILE* _stdoutRedirect = nullptr;
+	FILE* _stderrRedirect = nullptr;
 };
 
 inline std::string to_string(StateMachine::NewState state)

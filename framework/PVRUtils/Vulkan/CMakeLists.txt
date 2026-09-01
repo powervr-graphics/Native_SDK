@@ -1,7 +1,8 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.22.1)
 # Copyright (c) Imagination Technologies Limited.
 
 project(PVRUtilsVk)
+set(CMAKE_UNITY_BUILD ON)
 include(GNUInstallDirs)
 include(CMakeFindDependencyMacro)
 include(../../FrameworkCommon.cmake)
@@ -84,9 +85,11 @@ target_link_libraries(PVRUtilsVk
 		glslang 
 		SPIRV)
 
+get_filename_component(PVRUtilsVk_ABS_INC "${PVRUtilsVk_INCLUDE_DIRECTORIES}" ABSOLUTE)
+
 target_include_directories(PVRUtilsVk 
 	PUBLIC 
-		"$<BUILD_INTERFACE:${PVRUtilsVk_INCLUDE_DIRECTORIES}>"
+		$<BUILD_INTERFACE:${PVRUtilsVk_ABS_INC}>
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 if(PVR_ENABLE_INSTALL)	

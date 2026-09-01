@@ -512,3 +512,5 @@ CompilerldCXX.exe
 
 # Visual Studio cmake settings files
 CMakeSettings.json
+# Keystore
+keystore.properties

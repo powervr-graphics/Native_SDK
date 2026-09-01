@@ -124,7 +124,7 @@ void logMessage(const char* formatString)
 #else // Not android Not QNX
 	static char buffer[4096];
 	memset(buffer, 0, sizeof(buffer));
-	snprintf(buffer, 4095, formatString);
+	snprintf(buffer, 4095, "%s", formatString);
 	buffer[4095] = 0;
 #if defined(_WIN32)
 	if (isDebuggerPresent())
@@ -133,7 +133,7 @@ void logMessage(const char* formatString)
 		OutputDebugString("\n");
 	}
 #endif
-	printf(formatString);
+	printf("%s", formatString);
 	printf("\n");
 #endif
 }

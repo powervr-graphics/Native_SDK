@@ -14,6 +14,7 @@
 #include "SupernovaV1Mode1XPass.h"
 #include "SupernovaV1Mode2XPassUpscale.h"
 #include "SupernovaV1Mode2XPassOutput.h"
+#include "MentisV2NeuralSuperResolution.h"
 #include "Log.h"
 #include "FileIO.h"
 
@@ -66,6 +67,15 @@ DynamicMap* SuperResolution::init(const VulkanInitializationData& initialization
 		_vectorPass.push_back(supernovaV1Mode2XPassUpscale);
 		_vectorPass.push_back(supernovaV1Mode2XPassOutput);
 
+		break;
+	}
+	case PostProcessingMethod::MentisV2NeuralSuperResolution: {
+		// Mentis spatial upscaler
+		VulkanComputePostProcessingPass* vulkanComputePass = new MentisV2NeuralSuperResolution(PostprocessingPassOrder::SinglePass, PostProcessingMethod::MentisV2NeuralSuperResolution);
+		vulkanComputePass->setDynamicMap(&_dynamicMap);
+		vulkanComputePass->init(initializationData);
+
+		_vectorPass.push_back(vulkanComputePass);
 		break;
 	}
 	default:

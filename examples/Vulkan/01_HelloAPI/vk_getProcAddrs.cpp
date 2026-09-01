@@ -194,19 +194,27 @@ static NativeLibrary& vkglueLib()
 {
 #if _WIN32
 	static NativeLibrary mylib("vulkan-1.dll");
-#endif
-#if _LINUX || _ANDROID
-	static NativeLibrary mylib("libvulkan.so");
-#endif
-#if _APPLE
+#elif _APPLE
 	static NativeLibrary mylib("libMoltenVK.dylib");
+#elif _LINUX && !_ANDROID
+	static NativeLibrary mylib("libvulkan.so");
+#else
+	static NativeLibrary mylib("");
 #endif
 	return mylib;
 }
 
+#if _ANDROID
+extern "C" PFN_vkVoidFunction vkGetInstanceProcAddr(VkInstance instance, const char* pName);
+#endif
+
 bool vk::initVulkan()
 {
+#if _ANDROID
+	GetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)::vkGetInstanceProcAddr;
+#else
 	GetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)vkglueLib().getFunction("vkGetInstanceProcAddr");
+#endif
 
 	if (GetInstanceProcAddr)
 	{

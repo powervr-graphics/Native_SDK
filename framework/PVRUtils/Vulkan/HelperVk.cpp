@@ -1342,7 +1342,7 @@ void updateImage(pvrvk::Device& device, pvrvk::CommandBufferBase cbuffTransfer, 
 
 			stagingBuffers[i]->setObjectName("PVRUtilsVk::updateImage::Temporary Image Upload Buffer");
 			imgcp.setImageOffset(pvrvk::Offset3D(mipLevelUpdate.offsetX, mipLevelUpdate.offsetY, mipLevelUpdate.offsetZ));
-			imgcp.setImageExtent(pvrvk::Extent3D(mipLevelUpdate.imageWidth, mipLevelUpdate.imageHeight, 1));
+			imgcp.setImageExtent(pvrvk::Extent3D(mipLevelUpdate.imageWidth, mipLevelUpdate.imageHeight, mipLevelUpdate.imageDepth));
 
 			imgcp.setImageSubresource(pvrvk::ImageSubresourceLayers(inferAspectFromFormat(format, updateInfos[i].planeIndex), updateInfos[i].mipLevel, hwSlice, 1));
 			imgcp.setBufferRowLength(mipLevelUpdate.dataWidth);
@@ -1411,7 +1411,7 @@ pvrvk::Device createDeviceAndQueues(pvrvk::PhysicalDevice physicalDevice, const 
 			// if requested, look for presentation support
 			if (!queueCreateInfos[i].surface || physicalDevice->getSurfaceSupport(j, queueCreateInfos[i].surface))
 			{
-				uint32_t supportedFlags = static_cast<uint32_t>(queueFamilyProperties[j].getQueueFlags());
+								uint32_t supportedFlags = static_cast<uint32_t>(queueFamilyProperties[j].getQueueFlags());
 				uint32_t requestedFlags = static_cast<uint32_t>(queueCreateInfos[i].queueFlags);
 
 				if ((supportedFlags & static_cast<uint32_t>(pvrvk::QueueFlags::e_GRAPHICS_BIT)) ||

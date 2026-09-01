@@ -130,6 +130,9 @@ struct DeviceResources
 	/// <summary>Semaphore signaled when the compute command buffer with the particle simulation dispatchs have finished.</summary>
 	std::vector<pvrvk::Semaphore> computeSemaphores;
 
+	/// <summary>Semaphore signaled by graphics and waited on by the next frame's compute to prevent write after read races on particleBuffer.</summary>
+	std::vector<pvrvk::Semaphore> graphicsToComputeSemaphores;
+
 	/// <summary>Fence to wait in the host for the compute command buffers to complete execution.</summary>
 	std::vector<pvrvk::Fence> computeFences;
 
@@ -958,6 +961,7 @@ pvr::Result VulkanSPHFluidSimulation::initView()
 	_deviceResources->imageAcquiredSemaphores.resize(_swapchainLength);
 	_deviceResources->presentationSemaphores.resize(_swapchainLength);
 	_deviceResources->computeSemaphores.resize(_swapchainLength);
+	_deviceResources->graphicsToComputeSemaphores.resize(_swapchainLength);
 	_deviceResources->computeFences.resize(_swapchainLength);
 	_deviceResources->graphicsFences.resize(_swapchainLength);
 	_deviceResources->graphicsCommandBuffers.resize(_swapchainLength);
@@ -982,12 +986,21 @@ pvr::Result VulkanSPHFluidSimulation::initView()
 		_deviceResources->presentationSemaphores[i]->setObjectName("PresentationSemaphoreSwapchain" + std::to_string(i));
 		_deviceResources->imageAcquiredSemaphores[i]->setObjectName("ImageAcquiredSemaphoreSwapchain" + std::to_string(i));
 
+		_deviceResources->graphicsToComputeSemaphores[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->graphicsToComputeSemaphores[i]->setObjectName("GraphicsToComputeSemaphoreSwapchain" + std::to_string(i));
+
 		// Per swapchain fences
 		_deviceResources->graphicsFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 		_deviceResources->computeFences[i] = _deviceResources->device->createFence(pvrvk::FenceCreateFlags::e_SIGNALED_BIT);
 		_deviceResources->graphicsFences[i]->setObjectName(std::string("Per Frame Command Buffer Fence [") + std::to_string(i) + "]");
 		_deviceResources->computeFences[i]->setObjectName(std::string("Per Frame Compute Command Buffer Fence [") + std::to_string(i) + "]");
 	}
+
+	pvrvk::SubmitInfo preSignalInfo;
+	preSignalInfo.signalSemaphores = &_deviceResources->graphicsToComputeSemaphores[_swapchainLength - 1];
+	preSignalInfo.numSignalSemaphores = 1;
+	_deviceResources->graphicsQueue->submit(&preSignalInfo, 1);
+	_deviceResources->graphicsQueue->waitIdle();
 
 	// Create a single time submit command buffer for uploading resources
 	pvrvk::CommandBuffer uploadBuffer = _deviceResources->commandPool->allocateCommandBuffer();
@@ -1065,18 +1078,18 @@ pvr::Result VulkanSPHFluidSimulation::renderFrame()
 {
 	pvr::utils::beginQueueDebugLabel(_deviceResources->graphicsQueue, pvrvk::DebugUtilsLabel("renderFrame"));
 
+	// Semaphores are keyed to _frameId and shared across two queues, so both fences must be
+	// waited before acquire to ensure neither queue is still using this slot's semaphores
+	_deviceResources->graphicsFences[_frameId]->wait();
+	_deviceResources->graphicsFences[_frameId]->reset();
+	_deviceResources->computeFences[_frameId]->wait();
+	_deviceResources->computeFences[_frameId]->reset();
+
 	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->imageAcquiredSemaphores[_frameId]);
 
 	const uint32_t swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
 
-	_deviceResources->graphicsFences[swapchainIndex]->wait();
-	_deviceResources->graphicsFences[swapchainIndex]->reset();
-
 	updateSettingsBufferViews();
-
-	// Wait for any previous compute command buffer pending to complete execution
-	_deviceResources->computeFences[swapchainIndex]->wait();
-	_deviceResources->computeFences[swapchainIndex]->reset();
 
 	pvr::utils::beginQueueDebugLabel(_deviceResources->graphicsQueue, pvrvk::DebugUtilsLabel("Submitting per frame command buffers"));
 
@@ -1086,17 +1099,20 @@ pvr::Result VulkanSPHFluidSimulation::renderFrame()
 	pvrvk::PipelineStageFlags pipeWaitStageFlagsCompute = pvrvk::PipelineStageFlags::e_COMPUTE_SHADER_BIT;
 	submitInfoCompute.commandBuffers = &_deviceResources->computeCommandBuffers[swapchainIndex];
 	submitInfoCompute.numCommandBuffers = 1;
-	submitInfoCompute.waitSemaphores = nullptr; // Do not wait for any semaphores, synchronize later with the image acquire part
-	submitInfoCompute.numWaitSemaphores = 0;
+	// Wait for the immediately preceding frame's graphics to finish reading particleBuffer before overwriting it
+	const uint32_t prevFrameId = (_frameId + _swapchainLength - 1) % _swapchainLength;
+	submitInfoCompute.waitSemaphores = &_deviceResources->graphicsToComputeSemaphores[prevFrameId];
+	submitInfoCompute.numWaitSemaphores = 1;
 	submitInfoCompute.signalSemaphores = &_deviceResources->computeSemaphores[_frameId];
 	submitInfoCompute.numSignalSemaphores = 1;
 	submitInfoCompute.waitDstStageMask = &pipeWaitStageFlagsCompute;
-	_deviceResources->computeQueue->submit(&submitInfoCompute, 1, _deviceResources->computeFences[swapchainIndex]);
+	_deviceResources->computeQueue->submit(&submitInfoCompute, 1, _deviceResources->computeFences[_frameId]);
 
 	// For the graphics queue command buffer, wait for both the compute semaphore and the swapchain image acquire semaphore to be signaled 
 	// before doing any vertex shader work, and on completion signal the presentationSemaphores semaphore
 	pvrvk::SubmitInfo submitInfo;
-	const pvrvk::PipelineStageFlags pipeWaitStageFlags[] = { pvrvk::PipelineStageFlags::e_VERTEX_SHADER_BIT, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT };
+	// e_VERTEX_INPUT_BIT: particle buffer is read as an instance vertex attribute, which is fetched before vertex shading
+	const pvrvk::PipelineStageFlags pipeWaitStageFlags[] = { pvrvk::PipelineStageFlags::e_VERTEX_INPUT_BIT, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT };
 	
 	std::vector<pvrvk::Semaphore> vectorSemaphore = { _deviceResources->computeSemaphores[_frameId], _deviceResources->imageAcquiredSemaphores[_frameId] };
 	submitInfo.waitSemaphores = vectorSemaphore.data();
@@ -1104,9 +1120,11 @@ pvr::Result VulkanSPHFluidSimulation::renderFrame()
 	submitInfo.waitDstStageMask = &pipeWaitStageFlags[0];
 	submitInfo.numCommandBuffers = 1;
 	submitInfo.commandBuffers = &_deviceResources->graphicsCommandBuffers[swapchainIndex];
-	submitInfo.signalSemaphores = &_deviceResources->presentationSemaphores[_frameId];
-	submitInfo.numSignalSemaphores = 1;
-	_deviceResources->graphicsQueue->submit(&submitInfo, 1, _deviceResources->graphicsFences[swapchainIndex]);
+	// Signal both the presentation semaphore and the graphics-to-compute semaphore so the next compute for this slot can proceed
+	std::array<pvrvk::Semaphore, 2> graphicsSignalSemaphores = { _deviceResources->presentationSemaphores[_frameId], _deviceResources->graphicsToComputeSemaphores[_frameId] };
+	submitInfo.signalSemaphores = graphicsSignalSemaphores.data();
+	submitInfo.numSignalSemaphores = 2;
+	_deviceResources->graphicsQueue->submit(&submitInfo, 1, _deviceResources->graphicsFences[_frameId]);
 
 	pvr::utils::endQueueDebugLabel(_deviceResources->graphicsQueue);
 

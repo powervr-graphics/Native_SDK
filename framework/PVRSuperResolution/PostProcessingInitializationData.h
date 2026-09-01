@@ -17,6 +17,7 @@ enum class PostProcessingMethod
 {
 	SupernovaV1Mode1X = 0, /// <summary>Supernova V1 method where no upscaling is performed.</summary>
 	SupernovaV1Mode2X, /// <summary>Supernova V1 method with 2x upscaling performed.</summary>
+	MentisV2NeuralSuperResolution, /// <summary>Mentis Neural Super Resolution upscaler.</summary>
 	YUVAColorConversion, /// <summary>YUVA color conversion.</summary>
 	PostProcessingMethodSize /// <summary>Helper enum to know the amount available enums in PostProcessingMethod.</summary>
 };

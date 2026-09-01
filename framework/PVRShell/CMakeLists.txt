@@ -1,7 +1,8 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.22.1)
 # Copyright (c) Imagination Technologies Limited.
 
 project(PVRShell)
+set(CMAKE_UNITY_BUILD ON)
 
 include(GNUInstallDirs)
 include(CMakeFindDependencyMacro)

@@ -1,7 +1,8 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.22.1)
 # Copyright (c) Imagination Technologies Limited.
 
 project(PVRPfx)
+set(CMAKE_UNITY_BUILD ON)
 
 include(GNUInstallDirs)
 include(CMakeFindDependencyMacro)
@@ -46,9 +47,13 @@ set(PVRPfx_INCLUDE_DIRECTORIES
 # This ensures that #include "PVRPfx/EffectVk.h" works correctly
 include_directories("${CMAKE_CURRENT_LIST_DIR}/..")
 
+get_filename_component(PVRPfx_INC_FRAMEWORK "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
+get_filename_component(PVRPfx_INC_INCLUDE "${CMAKE_CURRENT_LIST_DIR}/../../include" ABSOLUTE)
+
 target_include_directories(PVRPfx 
 	PUBLIC 
-		"$<BUILD_INTERFACE:${PVRPfx_INCLUDE_DIRECTORIES}>"
+		$<BUILD_INTERFACE:${PVRPfx_INC_FRAMEWORK}>
+		$<BUILD_INTERFACE:${PVRPfx_INC_INCLUDE}>
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 if(PVR_ENABLE_INSTALL)

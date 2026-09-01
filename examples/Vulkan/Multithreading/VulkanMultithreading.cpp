@@ -103,7 +103,7 @@ struct DeviceResources
 	std::vector<pvr::ui::Text> loadingText;
 	pvr::utils::StructuredBufferView structuredMemoryView;
 	pvrvk::Buffer ubo;
-	pvrvk::DescriptorSet uboDescSet[4];
+	std::vector<pvrvk::DescriptorSet> uboDescSet;
 
 	pvrvk::PipelineCache pipelineCache;
 
@@ -211,6 +211,7 @@ void VulkanMultithreading::createImageSamplerDescriptorSets()
 void VulkanMultithreading::createUbo()
 {
 	std::vector<pvrvk::WriteDescriptorSet> descUpdate{ _swapchainLength };
+	_deviceResources->uboDescSet.resize(_swapchainLength);
 	{
 		pvr::utils::StructuredMemoryDescription desc;
 		desc.addElement("MVPMatrix", pvr::GpuDatatypes::mat4x4);
@@ -393,7 +394,7 @@ pvr::Result VulkanMultithreading::initView()
 
 	// create a new command pool for image uploading and upload the images in separate thread
 	_deviceResources->uploader.init(_deviceResources->device, _deviceResources->queue, &_hostMutex);
-	
+
 	bool isASTCSupported = pvr::utils::isSupportedFormat(_deviceResources->device->getPhysicalDevice(), pvrvk::Format::e_ASTC_4x4_UNORM_BLOCK);
 
 	_deviceResources->asyncUpdateInfo.diffuseTex = _deviceResources->uploader.uploadTextureAsync(_deviceResources->loader.loadTextureAsync(std::string("Marble") + (isASTCSupported ? "_astc.pvr" : ".pvr"), this, pvr::TextureFileFormat::PVR), true, &DiffuseTextureDoneCallback, true);

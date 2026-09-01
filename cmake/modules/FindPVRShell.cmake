@@ -50,3 +50,18 @@ endif()
 if(TARGET PVRShell)
     set(PVRShell_FOUND TRUE)
 endif()
+
+
+if(TARGET PVRShell)
+    get_target_property(_loc_debug PVRShell IMPORTED_LOCATION_DEBUG)
+    if(_loc_debug AND NOT EXISTS "${_loc_debug}")
+        message(STATUS "Restoring PVRShell IMPORTED_LOCATION_DEBUG")
+        get_filename_component(_fw_dir "${CMAKE_CURRENT_LIST_DIR}/../../framework" ABSOLUTE)
+        # Find the .a file!
+        file(GLOB_RECURSE _a_file "${_fw_dir}/*/build-android/.cxx/Debug/*/${ANDROID_ABI}/libPVRShell.a")
+        if(_a_file)
+            list(GET _a_file 0 _a_file_path)
+            set_property(TARGET PVRShell PROPERTY IMPORTED_LOCATION_DEBUG "${_a_file_path}")
+        endif()
+    endif()
+endif()

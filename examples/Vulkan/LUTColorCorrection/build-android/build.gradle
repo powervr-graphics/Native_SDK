@@ -1,0 +1,99 @@
+// Applies the Android plugin for Gradle to this build and makes the android block available to specify Android-specific build options
+plugins { id 'com.android.application' }
+
+// The set of framework projects on which this application is dependent
+def projectDependencies = ["PVRShell", "PVRUtilsVk"]
+
+// This block configures the repositories and dependencies for Gradle itself. Here we add a dependency for the Android plugin for Gradle as it provides
+// the additional instructions Gradle needs to build Android app modules
+// This block configures the repositories and dependencies used by all modules in the project
+android {
+namespace = "com.powervr.VulkanLUTColorCorrection"
+defaultConfig {
+		applicationId "com.powervr.VulkanLUTColorCorrection"
+externalNativeBuild {
+			cmake {
+				cppFlags "-fexceptions"
+				arguments "-DANDROID_STL=c++_static", "-DPVR_PREBUILT_DEPENDENCIES=ON", "-DPVR_ENABLE_INSTALL=ON"
+			}
+		}
+}
+	
+
+	// This block configures our build types
+	buildTypes {
+		release {
+			minifyEnabled false
+			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+			zipAlignEnabled true
+		}
+		debug {
+			sourceSets {
+				main {
+					jniLibs {
+						// We are providing prebuilt validation layer libraries built using the LunarG Vulkan-LoaderAndValidationLayers github repo: https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers.git
+						// We found that the latest set provided in the ndk were quite out of date (using VK_HEADER_VERSION 31) and were outputting false positive validation layer errors in certain cases.
+						// The following makes use of our provided validation layer libraries:
+						srcDir "${project.projectDir}/../../../../external/validation_layers/jniLibs"
+						
+						// The following will instead make use of the prebuilt validation layer libraries provided in the ndk:
+						//def ndkDir = android.ndkDirectory
+						//srcDir "$ndkDir/sources/third_party/vulkan/src/build-android/jniLibs"
+					}
+				}
+			}
+		}
+	}
+	externalNativeBuild {
+		cmake {
+
+			path = "../CMakeLists.txt"
+}
+	}
+
+	// Ensure that the icons are copied early - we do this by making the preBuild task depends on the copyIcons task
+	tasks.register('copyIcons', Copy) {
+		from file("${project.projectDir}/../../../../res/Android/Vulkan")
+		into sourceSets.main.res.srcDirs[0]
+		filePermissions { unix(0664) }
+	}
+	preBuild.dependsOn copyIcons
+
+	// Add to this list files that will need to be read at runtime here: Textures, shaders, text files etc.
+	FileCollection assetFiles = files(
+	"${project.projectDir}/../FragShader.fsh.spv",
+	"${project.projectDir}/../VertShader.vsh.spv",
+	"${project.projectDir}/../PostProcessFragShader.fsh.spv",
+	"${project.projectDir}/../PostProcessVertShader.vsh.spv",
+	"${project.projectDir}/../../../assets/Satyr/Satyr.pod",
+	"${project.projectDir}/../../../assets/Satyr/MarbleNormalMap.pvr",
+	"${project.projectDir}/../../../assets/Satyr/MarbleNormalMap_astc.pvr",
+	"${project.projectDir}/../../../assets/Satyr/Marble.pvr",
+	"${project.projectDir}/../../../assets/Satyr/Marble_astc.pvr",
+	"${project.projectDir}/../../../assets/Postprocessing/lut_cool_16.pvr",
+	"${project.projectDir}/../../../assets/Postprocessing/lut_cool_32.pvr",
+	"${project.projectDir}/../../../assets/Postprocessing/lut_warm_16.pvr",
+	"${project.projectDir}/../../../assets/Postprocessing/lut_warm_32.pvr"
+	)
+	
+	// Add a task for copying our assets from their original location (${project.projectDir}...) to the assets/ folder for packaging
+	tasks.register('copyAssetsDebug', Copy) {
+		from assetFiles
+		into sourceSets.main.assets.srcDirs[0]
+		filePermissions { unix(0664) }
+	}
+	
+	tasks.register('copyAssetsRelease', Copy) {
+		from assetFiles
+		into sourceSets.main.assets.srcDirs[0]
+		filePermissions { unix(0664) }
+	}
+}
+
+// This block specifies dependencies required to build only the module itself
+dependencies {
+	// Dependency on local binaries
+	implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':PVRShell')
+    implementation project(':PVRUtilsVk')
+}

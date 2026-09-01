@@ -62,6 +62,9 @@ enum Enum
 };
 } // namespace UBOs
 
+// Number of combined image sampler descriptors allocated per swapchain image
+const uint32_t combinedImageSamplersPerSwapchain = 5;
+
 struct DeviceResources
 {
 	// Communicate with the device.
@@ -120,10 +123,11 @@ struct DeviceResources
 	pvr::utils::StructuredBufferView modelBufferView;
 
 	// For each uniform buffer there is a Buffer, structured buffer view, descriptor set layout, and a descriptor set
-	pvr::Multi<pvrvk::Buffer, 3> uniformBuffers;
-	pvr::Multi<pvr::utils::StructuredBufferView, 3> uniformBufferViews;
-	pvr::Multi<pvrvk::DescriptorSetLayout, 3> uniformDescSetLayouts;
-	pvr::Multi<pvrvk::DescriptorSet, 3> uniformDescSets;
+	pvr::Multi<pvrvk::Buffer, 2> uniformBuffers;
+	pvr::Multi<pvr::utils::StructuredBufferView, 2> uniformBufferViews;
+	pvr::Multi<pvrvk::DescriptorSetLayout, 2> uniformDescSetLayouts;
+	pvr::Multi<pvrvk::DescriptorSet, 2> uniformDescSets;
+	std::vector<pvrvk::DescriptorSet> compositeParamsDescSets;
 
 	// UI renderer to display text
 	pvr::ui::UIRenderer uiRenderer;
@@ -171,6 +175,7 @@ class VulkanAmbientOcclusion : public pvr::Shell
 	uint32_t _compositeParamsCount = 3;
 	uint32_t _compositeParamsID = 0;
 	bool _updateAoParams = true;
+	std::vector<bool> _compositeParamsDirty;
 
 	/// <summary>Flag to know whether astc iss upported by the physical device.</summary>
 	bool _astcSupported;
@@ -193,7 +198,7 @@ private:
 	// Create all the UBO buffers for the different render passes and then
 	// upload any data that remains constant across the runtime of the project
 	void createBuffers();
-	void updateBuffers();
+	void updateBuffers(uint32_t swapchainIndex);
 	void uploadStaticData();
 
 	// Once all the buffers have been created, create all the descriptor sets
@@ -256,6 +261,7 @@ pvr::Result VulkanAmbientOcclusion::initView()
 
 	// Store the swapchain length for repeated use
 	_swapLength = _resources->swapchain->getSwapchainLength();
+	_compositeParamsDirty = std::vector<bool>(_swapLength, true);
 
 	_resources->imageAcquiredSemaphores.resize(_swapLength);
 	_resources->presentationSemaphores.resize(_swapLength);
@@ -287,11 +293,12 @@ pvr::Result VulkanAmbientOcclusion::initView()
 	// Allocate enough descriptor pool memory for the application
 	_resources->descriptorPool =
 		_resources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-													 .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 2)
-													 .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 2)
-													 .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 2 + static_cast<uint16_t>(6 * _swapLength))
-													 .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, static_cast<uint16_t>(1 * _swapLength))
-													 .setMaxDescriptorSets(4 + static_cast<uint16_t>(4 * _swapLength)));
+															 // One shared AOParameters set added to _swapLength for the per-swapchain-image CompositeParams sets
+															 .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, static_cast<uint16_t>(1 + _swapLength))
+															 .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, static_cast<uint16_t>(_sceneHandle->getNumMaterials()))
+															 .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, static_cast<uint16_t>(_sceneHandle->getNumMaterials() + combinedImageSamplersPerSwapchain * _swapLength))
+															 .addDescriptorInfo(pvrvk::DescriptorType::e_INPUT_ATTACHMENT, static_cast<uint16_t>(1 * _swapLength))
+															 .setMaxDescriptorSets(static_cast<uint16_t>(1 + _sceneHandle->getNumMaterials() + combinedImageSamplersPerSwapchain * _swapLength)));
 	if (!_resources->descriptorPool) { return pvr::Result::UnknownError; }
 
 	_resources->descriptorPool->setObjectName("DescriptorPool");
@@ -342,13 +349,13 @@ pvr::Result VulkanAmbientOcclusion::releaseView()
 /// <returns>Success if no errors occurred</returns>
 pvr::Result VulkanAmbientOcclusion::renderFrame()
 {
-	updateBuffers();
-
 	// Acquire the next frame in the queue
 	_resources->swapchain->acquireNextImage(uint64_t(-1), _resources->imageAcquiredSemaphores[_frameID]);
 	const uint32_t swapchainIndex = _resources->swapchain->getSwapchainIndex();
 	_resources->perFrameResourcesFences[swapchainIndex]->wait();
 	_resources->perFrameResourcesFences[swapchainIndex]->reset();
+
+	updateBuffers(swapchainIndex);
 
 	// Create submit information that has the correct sync objects
 	pvrvk::SubmitInfo submitInfo;
@@ -456,10 +463,12 @@ void VulkanAmbientOcclusion::createBuffers()
 	pvr::utils::StructuredMemoryDescription compositeBufferDesc;
 	compositeBufferDesc.addElement("AlbedoStrength", pvr::GpuDatatypes::Float);
 	compositeBufferDesc.addElement("AOStrength", pvr::GpuDatatypes::Float);
-	_resources->uniformBufferViews[UBOs::CompositeParams].init(compositeBufferDesc);
+	// Allocate one aligned uniform-buffer slice per swapchain image
+	_resources->uniformBufferViews[UBOs::CompositeParams].initDynamic(compositeBufferDesc, _swapLength, pvr::BufferUsageFlags::UniformBuffer,
+		_resources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment());
 
 	// Initialize a dynamic buffer for per model UBO
-	_resources->modelBufferView.initDynamic(modelBufferDesc, _sceneHandle->getNumMeshNodes(), pvr::BufferUsageFlags::UniformBuffer,
+	_resources->modelBufferView.initDynamic(modelBufferDesc, _sceneHandle->getNumMeshNodes() * _swapLength, pvr::BufferUsageFlags::UniformBuffer,
 		_resources->device->getPhysicalDevice()->getProperties().getLimits().getMinUniformBufferOffsetAlignment());
 
 	// Create the buffers
@@ -475,7 +484,7 @@ void VulkanAmbientOcclusion::createBuffers()
 	_resources->uniformBuffers[UBOs::AOParamaters]->setObjectName("AOParamatersUBO");
 
 	_resources->uniformBuffers[UBOs::CompositeParams] = pvr::utils::createBuffer(_resources->device,
-		pvrvk::BufferCreateInfo(_resources->uniformBufferViews[UBOs::CompositeParams].getSize(), pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
+		pvrvk::BufferCreateInfo(_resources->uniformBufferViews[UBOs::CompositeParams].getDynamicSliceSize() * _swapLength, pvrvk::BufferUsageFlags::e_UNIFORM_BUFFER_BIT),
 		pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT, pvrvk::MemoryPropertyFlags::e_HOST_VISIBLE_BIT | pvrvk::MemoryPropertyFlags::e_DEVICE_LOCAL_BIT, _resources->vmaAllocator,
 		pvr::utils::vma::AllocationCreateFlags::e_MAPPED_BIT);
 	_resources->uniformBuffers[UBOs::CompositeParams]->setObjectName("CompositeParamsUBO");
@@ -487,7 +496,7 @@ void VulkanAmbientOcclusion::createBuffers()
 }
 
 /// <summary>Updates the contents of the Ubo Buffers that change once per frame, this includes the MVPMatrix, the Composite parameters and the UI Renderer</summary>
-void VulkanAmbientOcclusion::updateBuffers()
+void VulkanAmbientOcclusion::updateBuffers(uint32_t swapchainIndex)
 {
 	if (_animate)
 	{
@@ -505,34 +514,30 @@ void VulkanAmbientOcclusion::updateBuffers()
 		glm::mat4x4 projection = pvr::math::perspective(pvr::Api::Vulkan, fov, static_cast<float>(this->getWidth()) / static_cast<float>(this->getHeight()),
 			_sceneHandle->getCamera(0).getNear(), _sceneHandle->getCamera(0).getFar());
 
+		const uint32_t frameBase = swapchainIndex * _sceneHandle->getNumMeshNodes();
+
 		// Update the per model normal matrix
 		for (uint32_t i = 0; i < _sceneHandle->getNumMeshNodes(); i++)
 		{
+			const uint32_t bufferIndex = frameBase + i;
 			glm::mat4 modelToWorld = _sceneHandle->getWorldMatrix(i);
 			glm::mat3x3 NormalMat = glm::mat3x3(glm::inverseTranspose(view * modelToWorld));
-			_resources->modelBufferView.getElementByName("NormalMatrix", 0, i).setValue(NormalMat);
-			_resources->modelBufferView.getElementByName("MVPMatrix", 0, i).setValue(projection * view * modelToWorld);
+			_resources->modelBufferView.getElementByName("NormalMatrix", 0, bufferIndex).setValue(NormalMat);
+			_resources->modelBufferView.getElementByName("MVPMatrix", 0, bufferIndex).setValue(projection * view * modelToWorld);
 		}
 
 		// The memory must be flushed if the devices memory's flags does not contain the HOST_COHERENT_BIT
 		// In this case it is known that the entire dynamic buffer has been updated
-		if (static_cast<uint32_t>(_resources->uniformBuffers[UBOs::CompositeParams]->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
+		if (static_cast<uint32_t>(_resources->modelBuffer->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
 		{
 			_resources->modelBuffer->getDeviceMemory()->flushRange(0, _resources->modelBufferView.getSize());
 		}
 	}
 
-	// Update the composite params
+	// Mark all swapchain slices as dirty when the composite mode changes
 	if (_updateAoParams)
 	{
-		_resources->uniformBufferViews[UBOs::CompositeParams].getElementByName("AlbedoStrength").setValue(_compositeParams[_compositeParamsID][0]);
-		_resources->uniformBufferViews[UBOs::CompositeParams].getElementByName("AOStrength").setValue(_compositeParams[_compositeParamsID][1]);
-
-		// Flush the device memory if required
-		if (static_cast<uint32_t>(_resources->uniformBuffers[UBOs::CompositeParams]->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
-		{
-			_resources->uniformBuffers[UBOs::CompositeParams]->getDeviceMemory()->flushRange(0, _resources->uniformBufferViews[UBOs::CompositeParams].getSize());
-		}
+		for (uint32_t i = 0; i < _swapLength; i++) { _compositeParamsDirty[i] = true; }
 
 		if (_compositeParamsID == _compositeParamsCount - 1)
 		{
@@ -552,6 +557,22 @@ void VulkanAmbientOcclusion::updateBuffers()
 		_resources->uiRenderer.getDefaultControls()->commitUpdates();
 		_resources->uiRenderer.getDefaultTitle()->commitUpdates();
 		_updateAoParams = false;
+	}
+
+	// Update only the currently safe (fence-waited) swapchain slice
+	if (_compositeParamsDirty[swapchainIndex])
+	{
+		_resources->uniformBufferViews[UBOs::CompositeParams].getElementByName("AlbedoStrength", 0, swapchainIndex).setValue(_compositeParams[_compositeParamsID][0]);
+		_resources->uniformBufferViews[UBOs::CompositeParams].getElementByName("AOStrength", 0, swapchainIndex).setValue(_compositeParams[_compositeParamsID][1]);
+
+		// Flush the device memory if required
+		if (static_cast<uint32_t>(_resources->uniformBuffers[UBOs::CompositeParams]->getDeviceMemory()->getMemoryFlags() & pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT) == 0)
+		{
+			const uint32_t rangeOffset = _resources->uniformBufferViews[UBOs::CompositeParams].getDynamicSliceOffset(swapchainIndex);
+			_resources->uniformBuffers[UBOs::CompositeParams]->getDeviceMemory()->flushRange(rangeOffset, _resources->uniformBufferViews[UBOs::CompositeParams].getDynamicSliceSize());
+		}
+
+		_compositeParamsDirty[swapchainIndex] = false;
 	}
 }
 
@@ -788,21 +809,52 @@ void VulkanAmbientOcclusion::createRenderpasses()
 	internalDependency.setSrcAccessMask(pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT);
 	internalDependency.setDstStageMask(pvrvk::PipelineStageFlags::e_FRAGMENT_SHADER_BIT);
 	internalDependency.setDstAccessMask(pvrvk::AccessFlags::e_SHADER_READ_BIT);
+	internalDependency.setDependencyFlags(pvrvk::DependencyFlags::e_BY_REGION_BIT);
 
 	pvrvk::SubpassDependency externalDependency;
 	externalDependency.setSrcSubpass(pvrvk::SubpassExternal);
 	externalDependency.setDstSubpass(0);
-	externalDependency.setSrcStageMask(pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT);
-	externalDependency.setSrcAccessMask(pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT);
-	externalDependency.setDstStageMask(pvrvk::PipelineStageFlags::e_FRAGMENT_SHADER_BIT);
-	externalDependency.setDstAccessMask(pvrvk::AccessFlags::e_SHADER_READ_BIT);
+	externalDependency.setSrcStageMask(pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT | pvrvk::PipelineStageFlags::e_LATE_FRAGMENT_TESTS_BIT);
+	externalDependency.setSrcAccessMask(pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT | pvrvk::AccessFlags::e_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT);
+	externalDependency.setDstStageMask(pvrvk::PipelineStageFlags::e_FRAGMENT_SHADER_BIT | pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT);
+	externalDependency.setDstAccessMask(pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT);
 
 	// Give all render passes that depend on a previous renderpass an external dependency
 	renderPassCreateInfo[RenderPasses::AmbientOcclusion].addSubpassDependency(externalDependency);
 	renderPassCreateInfo[RenderPasses::Presentation].addSubpassDependency(externalDependency);
 
+	// Synchronize attachment writes and layout transitions before the next render pass samples them
+	pvrvk::SubpassDependency outputDependency;
+	outputDependency.setSrcSubpass(0);
+	outputDependency.setDstSubpass(pvrvk::SubpassExternal);
+	outputDependency.setSrcStageMask(pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT | pvrvk::PipelineStageFlags::e_LATE_FRAGMENT_TESTS_BIT);
+	outputDependency.setSrcAccessMask(pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT | pvrvk::AccessFlags::e_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT);
+	outputDependency.setDstStageMask(pvrvk::PipelineStageFlags::e_FRAGMENT_SHADER_BIT);
+	outputDependency.setDstAccessMask(pvrvk::AccessFlags::e_SHADER_READ_BIT);
+	renderPassCreateInfo[RenderPasses::GBuffer].addSubpassDependency(outputDependency);
+	renderPassCreateInfo[RenderPasses::AmbientOcclusion].addSubpassDependency(outputDependency);
+
 	// Give the presentation pass a internal dependency to wait for it's subpass
 	renderPassCreateInfo[RenderPasses::Presentation].addSubpassDependency(internalDependency);
+
+	// Synchronize the acquired swapchain image before the presentation render pass writes it
+	pvrvk::SubpassDependency presentationInputDependency;
+	presentationInputDependency.setSrcSubpass(pvrvk::SubpassExternal);
+	presentationInputDependency.setDstSubpass(0);
+	presentationInputDependency.setSrcStageMask(pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT);
+	presentationInputDependency.setSrcAccessMask(pvrvk::AccessFlags::e_NONE);
+	presentationInputDependency.setDstStageMask(pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT);
+	presentationInputDependency.setDstAccessMask(pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT);
+	renderPassCreateInfo[RenderPasses::Presentation].addSubpassDependency(presentationInputDependency);
+
+	pvrvk::SubpassDependency presentationOutputDependency;
+	presentationOutputDependency.setSrcSubpass(0);
+	presentationOutputDependency.setDstSubpass(pvrvk::SubpassExternal);
+	presentationOutputDependency.setSrcStageMask(pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT);
+	presentationOutputDependency.setSrcAccessMask(pvrvk::AccessFlags::e_COLOR_ATTACHMENT_READ_BIT | pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT);
+	presentationOutputDependency.setDstStageMask(pvrvk::PipelineStageFlags::e_BOTTOM_OF_PIPE_BIT);
+	presentationOutputDependency.setDstAccessMask(pvrvk::AccessFlags::e_NONE);
+	renderPassCreateInfo[RenderPasses::Presentation].addSubpassDependency(presentationOutputDependency);
 
 	// Clone the AO renderpass create info into the horizontal blur.
 	renderPassCreateInfo[RenderPasses::HorizontalBlur] = renderPassCreateInfo[RenderPasses::AmbientOcclusion];
@@ -880,10 +932,14 @@ void VulkanAmbientOcclusion::createUBODescriptorSets()
 
 	// Allocate the descriptor sets from their layouts
 	_resources->uniformDescSets[UBOs::AOParamaters] = _resources->descriptorPool->allocateDescriptorSet(_resources->uniformDescSetLayouts[UBOs::AOParamaters]);
-	_resources->uniformDescSets[UBOs::CompositeParams] = _resources->descriptorPool->allocateDescriptorSet(_resources->uniformDescSetLayouts[UBOs::CompositeParams]);
+	_resources->compositeParamsDescSets.resize(_swapLength);
+	for (uint32_t i = 0; i < _swapLength; ++i)
+	{
+		_resources->compositeParamsDescSets[i] = _resources->descriptorPool->allocateDescriptorSet(_resources->uniformDescSetLayouts[UBOs::CompositeParams]);
+	}
 
 	_resources->uniformDescSets[UBOs::AOParamaters]->setObjectName("AOParamaters");
-	_resources->uniformDescSets[UBOs::CompositeParams]->setObjectName("CompositeParams");
+	for (uint32_t i = 0; i < _swapLength; ++i) { _resources->compositeParamsDescSets[i]->setObjectName("CompositeParams" + std::to_string(i)); }
 
 	// Use a vector to store the information about the UBO descriptors, so that they can be updated in one go
 	std::vector<pvrvk::WriteDescriptorSet> descriptorSetWriter;
@@ -894,10 +950,12 @@ void VulkanAmbientOcclusion::createUBODescriptorSets()
 			.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_resources->uniformBuffers[UBOs::AOParamaters], 0, _resources->uniformBufferViews[UBOs::AOParamaters].getDynamicSliceSize())));
 
 	// Composite parameters
-	descriptorSetWriter.push_back(
-		pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER, _resources->uniformDescSets[UBOs::CompositeParams], 0)
-			.setBufferInfo(
-				0, pvrvk::DescriptorBufferInfo(_resources->uniformBuffers[UBOs::CompositeParams], 0, _resources->uniformBufferViews[UBOs::CompositeParams].getDynamicSliceSize())));
+	for (uint32_t i = 0; i < _swapLength; ++i)
+	{
+		descriptorSetWriter.push_back(pvrvk::WriteDescriptorSet(pvrvk::DescriptorType::e_UNIFORM_BUFFER, _resources->compositeParamsDescSets[i], 0)
+			.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_resources->uniformBuffers[UBOs::CompositeParams], _resources->uniformBufferViews[UBOs::CompositeParams].getDynamicSliceOffset(i),
+				_resources->uniformBufferViews[UBOs::CompositeParams].getDynamicSliceSize())));
+	}
 
 	// Update the descriptors
 	_resources->device->updateDescriptorSets(descriptorSetWriter.data(), static_cast<uint32_t>(descriptorSetWriter.size()), nullptr, 0);
@@ -1152,8 +1210,10 @@ void VulkanAmbientOcclusion::recordCommandBuffers()
 			const pvr::assets::Mesh mesh = _sceneHandle->getMesh(node.getObjectId());
 			// Use the material index to bind to the correct descriptor set for this mesh
 			uint32_t descriptorIndex = node.getMaterialIndex();
+
+			const uint32_t modelIndex = i * _sceneHandle->getNumMeshNodes() + j;
 			// Get the starting position of this mesh node's ubo in the dynamic buffer
-			uint32_t bufferOffset = _resources->modelBufferView.getDynamicSliceOffset(j);
+			uint32_t bufferOffset = _resources->modelBufferView.getDynamicSliceOffset(modelIndex);
 
 			_resources->cmdBuffers[i]->bindVertexBuffer(_resources->sceneVbos.at(node.getObjectId()), 0, 0);
 			_resources->cmdBuffers[i]->bindIndexBuffer(_resources->sceneIbos.at(node.getObjectId()), 0, pvr::utils::convertToPVRVk(mesh.getFaces().getDataType()));
@@ -1203,7 +1263,7 @@ void VulkanAmbientOcclusion::recordCommandBuffers()
 		_resources->cmdBuffers[i]->bindDescriptorSet(
 			pvrvk::PipelineBindPoint::e_GRAPHICS, _resources->pipelineLayouts[Subpasses::Composite], 0, _resources->inputDescSets[Subpasses::Composite][i]);
 		_resources->cmdBuffers[i]->bindDescriptorSet(
-			pvrvk::PipelineBindPoint::e_GRAPHICS, _resources->pipelineLayouts[Subpasses::Composite], 1, _resources->uniformDescSets[UBOs::CompositeParams]);
+			pvrvk::PipelineBindPoint::e_GRAPHICS, _resources->pipelineLayouts[Subpasses::Composite], 1, _resources->compositeParamsDescSets[i]);
 		_resources->cmdBuffers[i]->bindPipeline(_resources->pipelines[Subpasses::Composite]);
 		_resources->cmdBuffers[i]->draw(0, 3, 0, 1);
 

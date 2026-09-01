@@ -1,55 +1,25 @@
 // Applies the Android plugin for Gradle to this build and makes the android block available to specify Android-specific build options
-apply plugin: 'com.android.library'
+plugins { id 'com.android.library' }
 
-// Get the output directory based on if the gradle command was kicked for the entire SDK or the example only
-def binOutput = gradle.ext.PVR_BINARY_OUTPUT_DIR
 // The set of framework projects on which this application is dependent
 def projectDependencies = ["PVRCore", "PVRUtilsCL"]
 
 // This block configures the repositories and dependencies for Gradle itself. Here we add a dependency for the Android plugin for Gradle as it provides
 // the additional instructions Gradle needs to build Android app modules
-buildscript {
-	repositories {
-		if (project.hasProperty('GRADLE_DEPS_PROXY_URL')) {
-			maven {
-				url "$GRADLE_DEPS_PROXY_URL"
-			}
-		}
-		else {
-			google()
-			mavenCentral()
-		}
-	}
-
-	// Adds the Android plugin for Gradle as a classpath dependency
-	dependencies {
-		classpath 'com.android.tools.build:gradle:8.13.0'
-	}
-}
-
 // This block configures the repositories and dependencies used by all modules in the project
-allprojects {
-	repositories {
-		if (project.hasProperty('GRADLE_DEPS_PROXY_URL')) {
-			maven {
-				url "$GRADLE_DEPS_PROXY_URL"
-			}
-		}
-		else {
-			google()
-			mavenCentral()
-		}
-	}
-}
-
 android {
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_17
+		targetCompatibility JavaVersion.VERSION_17
+	}
 
-	namespace "com.powervr.OpenCLMatrixMultiplication"
-	ndkVersion "29.0.14206865"
+compileSdk = 35
+namespace = "com.powervr.OpenCLMatrixMultiplication"
+ndkVersion = "29.0.14206865"
 	defaultConfig {
-		minSdkVersion 24
-		targetSdkVersion 33
-		compileSdkVersion 35
+minSdk = 24
+targetSdk = 35
+
 		externalNativeBuild {
 			cmake {
 				cppFlags "-fexceptions"
@@ -58,13 +28,15 @@ android {
 		}
 		ndk
 		{
-			abiFilters "$ANDROID_ABI".replace(" ", "").split(",")
+			abiFilters project.hasProperty("ANDROID_ABI") ? project.property("ANDROID_ABI").replace(" ", "").split(",") : ["arm64-v8a"]
 		}
 	}
 	externalNativeBuild {
 		cmake {
-			path "../CMakeLists.txt"
-			version "3.22.1+"
+
+			path = "../CMakeLists.txt"
+
+			version = "3.22.1+"
 		}
 	}
 }
@@ -77,7 +49,7 @@ dependencies {
     implementation project(':PVRUtilsCL')
 }
 
-tasks.whenTaskAdded { task ->
+tasks.configureEach { task ->
 	// We add a dependency on all projects dependencies corresponding externalNativeBuild tasks - If these lines are removed, the dependencies are not built as they should be.
 	if (task.name.startsWith('generateJsonModel')) {
 		def flavor = task.name.substring('generateJsonModel'.length())
@@ -95,19 +67,21 @@ tasks.whenTaskAdded { task ->
 			def flavor = task.name.substring('assemble'.length())
 			if (flavor)
 			{
+				def projDir = project.projectDir
+				def targetAbis = project.hasProperty("ANDROID_ABI") ? project.property("ANDROID_ABI").replace(" ", "").split(",") : ["arm64-v8a"]
 				task.doLast({
-					"$ANDROID_ABI".replace(" ", "").split(",").each ({
+					targetAbis.each ({
 						abi -> 
-						def baseCxx = new File("${project.projectDir}/.cxx/${flavor}")
+						def baseCxx = new File("${projDir}/.cxx/${flavor}")
 						if (baseCxx.exists()) {
 							def hashDir = baseCxx.listFiles()?.find { it.isDirectory() }
 							if (hashDir != null) {
 								def inputPath = new File(hashDir, "${abi}/bin").getAbsolutePath()
-								def outputPath = "${binOutput}/${flavor.toLowerCase()}/${abi}"
-								copy{
+								def outputPath = "${gradle.ext.PVR_BINARY_OUTPUT_DIR}/${flavor.toLowerCase()}/${abi}"
+								project.copy{
 									from inputPath
 									into outputPath
-									fileMode 0664
+		filePermissions { unix(0664) }
 									include "**"
 								}
 							}

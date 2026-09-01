@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.22.1)
 project(VulkanGnomeHorde)
+set(CMAKE_UNITY_BUILD ON)
 if(IOS)
 	message ("Skipping VulkanGnomeHorde : Vulkan is not supported on iOS.")
 	return()

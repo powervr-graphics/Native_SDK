@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.22.1)
 project(VulkanNeuralNetworkEnvironment)
+set(CMAKE_UNITY_BUILD ON)
 if(IOS)
 	message ("Skipping VulkanNeuralNetworkEnvironment : Vulkan is not supported on iOS.")
 	return()

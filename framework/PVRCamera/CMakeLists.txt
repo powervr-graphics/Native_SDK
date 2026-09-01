@@ -1,7 +1,8 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.22.1)
 # Copyright (c) Imagination Technologies Limited.
 
 project(PVRCamera)
+set(CMAKE_UNITY_BUILD ON)
 include(GNUInstallDirs)
 include(CMakeFindDependencyMacro)
 include(../FrameworkCommon.cmake)
@@ -49,10 +50,11 @@ target_link_libraries(PVRCamera
 	PRIVATE
 		${PVRCamera_PRIVATE_LINK_LIBS})
 
+get_filename_component(PVRCamera_ABS_INC "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
 get_filename_component(INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../include" ABSOLUTE)
 target_include_directories(PVRCamera
 	PUBLIC
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/..>
+		$<BUILD_INTERFACE:${PVRCamera_ABS_INC}>
 		$<BUILD_INTERFACE:${INCLUDE_DIR}>
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )

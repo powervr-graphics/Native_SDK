@@ -127,6 +127,23 @@ struct TBuiltInResourceInitialiser
 
 		// Initialise TBuiltInResource to a set of provided defaults
 		*tBuiltInResourcePtr = defaultTBuiltInResource;
+		// Allow non-inductive (for) for loops
+		tBuiltInResourcePtr->limits.nonInductiveForLoops = true;
+		// Allow while loops and do-while loops
+		tBuiltInResourcePtr->limits.whileLoops = true;
+		tBuiltInResourcePtr->limits.doWhileLoops = true;
+		// Allow non-constant expressions (like dynamic variables) to index uniform arrays in shader code
+		tBuiltInResourcePtr->limits.generalUniformIndexing = true;
+		// Allow in shaders to index input attributes (matrices or vectors) using dynamic expressions or non-constant variables
+		tBuiltInResourcePtr->limits.generalAttributeMatrixVectorIndexing = true;
+		// Allow in shaders to index input or output varying variables with non-constant (dynamic) expressions
+		tBuiltInResourcePtr->limits.generalVaryingIndexing = true;
+		// Allow indexing samplers with non-constant expressions (like dynamic loops or variables)
+		tBuiltInResourcePtr->limits.generalSamplerIndexing = true;
+		// Allow non-constant, variable expressions to be used to index into arrays, vectors, or matrices
+		tBuiltInResourcePtr->limits.generalVariableIndexing = true;
+		// Allow constant-index matrix and vector operations (like dynamic or non-constant expressions) during parsing of shader code
+		tBuiltInResourcePtr->limits.generalConstantMatrixVectorIndexing = true;
 
 		// Initialise the Vulkan specific TBuiltInResource members
 		tBuiltInResourcePtr->maxClipDistances = static_cast<int>(device->getPhysicalDevice()->getProperties().getLimits().getMaxClipDistances());

@@ -897,7 +897,9 @@ pvr::Result VulkanNeuralNetworkEnvironment::initView()
 		VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME, 
 		VK_KHR_COOPERATIVE_MATRIX_EXTENSION_NAME, 
 		VK_KHR_VULKAN_MEMORY_MODEL_EXTENSION_NAME,
-		VK_KHR_16BIT_STORAGE_EXTENSION_NAME,
+		VK_KHR_16BIT_STORAGE_EXTENSION_NAME, 
+
+
 		VK_EXT_SCALAR_BLOCK_LAYOUT_EXTENSION_NAME,
 		VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME
 	};
@@ -1362,7 +1364,7 @@ void VulkanNeuralNetworkEnvironment::fillAttachmentDescription(int numColorAttac
 	{
 		vectorAttachmentDescription.push_back(pvrvk::AttachmentDescription::createColorDescription(vectorColorFormat[i],
 			keepColorAttachmentContent ? pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL : pvrvk::ImageLayout::e_UNDEFINED, 
-			keepColorAttachmentContent ? pvrvk::ImageLayout::e_GENERAL: pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL,
+			keepColorAttachmentContent ? pvrvk::ImageLayout::e_GENERAL: pvrvk::ImageLayout::e_COLOR_ATTACHMENT_OPTIMAL, // TODO: Add specific flag
 			keepColorAttachmentContent ? pvrvk::AttachmentLoadOp::e_LOAD : pvrvk::AttachmentLoadOp::e_CLEAR, pvrvk::AttachmentStoreOp::e_STORE, numSamplesPerPixel));
 	}
 

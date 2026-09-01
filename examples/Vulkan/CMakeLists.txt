@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.22.1)
 project(VulkanExamples)
+set(CMAKE_UNITY_BUILD ON)
 
 set(VULKAN_EXAMPLES 
 	01_HelloAPI
@@ -27,9 +28,11 @@ set(VULKAN_EXAMPLES
 	ImageBasedLighting
 	ImageBasedLightingMapGenerator
 	IMGTextureFilterCubic
+	LUTColorCorrection
 	MatrixMultiplication
 	MultiSampling
 	Multithreading
+	NeuralSuperResolution
 	ParticleSystem
 	PipelineCache
 	PostProcessing

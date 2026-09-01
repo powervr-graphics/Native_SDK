@@ -55,7 +55,17 @@ const highp float PI = 3.1415920257568359375;
 const mediump int maxNumberTilePerThread = 4;
 
 // The shader code is loaded and is changed to make a shared variable array with number elements
+// maxNumberTilePerThread * NUMBER_WORKGROUP_THREADS:
 // shared int sharedArrayVisiblePatches[maxNumberTilePerThread * NUMBER_WORKGROUP_THREADS];
+
+
+// TODO: Use 16-bit precission integers for this shared variable, use bit offset
+// %s0
+
+// TODO: When profiling, use approximate for seconday ALU operations
+// atan: https://stackoverflow.com/questions/42537957/fast-accurate-atan-arctan-approximation-algorithm
+// acos: https://stackoverflow.com/questions/3380628/fast-arc-cos-algorithm
+// sqrt (1/(1/invsqrt)): https://en.wikipedia.org/wiki/Fast_inverse_square_root
 
 highp vec2 convertDirectionToUVEquirectangular(highp vec3 direction)
 {

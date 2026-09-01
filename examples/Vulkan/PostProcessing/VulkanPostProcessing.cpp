@@ -4529,11 +4529,19 @@ void VulkanPostProcessing::createBlurRenderPass()
 
 	// Add external subpass dependencies to avoid the implicit subpass dependencies and to provide more optimal pipeline stage task synchronisation
 	pvrvk::SubpassDependency externalDependencies[2];
-	externalDependencies[0] = pvrvk::SubpassDependency(pvrvk::SubpassExternal, 0, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT,
-		pvrvk::PipelineStageFlags::e_FRAGMENT_SHADER_BIT, pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_SHADER_READ_BIT, pvrvk::DependencyFlags::e_NONE);
+	externalDependencies[0] = pvrvk::SubpassDependency(pvrvk::SubpassExternal, 0, 
+		pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT,
+		pvrvk::PipelineStageFlags::e_FRAGMENT_SHADER_BIT,
+		pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT,
+		pvrvk::AccessFlags::e_SHADER_READ_BIT,
+		pvrvk::DependencyFlags::e_NONE);
 
-	externalDependencies[1] = pvrvk::SubpassDependency(0, pvrvk::SubpassExternal, pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT,
-		pvrvk::PipelineStageFlags::e_FRAGMENT_SHADER_BIT, pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT, pvrvk::AccessFlags::e_SHADER_READ_BIT, pvrvk::DependencyFlags::e_NONE);
+	externalDependencies[1] = pvrvk::SubpassDependency(0, pvrvk::SubpassExternal, 
+		pvrvk::PipelineStageFlags::e_COLOR_ATTACHMENT_OUTPUT_BIT,
+		pvrvk::PipelineStageFlags::e_FRAGMENT_SHADER_BIT,
+		pvrvk::AccessFlags::e_COLOR_ATTACHMENT_WRITE_BIT,
+		pvrvk::AccessFlags::e_SHADER_READ_BIT,
+		pvrvk::DependencyFlags::e_NONE);
 
 	renderPassInfo.addSubpassDependency(externalDependencies[0]);
 	renderPassInfo.addSubpassDependency(externalDependencies[1]);

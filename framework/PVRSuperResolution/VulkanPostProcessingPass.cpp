@@ -22,6 +22,10 @@ void VulkanPostProcessingPass::init(const VulkanInitializationData& initializati
 	_queue = initializationData.queue;
 
 	VkQueueFlagBits requiredQueueFlagBits{ VK_QUEUE_GRAPHICS_BIT };
+	if (_postProcessingMethod == PostProcessingMethod::MentisV2NeuralSuperResolution)
+	{
+		requiredQueueFlagBits = VK_QUEUE_COMPUTE_BIT;
+	}
 
 	assertCondition((initializationData.queueFamilyIndex & requiredQueueFlagBits) == 0, "ERROR: Provided queue in VulkanPostProcessingPass::init does not have compute capabilities.");
 

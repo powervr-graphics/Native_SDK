@@ -20,6 +20,8 @@ set(PVRSuperResolution_HEADERS
 	FileIO.h
 	Log.h
 	MathUtil.h
+	MentisV2NeuralSuperResolution.h
+	NRSWeights.h
 	PostProcessingInitializationData.h
 	PostProcessingPass.h
 	SupernovaV1Mode1XPass.h
@@ -38,6 +40,7 @@ set(PVRSuperResolution_SRC
 	FileIO.cpp
 	Log.cpp
 	MathUtil.cpp
+	MentisV2NeuralSuperResolution.cpp
 	SuperResolution.cpp
 	SupernovaV1Mode1XPass.cpp
 	SupernovaV1Mode2XPassUpscale.cpp
@@ -89,9 +92,10 @@ target_link_libraries(PVRSuperResolution PUBLIC glm)
 #	PUBLIC 
 #		"$<BUILD_INTERFACE:${PVRSuperResolution_INTERFACE_INCLUDE_DIRECTORIES}>")
 
-target_include_directories(PVRSuperResolution 
+get_filename_component(PVRSuperResolution_ABS_INC "${CMAKE_CURRENT_LIST_DIR}/../" ABSOLUTE)
+target_include_directories(PVRSuperResolution
 	PRIVATE 
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../>
+		$<BUILD_INTERFACE:${PVRSuperResolution_ABS_INC}>
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 		${PVRSuperResolution_PRIVATE_INCLUDE_DIRECTORIES})
 
