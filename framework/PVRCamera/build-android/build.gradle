@@ -1,16 +1,12 @@
-apply plugin: 'com.android.library'
+plugins { id 'com.android.library' }
 
 def projectDependencies = ["PVRCore"]
 
 android {
-	namespace = "com.powervr.PVRCamera"
-	ndkVersion = "29.0.14206865"
-	defaultConfig {
-		minSdkVersion 24
-		targetSdkVersion 33
-		compileSdkVersion 35
-		versionCode 1
-		versionName "1.0"
+namespace = "com.powervr.PVRCamera"
+defaultConfig {
+versionCode = 1
+versionName = "1.0"
 		externalNativeBuild {
 			cmake {
 				cppFlags "-fexceptions"
@@ -18,14 +14,11 @@ android {
 				targets "PVRCamera"
 			}
 		}
-		ndk
-		{
-			abiFilters "$ANDROID_ABI".replace(" ", "").split(",")
-		}
-	}
+}
 	externalNativeBuild {
 		cmake {
-			path "../CMakeLists.txt"
+
+			path = "../CMakeLists.txt"
 			version = "3.22.1"
 		}
 	}
@@ -48,36 +41,5 @@ dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.10"))
 
     implementation project(':PVRCore')
-}
-
-buildscript {
-	repositories {
-		if (project.hasProperty('GRADLE_DEPS_PROXY_URL')) {
-			maven {
-				url "$GRADLE_DEPS_PROXY_URL"
-			}
-		}
-		else {
-			google()
-			mavenCentral()
-		}
-	}
-	dependencies {
-		classpath 'com.android.tools.build:gradle:8.13.0'
-	}
-}
-
-allprojects {
-	repositories {
-		if (project.hasProperty('GRADLE_DEPS_PROXY_URL')) {
-			maven {
-				url "$GRADLE_DEPS_PROXY_URL"
-			}
-		}
-		else {
-			google()
-			mavenCentral()
-		}
-	}
 }
 

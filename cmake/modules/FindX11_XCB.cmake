@@ -27,9 +27,11 @@ foreach(comp ${X11_XCB_FIND_COMPONENTS})
         ${PKG_${comp}_LIBRARY_DIRS}
         )
 
-    find_package_handle_standard_args(${comp}
-        FOUND_VAR ${comp}_FOUND
-        REQUIRED_VARS ${compname}_LIBRARY)
+    if(${compname}_LIBRARY)
+        set(${comp}_FOUND true)
+    else()
+        set(${comp}_FOUND false)
+    endif()
     mark_as_advanced(${compname}_LIBRARY)
 
     list(APPEND X11_XCB_LIBRARIES ${${compname}_LIBRARY})
@@ -38,3 +40,7 @@ foreach(comp ${X11_XCB_FIND_COMPONENTS})
         set(X11_XCB_FOUND false)
     endif()
 endforeach()
+
+find_package_handle_standard_args(X11_XCB
+    FOUND_VAR X11_XCB_FOUND
+    REQUIRED_VARS X11_XCB_LIBRARIES)

@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.22.1)
 project(PVRUtilsGlsc)
+set(CMAKE_UNITY_BUILD ON)
 include(GNUInstallDirs)
 include(../../FrameworkCommon.cmake)
 # Copyright (c) Imagination Technologies Limited.
@@ -103,9 +104,13 @@ if(PVR_WINDOW_SYSTEM)
 	target_compile_definitions(PVRUtilsGlsc PUBLIC ${PVR_WINDOW_SYSTEM_DEFINE})
 endif()
 
+get_filename_component(PVRUtilsGlsc_INC_INCLUDE "${CMAKE_CURRENT_LIST_DIR}/../../../include" ABSOLUTE)
+get_filename_component(PVRUtilsGlsc_INC_FRAMEWORK "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE)
+
 target_include_directories(PVRUtilsGlsc 
 	PUBLIC 
-		"$<BUILD_INTERFACE:${PVRUtilsGlsc_INCLUDE_DIRECTORIES}>"
+		$<BUILD_INTERFACE:${PVRUtilsGlsc_INC_INCLUDE}>
+		$<BUILD_INTERFACE:${PVRUtilsGlsc_INC_FRAMEWORK}>
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 if(PVR_ENABLE_INSTALL)

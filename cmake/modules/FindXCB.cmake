@@ -35,9 +35,11 @@ foreach(comp ${XCB_FIND_COMPONENTS})
         ${PKG_${comp}_LIBRARY_DIRS}
         )
 
-    find_package_handle_standard_args(${comp}
-        FOUND_VAR ${comp}_FOUND
-        REQUIRED_VARS ${compname}_INCLUDE_DIR ${compname}_LIBRARY)
+    if(${compname}_INCLUDE_DIR AND ${compname}_LIBRARY)
+        set(${comp}_FOUND true)
+    else()
+        set(${comp}_FOUND false)
+    endif()
     mark_as_advanced(${compname}_INCLUDE_DIR ${compname}_LIBRARY)
 
     list(APPEND XCB_INCLUDE_DIRS ${${compname}_INCLUDE_DIR})
@@ -47,6 +49,10 @@ foreach(comp ${XCB_FIND_COMPONENTS})
         set(XCB_FOUND false)
     endif()
 endforeach()
+
+find_package_handle_standard_args(XCB
+    FOUND_VAR XCB_FOUND
+    REQUIRED_VARS XCB_INCLUDE_DIRS XCB_LIBRARIES)
 
 if(XCB_INCLUDE_DIRS)
 	list(REMOVE_DUPLICATES XCB_INCLUDE_DIRS)

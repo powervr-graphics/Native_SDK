@@ -92,7 +92,7 @@ struct VulkanInitializationData
 	/// <summary>Vulkan device bindings for all the Vulkan API calls that will be done.</summary>
 	const VkDeviceBindings* vk{ nullptr };
 
-	/// <summary>Vulkan instance bindings for all the instance Vulkan API calls that will be done.</summary>ç
+	/// <summary>Vulkan instance bindings for all the instance Vulkan API calls that will be done.</summary>ï¿½
 	const VkInstanceBindings* vkInstance{ nullptr };
 
 	/// <summary>Pointer to the application running using this library.</summary>

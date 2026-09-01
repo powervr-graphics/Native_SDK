@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.22.1)
 project(OpenGLSCExamples)
+set(CMAKE_UNITY_BUILD ON)
 
 set(OPENGLES_AUTOMOTIVE_EXAMPLES
 	OpenGLSCSurroundView

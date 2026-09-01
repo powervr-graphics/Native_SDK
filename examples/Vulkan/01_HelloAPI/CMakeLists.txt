@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.22.1)
 project(VulkanHelloAPI)
+set(CMAKE_UNITY_BUILD ON)
 
 if(IOS)
 	message ("Skipping VulkanHelloAPI : Not supported on iOS")
@@ -32,7 +33,8 @@ if(WIN32)
 elseif(ANDROID)
 	find_library(lib-android android) #The following lines add Android specific libraries
 	find_library(lib-log log)
-	list(APPEND PLATFORM_LIBS ${lib-android} ${lib-log})
+	find_library(lib-vulkan vulkan)
+	list(APPEND PLATFORM_LIBS ${lib-android} ${lib-log} ${lib-vulkan})
 	list(APPEND SRC_FILES 
 		MainAndroid.cpp 
 		${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c

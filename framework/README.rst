@@ -53,6 +53,16 @@ This is the code for interfacing with the camera on mobile platforms. A dummy de
 
 See the full `PVRCamera reference documentation <https://docs.imgtec.com/sdk-documentation/html/framework-libraries/PVRCamera/library/pvrcamera-introduction.html>`__
 
+PVRPfx
+~~~~~~
+
+This library handles PVR PFX effects for Vulkan. It provides classes and utilities for parsing and applying effects from .pfx files, simplifying the management of complex rendering pipelines.
+
+PVRSuperResolution
+~~~~~~~~~~~~~~~~~~
+
+PVRSuperResolution library brings to the SDK a set of postprocessing techniques focused on sharpening and upscaling (both spatial and temporal). It provides a high-level interface to easily integrate these algorithms into rendering pipelines.
+
 Building
 --------
 All PowerVR examples for all platforms will build the PowerVR Framework libraries they require. If they are used, or code is based upon them, then the Framework will not need to be built separately. Instead, include the relevant CMakeFiles or Gradle projects as dependencies. Any of the SDK examples can be used for this purpose.

@@ -89,9 +89,10 @@ target_link_libraries(PVRSuperResolution PUBLIC glm)
 #	PUBLIC 
 #		"$<BUILD_INTERFACE:${PVRSuperResolution_INTERFACE_INCLUDE_DIRECTORIES}>")
 
-target_include_directories(PVRSuperResolution 
+get_filename_component(PVRSuperResolution_ABS_INC "${CMAKE_CURRENT_LIST_DIR}/../" ABSOLUTE)
+target_include_directories(PVRSuperResolution
 	PRIVATE 
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../>
+		$<BUILD_INTERFACE:${PVRSuperResolution_ABS_INC}>
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 		${PVRSuperResolution_PRIVATE_INCLUDE_DIRECTORIES})
 

@@ -10,7 +10,7 @@
 
 namespace pvr {
 
-const std::string supernovaV1Mode2XFragmentShaderName = "SupernovaV1Mode2XUpscale.fsh.spv";
+const std::string supernovaV1Mode2XUpscaleFragmentShaderName = "SupernovaV1Mode2XUpscale.fsh.spv";
 
 SupernovaV1Mode2XPassUpscale::SupernovaV1Mode2XPassUpscale(PostprocessingPassOrder postprocessingPassOrder, bool hasAlphaChannel)
 	: VulkanGraphicsPostProcessingPass(postprocessingPassOrder, PostProcessingMethod::SupernovaV1Mode2X)
@@ -41,7 +41,7 @@ SupernovaV1Mode2XPassUpscale::SupernovaV1Mode2XPassUpscale(PostprocessingPassOrd
 
 void SupernovaV1Mode2XPassUpscale::buildPipelines()
 {
-	_vectorPipeline.push_back(buildPostProcessingPipeline(_renderPass, _vectorPipelineLayout[0], supernovaV1Mode2XFragmentShaderName, static_cast<int>(_vectorOutputImageFormat.size())));
+	_vectorPipeline.push_back(buildPostProcessingPipeline(_renderPass, _vectorPipelineLayout[0], supernovaV1Mode2XUpscaleFragmentShaderName, static_cast<int>(_vectorOutputImageFormat.size())));
 }
 
 } // namespace pvr

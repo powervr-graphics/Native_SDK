@@ -1,7 +1,8 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.22.1)
 # Copyright (c) Imagination Technologies Limited.
 
 project(PowerVR_Framework)
+set(CMAKE_UNITY_BUILD ON)
 
 # Add the default parts of the framework
 add_subdirectory_if_exists(PVRCore PVRCore)

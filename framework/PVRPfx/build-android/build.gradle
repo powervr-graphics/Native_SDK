@@ -1,17 +1,12 @@
-apply plugin: 'com.android.library'
+plugins { id 'com.android.library' }
 
 def projectDependencies = ["PVRUtilsVk", "pugixml"]
 
 android {
-
-	namespace "com.powervr.PVRPfx"
-	ndkVersion "29.0.14206865"
-	defaultConfig {
-		minSdkVersion 24
-		targetSdkVersion 33
-		compileSdkVersion 35
-		versionCode 1
-		versionName "1.0"
+namespace = "com.powervr.PVRPfx"
+defaultConfig {
+versionCode = 1
+versionName = "1.0"
 		externalNativeBuild {
 			cmake {
 				cppFlags "-fexceptions"
@@ -19,37 +14,16 @@ android {
 				targets "PVRPfx"
 			}
 		}
-		ndk
-		{
-			abiFilters "$ANDROID_ABI".replace(" ", "").split(",")
-		}
-	}
+}
 	externalNativeBuild {
 		cmake {
-			path "../CMakeLists.txt"
-			version "3.22.1+"
-		}
+
+			path = "../CMakeLists.txt"
+}
 	}
 }
 
 
-
-buildscript {
-	repositories {
-		if (project.hasProperty('GRADLE_DEPS_PROXY_URL')) {
-			maven {
-				url "$GRADLE_DEPS_PROXY_URL"
-			}
-		}
-		else {
-			google()
-			mavenCentral()
-		}
-	}
-	dependencies {
-		classpath 'com.android.tools.build:gradle:8.13.0'
-	}
-}
 
 // This block specifies dependencies required to build only the module itself
 dependencies {
@@ -60,16 +34,3 @@ dependencies {
     implementation project(':pugixml')
 }
 
-allprojects {
-	repositories {
-		if (project.hasProperty('GRADLE_DEPS_PROXY_URL')) {
-			maven {
-				url "$GRADLE_DEPS_PROXY_URL"
-			}
-		}
-		else {
-			google()
-			mavenCentral()
-		}
-	}
-}

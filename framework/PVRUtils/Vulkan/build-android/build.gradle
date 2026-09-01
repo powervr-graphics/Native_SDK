@@ -1,17 +1,12 @@
-apply plugin: 'com.android.library'
+plugins { id 'com.android.library' }
 
 def projectDependencies = ["PVRCore", "PVRAssets", "PVRVk", "glslang", "VulkanMemoryAllocator"]
 
 android {
-
-	namespace "com.powervr.PVRUtilsVk"
-	ndkVersion "29.0.14206865"
-	defaultConfig {
-		minSdkVersion 24
-		targetSdkVersion 33
-		compileSdkVersion 35
-		versionCode 1
-		versionName "1.0"
+namespace = "com.powervr.PVRUtilsVk"
+defaultConfig {
+versionCode = 1
+versionName = "1.0"
 		externalNativeBuild {
 			cmake {
 				cppFlags "-fexceptions"
@@ -19,16 +14,12 @@ android {
 				targets "PVRUtilsVk"
 			}
 		}
-		ndk
-		{
-			abiFilters "$ANDROID_ABI".replace(" ", "").split(",")
-		}
-	}
+}
 	externalNativeBuild {
 		cmake {
-			path "../CMakeLists.txt"
-			version "3.22.1+"
-		}
+
+			path = "../CMakeLists.txt"
+}
 	}
 }
 
@@ -43,33 +34,3 @@ dependencies {
 Set taskDeleted = []
 
 
-buildscript {
-	repositories {
-		if (project.hasProperty('GRADLE_DEPS_PROXY_URL')) {
-			maven {
-				url "$GRADLE_DEPS_PROXY_URL"
-			}
-		}
-		else {
-			google()
-			mavenCentral()
-		}
-	}
-	dependencies {
-		classpath 'com.android.tools.build:gradle:8.13.0'
-	}
-}
-
-allprojects {
-	repositories {
-		if (project.hasProperty('GRADLE_DEPS_PROXY_URL')) {
-			maven {
-				url "$GRADLE_DEPS_PROXY_URL"
-			}
-		}
-		else {
-			google()
-			mavenCentral()
-		}
-	}
-}

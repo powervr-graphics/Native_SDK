@@ -99,7 +99,11 @@ inline void textureLoadAsyncWorker(TextureLoadFuture future) { future->loadNow()
 class TextureAsyncLoader : public AsyncScheduler<TexturePtr, TextureLoadFuture, &impl::textureLoadAsyncWorker>
 {
 public:
-	TextureAsyncLoader() { _myInfo = "TextureAsyncLoader"; }
+	TextureAsyncLoader()
+	{
+		_myInfo = "TextureAsyncLoader";
+		start();
+	}
 	/// <summary>This function enqueues a "load texture" on a background thread, and returns an object
 	/// that can be used to query and wait for the result.</summary>
 	/// <param name="filename">The filename of the texture to load</param>

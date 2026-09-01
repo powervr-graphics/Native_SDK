@@ -337,7 +337,7 @@ Texture readTGA(const Stream& stream)
 	{
 		try
 		{
-			stream.seek((long)original_position, Stream::SeekOriginFromStart);
+			stream.seek(static_cast<long>(original_position), Stream::SeekOriginFromStart);
 		}
 		catch (...)
 		{}

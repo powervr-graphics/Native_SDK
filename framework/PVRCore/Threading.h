@@ -197,6 +197,8 @@ public:
 	/// <summary>Destructor (virtual)</summary>
 	virtual ~AsyncScheduler()
 	{
+		if (!_thread.joinable()) { return; }
+
 		bool didit = false;
 		_queueSemaphore.wait(); // protect the _done variable
 		if (!_done)
@@ -210,9 +212,16 @@ public:
 		{ _thread.join(); } }
 
 protected:
-	/// <summary>Constructor (empty, spawns worker thread and waits)</summary>
+	/// <summary>Constructor. The derived class must call start() after initializing its scheduler state.</summary>
 	AsyncScheduler()
 	{
+		_done = true;
+	}
+
+	/// <summary>Starts the worker after the derived class has finished initializing its members.</summary>
+	void start()
+	{
+		if (_thread.joinable()) { return; }
 		_done = false;
 		_thread = std::thread(&AsyncScheduler::run, this);
 	}

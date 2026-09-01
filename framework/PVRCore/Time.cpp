@@ -14,9 +14,6 @@
 #elif defined(__APPLE__)
 #include <mach/mach_time.h>
 
-#elif defined(__QNX__)
-#include <sys/time.h>
-
 #else
 #include <time.h>
 #ifdef _POSIX_MONOTONIC_CLOCK
@@ -38,7 +35,7 @@ Time::Time()
 	_timeBaseInfo = new mach_timebase_info_data_t;
 	mach_timebase_info(_timeBaseInfo);
 	_timerFrequency = static_cast<uint64_t>((1.0e9 * static_cast<double>(_timeBaseInfo->numer)) / static_cast<double>(_timeBaseInfo->denom));
-#elif !defined(__QNX__)
+#else
 	timespec timerInfo;
 	if (clock_getres(PVR_TIMER_CLOCK, &timerInfo) != 0) { _timerFrequency = static_cast<uint64_t>(timerInfo.tv_sec); }
 #endif
@@ -69,10 +66,6 @@ uint64_t Time::getElapsedNanoSecs() const
 #elif defined(__APPLE__)
 	uint64_t time = mach_absolute_time();
 	currentTime = static_cast<uint64_t>(time * (_timeBaseInfo->numer / _timeBaseInfo->denom));
-#elif defined(__QNX__)
-	timeval tv;
-	gettimeofday(&tv, NULL);
-	currentTime = static_cast<uint64_t>((tv.tv_sec * (unsigned long)1000) + (tv.tv_usec / 1000.0)) * 1000000;
 #else
 	currentTime = getCurrentTimeStamp() - _startTime;
 #endif
@@ -108,10 +101,6 @@ uint64_t Time::getCurrentTimeStamp() const
 	uint64_t currentTime;
 #if defined(_WIN32)
 	currentTime = helperQueryPerformanceCounter();
-#elif defined(__QNX__)
-	timeval tv;
-	gettimeofday(&tv, NULL);
-	currentTime = static_cast<uint64_t>((tv.tv_sec * (unsigned long)1000) + (tv.tv_usec / 1000.0)) * 1000000;
 #else
 	timespec time;
 	clock_gettime(PVR_TIMER_CLOCK, &time);

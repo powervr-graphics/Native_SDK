@@ -655,24 +655,26 @@ pvr::Result VulkanIntroducingPVRVk::renderFrame()
 	// engine has relinquished control of the image. Only after this can the swapchain be safely modified.
 
 	// A high level overview for rendering and presenting an image to the screen is as follows:
-	// 1). Acquire a presentable image from the presentation engine. The index of the next image into which to render will be returned.
-	// 2). Wait for the per frame resources fence to become signalled meaning the resources/command buffers for the current virtual frame are finished with.
+	// 1). Wait for the per frame resources fence to become signalled meaning the resources/command buffers for the current virtual frame are finished with.
+	// 2). Acquire a presentable image from the presentation engine. The index of the next image into which to render will be returned.
 	// 3). Render the image (update variables, vkQueueSubmit). We are using per swapchain pre-recorded command buffers so we only need to submit them on each frame.
 	// 4). Present the acquired and now rendered image. Presenting an image returns ownership of the image back to the presentation engine.
 	// 5). Increment (and wrap) the virtual frame index
 
 	//
-	// 1). Acquire a presentable image from the presentation engine. The index of the next image into which to render will be returned.
+	// 1). Wait for the per frame resources fence to have been signalled meaning the resources/command buffers for the current virtual frame are finished with.
+	//
+	// Wait for the command buffer from swapChainLength frames ago to be finished with.
+	_deviceResources->perFrameResourcesFences[_currentFrameIndex]->wait();
+	_deviceResources->perFrameResourcesFences[_currentFrameIndex]->reset();
+
+	//
+	// 2). Acquire a presentable image from the presentation engine. The index of the next image into which to render will be returned.
 	//
 	// The order in which images are acquired is implementation-dependent, and may be different than the order the images were presented
 	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->imageAcquireSemaphores[_currentFrameIndex]);
 
-	//
-	// 2). Wait for the per frame resources fence to have been signalled meaning the resources/command buffers for the current virtual frame are finished with.
-	//
-	// Wait for the command buffer from swapChainLength frames ago to be finished with.
-	_deviceResources->perFrameResourcesFences[_deviceResources->swapchain->getSwapchainIndex()]->wait();
-	_deviceResources->perFrameResourcesFences[_deviceResources->swapchain->getSwapchainIndex()]->reset();
+	const uint32_t swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
 
 	// Update the model view projection buffer data
 	{
@@ -689,7 +691,7 @@ pvr::Result VulkanIntroducingPVRVk::renderFrame()
 		// so care needs to be taken to only modify memory to use with the current swapchain. Other slices of the memory may still be in use.
 
 		memcpy(static_cast<unsigned char*>(_deviceResources->modelViewProjectionBuffer->getDeviceMemory()->getMappedData()) +
-				_dynamicBufferAlignedSize * _deviceResources->swapchain->getSwapchainIndex(),
+				_dynamicBufferAlignedSize * swapchainIndex,
 			&modelViewProjectionMatrix, sizeof(_viewProjectionMatrix));
 
 		// If the model view projection buffer memory was allocated with pvrvk::MemoryPropertyFlags including pvrvk::MemoryPropertyFlags::e_HOST_COHERENT_BIT indicating that
@@ -699,7 +701,7 @@ pvr::Result VulkanIntroducingPVRVk::renderFrame()
 		{
 			// Flush the memory guaranteeing that host writes to the memory ranges specified are made available to the device.
 			_deviceResources->modelViewProjectionBuffer->getDeviceMemory()->flushRange(
-				_dynamicBufferAlignedSize * _deviceResources->swapchain->getSwapchainIndex(), sizeof(_viewProjectionMatrix));
+				_dynamicBufferAlignedSize * swapchainIndex, sizeof(_viewProjectionMatrix));
 		}
 	}
 

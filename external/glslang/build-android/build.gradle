@@ -1,19 +1,24 @@
-apply plugin: 'com.android.library'
+plugins { id 'com.android.library' }
 
 android {
-	namespace "com.powervr.glslang"
-	ndkVersion "29.0.14206865"
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_17
+		targetCompatibility JavaVersion.VERSION_17
+	}
+
+compileSdk = 35
+namespace = "com.powervr.glslang"
+ndkVersion = "29.0.14206865"
 	defaultConfig {
-		minSdkVersion 24
-		targetSdkVersion 33
-		compileSdkVersion 35
-		versionCode 1
-		versionName "1.0"
+minSdk = 24
+targetSdk = 35
+versionCode = 1
+versionName = "1.0"
 		externalNativeBuild {
 			cmake {
 				cppFlags "-fexceptions"
 				arguments "-DANDROID_STL=c++_static", "-DPVR_ENABLE_INSTALL=ON"
-				targets "glslang", "SPIRV", "OGLCompiler", "OSDependent"
+				targets "glslang", "SPIRV", "MachineIndependent", "GenericCodeGen", "OSDependent"
 			}
 		}
 		ndk
@@ -23,39 +28,11 @@ android {
 	}
 	externalNativeBuild {
 		cmake {
-			path "../CMakeLists.txt"
-			version "3.22.1+"
+
+			path = "../CMakeLists.txt"
+
+			version = "3.22.1+"
 		}
 	}
 }
 
-buildscript {
-	repositories {
-		if (project.hasProperty('GRADLE_DEPS_PROXY_URL')) {
-			maven {
-				url "$GRADLE_DEPS_PROXY_URL"
-			}
-		}
-		else {
-			google()
-			mavenCentral()
-		}
-	}
-	dependencies {
-		classpath 'com.android.tools.build:gradle:8.13.0'
-	}
-}
-
-allprojects {
-	repositories {
-		if (project.hasProperty('GRADLE_DEPS_PROXY_URL')) {
-			maven {
-				url "$GRADLE_DEPS_PROXY_URL"
-			}
-		}
-		else {
-			google()
-			mavenCentral()
-		}
-	}
-}

@@ -160,7 +160,11 @@ private:
 	async::Mutex* _cmdQueueMutex;
 
 public:
-	ImageApiAsyncUploader() : _cmdQueueMutex(nullptr) { _myInfo = "ImageApiAsyncUploader"; }
+	ImageApiAsyncUploader() : _cmdQueueMutex(nullptr)
+	{
+		_myInfo = "ImageApiAsyncUploader";
+		start();
+	}
 	/// <summary>The type of the optional callback that is called at the end of the operation</summary>
 	typedef async::IFrameworkAsyncResult<pvrvk::ImageView>::Callback CallbackType;
 

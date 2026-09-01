@@ -359,10 +359,10 @@ pvr::Result VulkanBumpmap::initView()
 	_deviceResources->commandPool->setObjectTag(static_cast<uint64_t>(2), mainCommandPoolName.size(), mainCommandPoolName.c_str());
 
 	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(pvrvk::DescriptorPoolCreateInfo()
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 16)
-																						  .addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 16)
-																						  .setMaxDescriptorSets(16));
+			.addDescriptorInfo(pvrvk::DescriptorType::e_COMBINED_IMAGE_SAMPLER, 16)
+			.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 16)
+			.addDescriptorInfo(pvrvk::DescriptorType::e_UNIFORM_BUFFER, 16)
+			.setMaxDescriptorSets(16));
 
 	std::string descriptorPoolName = "DescriptorPool";
 	_deviceResources->descriptorPool->setObjectName("DescriptorPool");
@@ -526,7 +526,6 @@ pvr::Result VulkanBumpmap::renderFrame()
 	submitInfo.waitDstStageMask = &pipeWaitStageFlags;
 	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameResourcesFences[swapchainIndex]);
 
-	pvr::utils::insertDebugUtilsLabel(_deviceResources->cmdBuffers[swapchainIndex], pvrvk::DebugUtilsLabel("Swap chain index " + std::to_string(swapchainIndex)));
 	_deviceResources->queue->insertDebugUtilsLabel(pvrvk::DebugUtilsLabel("Swap chain index " + std::to_string(swapchainIndex)));
 
 	pvr::utils::endQueueDebugLabel(_deviceResources->queue);

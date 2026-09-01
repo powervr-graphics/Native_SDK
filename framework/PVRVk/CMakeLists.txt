@@ -1,6 +1,7 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.22.1)
 # Copyright (c) Imagination Technologies Limited.
 project(PVRVk)
+set(CMAKE_UNITY_BUILD ON)
 include(GNUInstallDirs)
 include(../FrameworkCommon.cmake)
 
@@ -119,10 +120,17 @@ add_library(PVRVk STATIC
 	${PVRVk_INCLUDES}
 	)
 
+set_source_files_properties(VulkanBase.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+
 # Set the include directories for PVRVk
-target_include_directories(PVRVk 
+get_filename_component(PVRVk_INC_INCLUDE "${CMAKE_CURRENT_LIST_DIR}/../../include" ABSOLUTE)
+get_filename_component(PVRVk_INC_FRAMEWORK "${CMAKE_CURRENT_LIST_DIR}/../" ABSOLUTE)
+
+target_include_directories(PVRVk
 	PUBLIC 
-		"$<BUILD_INTERFACE:${PVRVk_INCLUDE_DIRECTORIES}>"
+		$<BUILD_INTERFACE:${PVRVk_INC_INCLUDE}>
+		$<BUILD_INTERFACE:${PVRVk_INC_FRAMEWORK}>
+		$<BUILD_INTERFACE:${MVK_INCLUDE_DIR}>
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 # Determine which platform PVRVk should be built to support

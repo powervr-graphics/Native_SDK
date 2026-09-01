@@ -1,9 +1,19 @@
 Build Instructions
 ==================
 
-The following provides instructions for building the PowerVR SDK for Android, Windows and Linux. When you want to build the SDK, you can either build the framework and all of the examples, or you can build a standalone example. Builds are provided by either a CMakeLists.txt file or a build-android folder.
+The following provides instructions for building the PowerVR SDK for Android, Windows and Linux. When you want to build the SDK, you can either build the framework and all of the examples, or you can build a standalone example.
 
-It is recommended that you use the top level CMakeLists.txt or build-android system to build all of the examples at the same time. This prevents you from building the framework multiple times. Each example has its own build-android folder and CMakeLists.txt, and the instructions for building a standalone example are identical to building the entire SDK.
+**Important:** The Android Gradle build system has been refactored into a monolithic structure. Building individual examples directly from their own leaf node directories (e.g., navigating to ``examples/Vulkan/01_HelloAPI/build-android``) is **no longer supported**. All Android builds must be orchestrated from the root ``build-android`` directory.
+
+To build a specific example from the command line using Gradle, navigate to the root ``build-android`` directory and specify the example's module name followed by the build task. For example:
+
+.. code:: bash
+
+   cd build-android
+   # Windows
+   gradlew :VulkanHelloAPI:assembleDebug
+   # macOS/Linux
+   ./gradlew :VulkanHelloAPI:assembleDebug
 
 .. include_skip_start
 
@@ -123,19 +133,19 @@ Android uses its own build system called Gradle. Instead of calling CMake direct
 Command line
 ^^^^^^^^^^^^
 
-Building from the command-line is very easy. We provide gradle wrappers, which are used to avoid downloading and installing gradle. The wrapper is a small script located in the corresponding ``build-android`` that you are trying to build.
+Building from the command-line is very easy. We provide gradle wrappers, which are used to avoid downloading and installing gradle. The wrapper is a small script located in the root ``build-android`` folder.
 
 The wrapper will automatically download the required gradle version and run it. (**Note**: Using the wrapper is optional; if you already have gradle installed, you can use that instead).
 
-To build from command-line navigate to the build-android folder and run the gradle wrapper:
+To build from command-line navigate to the root ``build-android`` folder and run the gradle wrapper. To build a specific example, specify its module name:
 
 .. code:: bash
 
    # Gradle builds have the following signature :
-   # gradlew assemble[Debug/Release] [parameters]
+   # gradlew :[ModuleName]:assemble[Debug/Release] [parameters]
 
-   # An example of a debug build would be as follows :
-   gradlew assembleDebug -PANDROID_ABIS=arm64-v8a
+   # An example of a debug build for the Vulkan HelloAPI example would be as follows :
+   gradlew :VulkanHelloAPI:assembleDebug -PANDROID_ABIS=arm64-v8a
 
 The SDK can be built with a gradle (not gradlew) command when installing all the requirements (Gradle 8.13, NDK 29.0.14206865, CMake 3.22.1 and JDK 21). Example command (add the --stacktrace parameter for verbose information on any exceptions):
 
@@ -282,7 +292,7 @@ Troubleshooting
 
 Unfortunately things can’t go perfectly every time. We’ve got some frequent things for you to test, and hopefully this will resolve the problem you are experiencing.
 
-The minimum required version of CMake to build the SDK is 3.18.0. Ubuntu 20.04 is installed with CMake 3.10.4 so to build with a more recent version there are two options. Either build and install CMake 3.18.0 from the source code or download and extract the precompiled binaries for your platform. To override the CMake version used to build the SDK, simply add a *local.properties* file to the build-android folder and point CMake to your installation of version 3.18.0 by adding the following line: ``cmake.dir=[path-to-cmake-binaries]``
+The minimum required version of CMake to build the SDK is 3.22.1. Ubuntu 20.04 is installed with CMake 3.10.4 so to build with a more recent version there are two options. Either build and install CMake 3.22.1 from the source code or download and extract the precompiled binaries for your platform. To override the CMake version used to build the SDK, simply add a *local.properties* file to the build-android folder and point CMake to your installation of version 3.22.1 by adding the following line: ``cmake.dir=[path-to-cmake-binaries]``
 
 Sometimes the build system might have a problem finding the correct Android SDK, if there are multiple ones installed. to resolve this, open the ``build-android`` folder you are tying to build. Create a ``local.properties`` file, and add the line ``sdk.dir=[path-to-the-ANDROID-sdk]``, or add an environment variable ``ANDROID_HOME=[path-to-the-ANDROID-sdk]``.
 

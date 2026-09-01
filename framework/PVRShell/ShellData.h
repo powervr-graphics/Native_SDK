@@ -66,6 +66,8 @@ struct ShellData
 	float FPS; //!< The current frames per second
 	bool showFPS; //!< Indicates whether the current fps should be printed
 
+	bool captureStdLog = false;
+
 	Api contextType; //!< The API used
 	Api minContextType; //!< The minimum API supported
 

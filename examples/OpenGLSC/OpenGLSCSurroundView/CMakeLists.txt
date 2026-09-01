@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.22.1)
 project(OpenGLSCSurroundView)
+set(CMAKE_UNITY_BUILD ON)
 
 add_subdirectory(../../.. ${CMAKE_CURRENT_BINARY_DIR}/sdk)
 

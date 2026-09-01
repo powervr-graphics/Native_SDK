@@ -26,7 +26,7 @@ Allocation Allocator_::allocateMemoryForImage(pvrvk::Image& image, const Allocat
 	VmaAllocation vmaAllocation;
 	VmaAllocationInfo allocInfo;
 
-	VmaAllocationCreateInfo vmaAllocCreateInfo;
+	VmaAllocationCreateInfo vmaAllocCreateInfo{};
 	vmaAllocCreateInfo.flags = (VmaAllocationCreateFlags)createInfo.flags;
 	vmaAllocCreateInfo.usage = (VmaMemoryUsage)createInfo.usage;
 	vmaAllocCreateInfo.requiredFlags = (VkMemoryPropertyFlags)createInfo.requiredFlags;
@@ -45,7 +45,7 @@ Allocation Allocator_::allocateMemoryForBuffer(pvrvk::Buffer& buffer, const Allo
 	VmaAllocationInfo vmaAllocationInfo;
 	VmaAllocation vmaAllocation;
 
-	VmaAllocationCreateInfo vmaAllocCreateInfo;
+	VmaAllocationCreateInfo vmaAllocCreateInfo{};
 	vmaAllocCreateInfo.flags = (VmaAllocationCreateFlags)createInfo.flags;
 	vmaAllocCreateInfo.usage = (VmaMemoryUsage)createInfo.usage;
 	vmaAllocCreateInfo.requiredFlags = (VkMemoryPropertyFlags)createInfo.requiredFlags;
@@ -63,7 +63,7 @@ Allocation Allocator_::allocateMemory(const pvrvk::MemoryRequirements* vkMemoryR
 {
 	VmaAllocationInfo vmaAllocationInfo;
 	VmaAllocation vmaAllocation;
-	VmaAllocationCreateInfo vmaAllocCreateInfo;
+	VmaAllocationCreateInfo vmaAllocCreateInfo{};
 	vmaAllocCreateInfo.flags = (VmaAllocationCreateFlags)createInfo.flags;
 	vmaAllocCreateInfo.usage = (VmaMemoryUsage)createInfo.usage;
 	vmaAllocCreateInfo.requiredFlags = (VkMemoryPropertyFlags)createInfo.requiredFlags;
@@ -79,7 +79,7 @@ Allocation Allocator_::allocateMemory(const pvrvk::MemoryRequirements* vkMemoryR
 
 void Allocator_::findMemoryTypeIndex(uint32_t memoryTypeBits, const AllocationCreateInfo& allocationCreateInfo, uint32_t& outMemoryTypeIndex)
 {
-	VmaAllocationCreateInfo vmaAllocCreateInfo;
+	VmaAllocationCreateInfo vmaAllocCreateInfo{};
 	vmaAllocCreateInfo.flags = (VmaAllocationCreateFlags)allocationCreateInfo.flags;
 	vmaAllocCreateInfo.usage = (VmaMemoryUsage)allocationCreateInfo.usage;
 	vmaAllocCreateInfo.requiredFlags = (VkMemoryPropertyFlags)allocationCreateInfo.requiredFlags;

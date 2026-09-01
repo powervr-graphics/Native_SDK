@@ -1,0 +1,2 @@
+1. The glslangValidator.exe used in the SDK is old and does not support the vulkan1.2 environment so just copy the one from your Vulkan SDK into the <PATH_TO_PVR_SDK>\<YOUR_CMAKE_BUILD_FOLDER>\external\glslang\build\StandAlone\Debug directory.
+2. Add VK_ENABLE_BETA_EXTENSIONS=1 as a preprocessor definition to the VS project (Not sure how to do it through 'maker.py' at the moment. Doesn't matter since this is only required until KHR_ray_tracing goes out of beta).

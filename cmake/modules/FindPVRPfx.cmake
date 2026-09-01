@@ -46,3 +46,18 @@ endif()
 if(TARGET PVRPfx)
     set(PVRPfx_FOUND TRUE)
 endif()
+
+
+if(TARGET PVRPfx)
+    get_target_property(_loc_debug PVRPfx IMPORTED_LOCATION_DEBUG)
+    if(_loc_debug AND NOT EXISTS "${_loc_debug}")
+        message(STATUS "Restoring PVRPfx IMPORTED_LOCATION_DEBUG")
+        get_filename_component(_fw_dir "${CMAKE_CURRENT_LIST_DIR}/../../framework" ABSOLUTE)
+        # Find the .a file!
+        file(GLOB_RECURSE _a_file "${_fw_dir}/*/build-android/.cxx/Debug/*/${ANDROID_ABI}/libPVRPfx.a")
+        if(_a_file)
+            list(GET _a_file 0 _a_file_path)
+            set_property(TARGET PVRPfx PROPERTY IMPORTED_LOCATION_DEBUG "${_a_file_path}")
+        endif()
+    endif()
+endif()

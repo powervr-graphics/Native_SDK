@@ -90,16 +90,25 @@ layout(set = 0, binding = 5) uniform highp sampler2D imageIn;
 #define MAX_NEURONS_PER_LAYER 64
 #define MAX_LAYERS 5
 #define NUM_FREQUENCIES 8
+//#define PI 3.1415926535897932384626433832795
 #define PI 3.141593
 
-// Build a shared variable where to sotre for this workgroup the information from the neural network patch that will be used
+// Build a shared variavble where to sotre for this workgroup the information from the neural network patch that will be used
 // by all threads in the subgroup to approximate pixels from the environment
+// TODO: Compress to float16 (float 8?) to save bandwidth
+// shared float sharedArrayNNBiases[];
+// TODO: Use workgroup and NN dependant array size
+// TODO: Only bias values in index [32, 44] are used, remove the other ones when building the new buffer to minimize bandwidth
+//       currently these unused, 0 values represent 4MB of memory when using 32-bit float.
 shared float sharedArrayNNBiases[45];
 
 // Build a shared variavble where to sotre for this workgroup the information from the neural network patch that will be used
 // by all threads in the subgroup to approximate pixels from the environment
+// TODO: Compress to float16 (float 8?) to save bandwidth
+// TODO: Use workgroup and NN dependant array size
 shared float16_t sharedArrayNNWeights[128];
 
+// TODO: Find a way to reduce shared memory
 shared float16_t sharedArrayNNWeightsFinalTemp[128];
 
 shared float sharedMatrixResults32BitFloat[128];
@@ -107,7 +116,13 @@ shared float sharedMatrixResults32BitFloat[128];
 // Where to store the values of the neurons in the second layer before writing them in the sharedMatrixActivations for the last layer evaluation
 shared float secondLayerNeuronValues[20];
 
+// Define a custom-size array for sotring the activation values
+// float activations[MAX_LAYERS * MAX_NEURONS_PER_LAYER];
+// TODO: Use workgroup and NN dependant array size
+//float activations[160];
+
 // Store in a shared array the coordinates of those screen pixels which require inference
+// TODO: Use workgroup and NN dependant array size
 const int numberElementSubgroup = 32;
 const int numberPixelPerThread = 10;
 shared vec4 sharedArrayUVInference[numberElementSubgroup * numberPixelPerThread];
@@ -167,6 +182,7 @@ void loadNNInformation(int patchIndex)
     int workgroupIDxInt = int(gl_WorkGroupID.x);
 
     // Load the nnBiases buffer information from neuralNetworkEnvironment
+    // TODO: 32 threads loading 45 values: the last thread loast indices 31...45. Make each thread loast int(ceil(...))
     int numElementPerThread = int(ceil(float(nnBiasesNumberElement) / workGroupSizeXFloat));
     int bufferIndexStart = (nnBiasesNumberElement + nnWeightsNumberElement) * patchIndex;
     int sharedIndexStart = localInvocationIDxInt * numElementPerThread;
@@ -177,6 +193,10 @@ void loadNNInformation(int patchIndex)
     {
         sharedArrayNNBiases[i] = float(neuralNetworkEnvironment[bufferIndexStart + i]);
     }
+
+    // TODO: Parameterize the loading operations, taking into account neuronsPerLayer1 and equivalent information
+    // TODO: Consider using a larger shared variable to hold all the information and then copy from there to each cooperative matrix? (use subindices to copy each part
+    // later required)
 
     // Load the nnWeights buffer information from neuralNetworkEnvironment
     // The neural network has structure 32x10x3 layers. Each neuron in the layer #1 has 32 weights to the neurons in layer #0 which need to be evaluated
@@ -260,6 +280,7 @@ void loadNNInformation(int patchIndex)
     barrier();
 
     // To facilitate the evaluation of the neural networks later, the last ten weights just loaded onto sharedArrayNNWeightsFinalTemp need to be replicated
+    // TODO: Parallelize
     if(localInvocationIDxInt == 0)
     {
         for(int i = 0; i < 10; ++i)
@@ -269,6 +290,7 @@ void loadNNInformation(int patchIndex)
             sharedArrayNNWeightsFinalTemp[i + 32] = sharedArrayNNWeightsFinalTemp[i + 64 + 20];
         }
 
+        // NOTE: This part might not be neded as it does not interact with the parts of the matrix evaluating the three last neurons
         for(int i = 64; i < 128; ++i)
         {
             sharedArrayNNWeightsFinalTemp[i] = float16_t(0.0);
@@ -278,6 +300,8 @@ void loadNNInformation(int patchIndex)
     barrier();
 }
 
+
+// TODO: Split this work amongst threads and add a barrier
 void frequencyEncodingCooperativeMatrix(highp vec2 inputData, int writeOffset)
 {
     int inputCount = 2;
@@ -436,9 +460,13 @@ void main()
 
     loadNNInformation(patchIndex);
 
+    // TODO: Remove if not needed
     barrier();
 
     // Now, start the inference of pixels. First do the layer #1 with 10 neurons, where each neuron will evaluate its 32 connections with the previous layer
+
+    // TODO: Infer for each pixel regardles on whether it is from the correct patch to avoid all the logic to find those pixels which are from the patch being inferred?
+    //       or use the logic to only infer the pixels from the patch and avoid wasting unneccessary calls to cooperative matrix operations?
     int numberIndex = (numberElementSubgroup * numberPixelPerThread) / 2;
 
     barrier();
@@ -450,23 +478,27 @@ void main()
         // For now, consider all pixels in sharedArrayUVInference have correct values (UVs from a pixel from the patch this subgroup takes care of)
         
         // Fill the sharedMatrixActivations with the initial information to infer two different pixels
+        // TODO: Add a way to avoid processing those values from sharedArrayUVInference with incorrect pixels
         frequencyEncodingCooperativeMatrix(sharedArrayUVInference[2 * i + 0].xy, 0);
         frequencyEncodingCooperativeMatrix(sharedArrayUVInference[2 * i + 1].xy, 32);
         bool pixelCorrectArray[2];
         pixelCorrectArray[0] = sharedArrayUVInference[2 * i + 0] != vec4(-1.0);
         pixelCorrectArray[1] = sharedArrayUVInference[2 * i + 1] != vec4(-1.0);
 
+        // TODO: Remove if not needed
         barrier();
 
         // Init with 0's the sharedMatrixActivations matrix before writing the activations
         coopMatLoad(matrixActivations, sharedMatrixActivations, 0, 8, gl_CooperativeMatrixLayoutColumnMajor);
         matrixResults = coopmat<float, gl_ScopeSubgroup, 16, 8, gl_MatrixUseAccumulator>(0.0);
 
+        // TODO: Remove if not needed
         barrier();
 
         // 2. Perform the evaluation of the first layer
         matrixResults = coopMatMulAdd(matrixWeightN0N3, matrixActivations, matrixResults);
 
+        // TODO: Remove if not needed
         barrier();
 
         // Collect the activation values from matrixResults (load the cooperative matrix onto sharedArrayNNWeights 
@@ -489,11 +521,13 @@ void main()
         // Next round of neuron inference. Initialize matrixResults
         matrixResults = coopmat<float, gl_ScopeSubgroup, 16, 8, gl_MatrixUseAccumulator>(0.0);
 
+        // TODO: Remove if not needed
         barrier();
 
         // 3. Perform the evaluation of the first layer for the next set of neurons
         matrixResults = coopMatMulAdd(matrixWeightN4N7, matrixActivations, matrixResults);
 
+        // TODO: Remove if not needed
         barrier();
 
         // Collect the activation values from matrixResults (load the cooperative matrix onto sharedArrayNNWeights 
@@ -516,11 +550,13 @@ void main()
         // Next round of neuron inference. Initialize matrixResults
         matrixResults = coopmat<float, gl_ScopeSubgroup, 16, 8, gl_MatrixUseAccumulator>(0.0);
 
+        // TODO: Remove if not needed
         barrier();
 
         // 4. Perform the evaluation of the first layer for the last set of neurons (only two in this case)
         matrixResults = coopMatMulAdd(matrixWeightN8N9, matrixActivations, matrixResults);
 
+        // TODO: Remove if not needed
         barrier();
 
         // Collect the activation values from matrixResults (load the cooperative matrix onto sharedArrayNNWeights 
@@ -552,6 +588,7 @@ void main()
             sharedMatrixActivations[j + 16] = float16_t(secondLayerNeuronValues[j + 10]); 
         }
 
+        // TODO: Remove if not needed
         barrier();
 
         // Load the values from sharedMatrixActivations onto matrixActivations

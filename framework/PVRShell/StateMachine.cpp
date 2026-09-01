@@ -14,6 +14,11 @@
 #include <cstdlib>
 #include <cmath>
 #include <sstream>
+
+#if defined(_WIN32)
+#include <io.h>
+#endif
+
 #pragma warning(disable : 4127)
 
 #if defined(_WIN32)
@@ -32,7 +37,10 @@ StateMachine::StateMachine(OSApplication instance, platform::CommandLineParser& 
 	_shellData.commandLine = &commandLine;
 }
 
-StateMachine::~StateMachine() { LogClose(); }
+StateMachine::~StateMachine()
+{ 
+	LogClose();
+}
 
 void StateMachine::readApiFromCommandLine()
 {
@@ -241,6 +249,7 @@ void setLogLevel(Shell& shell, const char* arg, const char* val)
 			"information(default for release build), debug(default for debug build), verbose");
 	}
 }
+
 void setColorBpp(Shell& shell, const char* arg, const char* val)
 {
 	WARN_AND_QUIT_IF_PARAMETER_NOT_PROVIDED(arg, val);
@@ -295,6 +304,15 @@ void setForceFrameTime(Shell& shell, const char* arg, const char* val)
 		if (value) { shell.setFakeFrameTime(std::max(1u, static_cast<uint32_t>(value))); }
 	}
 }
+
+void setStdLogCapture(Shell& shell, const char* arg, const char* val)
+{
+	(void)shell;
+	(void)arg;
+	(void)val;
+
+	shell.getOS()._shellData.captureStdLog = true;
+}
 void showVersion(Shell& shell, const char* /*arg*/, const char* /*val*/) { Log(LogLevel::Information, "Version: '%hs'", shell.getSDKVersion()); }
 void setShowFps(Shell& shell, const char* /*arg*/, const char* /*val*/) { shell.setShowFPS(true); }
 void showInfo(Shell& shell, const char* /*arg*/, const char* /*val*/) { shell.getOS()._shellData.outputInfo = true; }
@@ -313,7 +331,8 @@ const std::map<std::string, SetShellParameterPtr> supportedCommandLineOptions{ s
 	std::make_pair("-config", &setDesiredCconfigId), std::make_pair("-forceframetime", &setForceFrameTime), std::make_pair("-fft", &setForceFrameTime),
 	std::make_pair("-version", &showVersion), std::make_pair("-fps", &setShowFps), std::make_pair("-info", &showInfo), std::make_pair("-h", &showCommandLineOptions),
 	std::make_pair("-help", &showCommandLineOptions), std::make_pair("--help", &showCommandLineOptions), std::make_pair("-safetycritical", &setSafetyCritical),
-	std::make_pair("-jsongeneration", &setJsonGeneration) };
+	std::make_pair("-jsongeneration", &setJsonGeneration),
+	std::make_pair("-log", &setStdLogCapture)};
 
 namespace {
 void showCommandLineOptions(Shell& /*shell*/, const char* /*arg*/, const char* /*val*/)
@@ -488,9 +507,13 @@ Result StateMachine::executeInitApplication()
 		return result;
 	}
 	applyCommandLine();
+
+	beginStdLogCapture();
 	_currentState = StateAppInitialised;
+
 	return Result::Success;
 }
+
 Result StateMachine::executeQuitApplication()
 {
 	Log(LogLevel::Debug, "StateMachine::executeQuitApplication executing");
@@ -501,6 +524,8 @@ Result StateMachine::executeQuitApplication()
 		std::string error = std::string("QuitApplication() failed with pvr error '") + getResultCodeString(result) + std::string("'\n");
 		Log(LogLevel::Error, error.c_str());
 	}
+
+	endStdLogCapture();
 
 	_shell.reset();
 	preExit();
@@ -625,9 +650,7 @@ Result StateMachine::executeFrame()
 	// Have we reached the point where we need to die?
 	if ((_shellData.dieAfterFrame >= 0 && _shellData.frameNo >= static_cast<uint32_t>(_shellData.dieAfterFrame)) ||
 		(_shellData.dieAfterTime >= 0 && ((_shellData.timer.getElapsedMilliSecs() - _shellData.startTime) * 0.001f) > _shellData.dieAfterTime))
-	{
-		_shellData.weAreDone = true;
-	}
+	{ _shellData.weAreDone = true; }
 	if (_shellData.forceReleaseInitWindow || _shellData.forceReleaseInitView)
 	{
 		Log(LogLevel::Information,
@@ -683,6 +706,41 @@ Result StateMachine::executeDown()
 	case StateReady: return executeReleaseView();
 	default: return Result::UnknownError;
 	}
+}
+
+void StateMachine::beginStdLogCapture()
+{
+	if (!_shellData.captureStdLog) { return; }
+
+	const std::string filename = getWritePath() + getApplicationName() + "_Log.txt";
+	Log(LogLevel::Information, "Log file written at: %s", filename.c_str());
+
+#if defined(_WIN32)
+	if (freopen_s(&_stdoutRedirect, filename.c_str(), "w", stdout) != 0)
+	{
+		Log(LogLevel::Error, "stdout redirect failed");
+		return;
+	}
+	if (_dup2(_fileno(stdout), _fileno(stderr)) != 0)
+	{
+		Log(LogLevel::Error, "stderr redirect failed");
+		return;
+	}
+#else �
+	freopen(filename.c_str(), "w", stdout);
+	freopen(filename.c_str(), "a", stderr);
+#endif �
+	Log(LogLevel::Information, "STDOUT/STDERR logging enabled: %s", filename.c_str());
+}
+
+void StateMachine::endStdLogCapture()
+{
+	if (!_shellData.captureStdLog) { return; }
+
+	fflush(stdout);
+	fflush(stderr);
+
+	_shellData.captureStdLog = false;
 }
 
 } // namespace platform

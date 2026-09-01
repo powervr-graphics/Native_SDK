@@ -19,28 +19,27 @@ if(PVR_PREBUILT_DEPENDENCIES)
 
 		string(TOLOWER "${CMAKE_BUILD_TYPE}" PVR_ANDROID_BUILD_TYPE)
 
-		# Search for the config file directly
-		# Try lowercase build type first
-		set(SEARCH_PATH "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRSuperResolution/build-android/.cxx/${PVR_ANDROID_BUILD_TYPE}/*/${ANDROID_ABI}/PVRSuperResolution/PVRSuperResolutionConfig.cmake")
-		file(GLOB PVRSuperResolution_CONFIG_GLOB "${SEARCH_PATH}")
-		
-		# If not found, try original build type
-		if(NOT PVRSuperResolution_CONFIG_GLOB)
-			set(SEARCH_PATH "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRSuperResolution/build-android/.cxx/${CMAKE_BUILD_TYPE}/*/${ANDROID_ABI}/PVRSuperResolution/PVRSuperResolutionConfig.cmake")
-			file(GLOB PVRSuperResolution_CONFIG_GLOB "${SEARCH_PATH}")
-		endif()
-		
-		if(PVRSuperResolution_CONFIG_GLOB)
-			list(GET PVRSuperResolution_CONFIG_GLOB 0 PVRSuperResolution_CONFIG_FILE)
-			get_filename_component(PVRSuperResolution_DIR ${PVRSuperResolution_CONFIG_FILE} DIRECTORY)
-			message(STATUS "PVRSuperResolution: Found prebuilt directory ${PVRSuperResolution_DIR}")
-		endif()
+		file(GLOB PVRSuperResolution_CONFIG_GLOB "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRSuperResolution/build-android/.cxx/${PVR_ANDROID_BUILD_TYPE}/*/${ANDROID_ABI}/PVRSuperResolution/PVRSuperResolutionConfig.cmake")
+		file(GLOB PVRSuperResolution_CONFIG_GLOB2 "${CMAKE_CURRENT_LIST_DIR}/../../framework/PVRSuperResolution/build-android/.cxx/${CMAKE_BUILD_TYPE}/*/${ANDROID_ABI}/PVRSuperResolution/PVRSuperResolutionConfig.cmake")
+		list(APPEND PVRSuperResolution_CONFIG_GLOB ${PVRSuperResolution_CONFIG_GLOB2})
+
+		set(PVRSuperResolution_DIR "")
+		foreach(CONFIG_FILE IN LISTS PVRSuperResolution_CONFIG_GLOB)
+			get_filename_component(DIR "${CONFIG_FILE}" DIRECTORY)
+			if(EXISTS "${DIR}/PVRSuperResolutionTargets.cmake")
+				set(PVRSuperResolution_DIR "${DIR}")
+				message(STATUS "PVRSuperResolution: Found valid prebuilt directory ${PVRSuperResolution_DIR}")
+				break()
+			endif()
+		endforeach()
 	endif()
 endif()
 
 if(NOT TARGET PVRSuperResolution)
 	# Try to find the package configuration
-	find_package(PVRSuperResolution CONFIG QUIET)
+	if(PVRSuperResolution_DIR)
+		find_package(PVRSuperResolution CONFIG QUIET)
+	endif()
 	
 	if(PVRSuperResolution_FOUND)
 		message(STATUS "PVRSuperResolution: Package configuration found.")

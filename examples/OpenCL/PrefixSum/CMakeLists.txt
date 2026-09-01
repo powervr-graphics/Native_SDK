@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.22.1)
 project(OpenCLPrefixSum)
+set(CMAKE_UNITY_BUILD ON)
 if(IOS)	
 	message("Skipping OpenCLPrefixSum : Not supported on iOS")
 	return()

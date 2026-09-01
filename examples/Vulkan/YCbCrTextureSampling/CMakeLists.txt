@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.22.1)
 project(VulkanYCbCrTextureSampling)
+set(CMAKE_UNITY_BUILD ON)
 if(IOS)
 	message ("Skipping VulkanYCbCrTextureSampling : Vulkan is not supported on iOS.")
 	return()

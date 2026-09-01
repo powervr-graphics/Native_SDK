@@ -49,6 +49,11 @@ layout(set = 0, binding = 2) uniform nnUniformBuffer
     highp int nnBiasesNumberElement;
 };
 
+// TODO: When profiling, use approximate for seconday ALU operations
+// atan: https://stackoverflow.com/questions/42537957/fast-accurate-atan-arctan-approximation-algorithm
+// acos: https://stackoverflow.com/questions/3380628/fast-arc-cos-algorithm
+// sqrt (1/(1/invsqrt)): https://en.wikipedia.org/wiki/Fast_inverse_square_root
+
 highp vec2 convertDirectionToUVEquirectangular(highp vec3 direction)
 {
 	// Theta is normalized to [0, 1]
